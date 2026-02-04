@@ -1,0 +1,150 @@
+/* ========================================
+   Estilos del Plano Urbano
+   ======================================== */
+
+/* Contenedor del plano */
+.plano-container {
+    position: relative;
+    display: inline-block;
+    margin-top: 20px;
+    max-width: 100%;
+}
+
+/* Imagen del plano */
+#imgPlano {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Marcadores */
+.marcador {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    background-color: red;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    border: 2px solid white;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 20px;
+    z-index: 100;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.marcador:hover {
+    transform: translate(-50%, -50%) scale(1.2);
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+}
+
+/* Controles del formulario */
+.form-label {
+    font-weight: 500;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 1rem;
+    transition: border-color 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-select {
+    border-radius: 5px;
+    border: 1px solid #ced4da;
+    padding: 0.5rem 2.5rem 0.5rem 1rem;
+    cursor: pointer;
+}
+
+/* Botones personalizados */
+.btn-custom {
+    background-color: #6a1b9a;
+    color: white;
+    border-color: #5e148c;
+    border-radius: 5px;
+    padding: 0.5rem 1.5rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-custom:hover {
+    background-color: #7c23b3;
+    border-color: #6a1b9a;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .plano-container {
+        width: 100%;
+    }
+    
+    .marcador {
+        width: 40px;
+        height: 40px;
+        font-size: 16px;
+    }
+    
+    .d-flex.flex-wrap {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .align-self-end {
+        align-self: stretch;
+    }
+}
+
+/* Estilos para impresión */
+@media print {
+    body * {
+        visibility: hidden;
+        margin: 0;
+        padding: 0;
+    }
+
+    .plano-container, .plano-container * {
+        visibility: visible;
+    }
+
+    .plano-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: auto;
+        margin: 0;
+    }
+    
+    .marcador {
+        width: 37px !important;
+        height: 37px !important;
+        font-size: 16px !important;
+        background-color: red !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    
+    .no-print {
+        display: none !important;
+    }
+
+    @page {
+        size: auto;
+        margin: 0mm;
+    }
+}
