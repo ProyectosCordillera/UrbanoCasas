@@ -1,0 +1,58 @@
+{
+  "marcas": [
+    {
+      "numeroCasa": 33,
+      "cliente": "Juan Pérez",
+      "coordenadas": {
+        "x": 455,
+        "y": 1268
+      },
+      "fecha": "2024-01-15T10:30:00Z"
+    },
+    {
+      "numeroCasa": 48,
+      "cliente": "María García",
+      "coordenadas": {
+        "x": 145,
+        "y": 437
+      },
+      "fecha": "2024-01-16T14:20:00Z"
+    },
+    {
+      "numeroCasa": 1,
+      "cliente": "Carlos Rodríguez",
+      "coordenadas": {
+        "x": 925,
+        "y": 1265
+      },
+      "fecha": "2024-01-17T09:15:00Z"
+    },
+    {
+      "numeroCasa": 17,
+      "cliente": "Ana Martínez",
+      "coordenadas": {
+        "x": 630,
+        "y": 365
+      },
+      "fecha": "2024-01-18T11:45:00Z"
+    },
+    {
+      "numeroCasa": 35,
+      "cliente": "Roberto Sánchez",
+      "coordenadas": {
+        "x": 455,
+        "y": 1148
+      },
+      "fecha": "2024-01-19T16:30:00Z"
+    },
+    {
+      "numeroCasa": 25,
+      "cliente": "Laura Díaz",
+      "coordenadas": {
+        "x": 630,
+        "y": 845
+      },
+      "fecha": "2024-01-20T13:10:00Z"
+    }
+  ]
+}
