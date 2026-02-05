@@ -442,25 +442,130 @@ function imprimirPlano() {
         return false;
     }
 
-    window.print();
+    const imgPlano = document.getElementById('imgPlano');
+    const marcador = marcadores[0];
+    const numeroCasa = marcador.textContent;
+
+    // Obtener coordenadas originales de la casa
+    const casa = parseInt(numeroCasa, 10);
+    if (!coordenadasCasas.hasOwnProperty(casa)) {
+        Swal.fire('Error', 'Coordenadas no encontradas para la impresión', 'error');
+        return false;
+    }
+
+    const coordsOriginales = coordenadasCasas[casa];
+    const coordX = coordsOriginales.x;
+    const coordY = coordsOriginales.y;
+
+    Swal.fire({
+        title: 'Preparando impresión',
+        html: `<div class="text-center">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p>Calculando posición exacta del marcador...</p>
+                <small class="text-muted">Casa ${numeroCasa} en coordenadas (${coordX}, ${coordY})</small>
+            </div>`,
+        allowOutsideClick: false,
+        didOpen: () => {
+            Swal.showLoading(null);
+
+            setTimeout(() => {
+                // 1. Dimensiones reales del plano
+                const imgWidth = imgPlano.naturalWidth || PLANO_ANCHO_REAL;
+                const imgHeight = imgPlano.naturalHeight || PLANO_ALTO_REAL;
+
+                // 2. Tamaño de hoja carta en píxeles (asumiendo 96 DPI)
+                const pageWidth = 8.5 * 96;  // 816px
+                const pageHeight = 11 * 96;  // 1056px
+                const margin = 40; // Margen en píxeles
+
+                // 3. Calcular escala máxima que cabe en la hoja
+                const scaleX = (pageWidth - 2 * margin) / imgWidth;
+                const scaleY = (pageHeight - 2 * margin) / imgHeight;
+                const scale = Math.min(scaleX, scaleY);
+
+                // 4. Dimensiones del plano escalado
+                const printWidth = imgWidth * scale;
+                const printHeight = imgHeight * scale;
+
+                // 5. Calcular posición del marcador ESCALADA
+                const markerX = (coordX / imgWidth) * printWidth;
+                const markerY = (coordY / imgHeight) * printHeight;
+
+                // 6. Tamaño del marcador para impresión
+                const markerSize = 42; // Tamaño fijo para impresión
+                const fontSize = 20;
+
+                // 7. Crear ventana de impresión con marcador posicionado EXACTAMENTE
+                const printWindow = window.open('', '_blank', 'width=800,height=1000');
+                
+                printWindow.document.write(`
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Plano - Casa ${numeroCasa}</title>
+                        <style>
+                            @page {
+                                size: letter portrait;
+                                margin: 0;
+                            }
+                            body {
+                                margin: ${margin}px;
+                                padding: 0;
+                                width: ${pageWidth - 2 * margin}px;
+                                height: ${pageHeight - 2 * margin}px;
+                                display: flex;
+                                justify-content: center;
+                                align-items: center;
+                                background: white;
+                            }
+                            .print-container {
+                                position: relative;
+                                width: ${printWidth}px;
+                                height: ${printHeight}px;
+                            }
+                            .print-image {
+                                width: 100%;
+                                height: 100%;
+                                display: block;
+                            }
+                            .print-marker {
+                                position: absolute;
+                                left: ${markerX}px;
+                                top: ${markerY}px;
+                                width: ${markerSize}px;
+                                height: ${markerSize}px;
+                                background-color: #dc3545;
+                                color: white;
+                                border: 2px solid white;
+                                border-radius: 50%;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-weight: bold;
+                                font-size: ${fontSize}px;
+                                transform: translate(-50%, -50%);
+                                -webkit-print-color-adjust: exact;
+                                print-color-adjust: exact;
+                                box-shadow: 0 0 5px rgba(0,0,0,0.5);
+                            }
+                        </style>
+                    </head>
+                    <body onload="setTimeout(function(){ window.print(); setTimeout(function(){ window.close(); }, 100); }, 200);">
+                        <div class="print-container">
+                            <img class="print-image" src="${imgPlano.src}" alt="Plano">
+                            <div class="print-marker">${numeroCasa}</div>
+                        </div>
+                    </body>
+                    </html>
+                `);
+                
+                printWindow.document.close();
+                Swal.close();
+            }, 300);
+        }
+    });
+
     return false;
 }
-
-function recalcularPosiciones() {
-    const marcadoresContainer = document.getElementById('marcadoresContainer');
-    if (marcadoresContainer.children.length > 0) {
-        const numeroCasa = document.getElementById('txtNumeroCasa').value.trim();
-        const numValido = parseInt(numeroCasa, 10);
-        if (numeroCasa && !isNaN(numValido) && coordenadasCasas.hasOwnProperty(numValido)) {
-            const coords = coordenadasCasas[numValido];
-            marcadoresContainer.innerHTML = '';
-            agregarMarcador(numValido, coords.x, coords.y);
-        }
-    }
-}
-
-let resizeTimeout;
-window.addEventListener('resize', function () {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(recalcularPosiciones, 200);
-});
