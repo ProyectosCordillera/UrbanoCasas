@@ -1,0 +1,22 @@
+{
+  "marcas": [
+    {
+      "numeroCasa": 1,
+      "cliente": "Carlos Rodríguez",
+      "coordenadas": {
+        "x": 925,
+        "y": 1265
+      },
+      "fecha": "2024-01-15T10:30:00Z"
+    },
+    {
+      "numeroCasa": 17,
+      "cliente": "Ana Martínez",
+      "coordenadas": {
+        "x": 630,
+        "y": 365
+      },
+      "fecha": "2024-01-16T14:20:00Z"
+    }
+  ]
+}
