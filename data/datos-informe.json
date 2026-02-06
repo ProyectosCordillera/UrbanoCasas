@@ -1,58 +1,236 @@
-{
-  "marcas": [
-    {
-      "numeroCasa": 33,
-      "cliente": "Juan Pérez",
-      "coordenadas": {
-        "x": 455,
-        "y": 1268
-      },
-      "fecha": "2024-01-15T10:30:00Z"
+[
+  {
+    "numeroCasa": 35,
+    "cliente": "Cliente no especificado",
+    "coordenadas": {
+      "x": 455,
+      "y": 1148
     },
-    {
-      "numeroCasa": 48,
-      "cliente": "María García",
-      "coordenadas": {
-        "x": 145,
-        "y": 437
-      },
-      "fecha": "2024-01-16T14:20:00Z"
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 37,
+    "cliente": "Cliente no especificado",
+    "coordenadas": {
+      "x": 455,
+      "y": 1028
     },
-    {
-      "numeroCasa": 1,
-      "cliente": "Carlos Rodríguez",
-      "coordenadas": {
-        "x": 925,
-        "y": 1265
-      },
-      "fecha": "2024-01-17T09:15:00Z"
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 38,
+    "cliente": "Cliente no especificado",
+    "coordenadas": {
+      "x": 455,
+      "y": 968
     },
-    {
-      "numeroCasa": 17,
-      "cliente": "Ana Martínez",
-      "coordenadas": {
-        "x": 630,
-        "y": 365
-      },
-      "fecha": "2024-01-18T11:45:00Z"
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 40,
+    "cliente": "Cliente no especificado",
+    "coordenadas": {
+      "x": 455,
+      "y": 848
     },
-    {
-      "numeroCasa": 35,
-      "cliente": "Roberto Sánchez",
-      "coordenadas": {
-        "x": 455,
-        "y": 1148
-      },
-      "fecha": "2024-01-19T16:30:00Z"
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 42,
+    "cliente": "NORMAN ANDREI MADRIZ BERMUDEZ",
+    "coordenadas": {
+      "x": 455,
+      "y": 728
     },
-    {
-      "numeroCasa": 25,
-      "cliente": "Laura Díaz",
-      "coordenadas": {
-        "x": 630,
-        "y": 845
-      },
-      "fecha": "2024-01-20T13:10:00Z"
-    }
-  ]
-}
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 43,
+    "cliente": "DANIEL BRAVO VINDAS",
+    "coordenadas": {
+      "x": 455,
+      "y": 668
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 44,
+    "cliente": "JOSE PABLO FERNANDEZ QUESADA",
+    "coordenadas": {
+      "x": 455,
+      "y": 608
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 45,
+    "cliente": "ANA CAROLINA GOMEZ VARGAS",
+    "coordenadas": {
+      "x": 455,
+      "y": 548
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 46,
+    "cliente": "JAIRO ALONSO BLANCO OBANDO",
+    "coordenadas": {
+      "x": 455,
+      "y": 488
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 47,
+    "cliente": "3-102-691665 S.R.L.",
+    "coordenadas": {
+      "x": 455,
+      "y": 428
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 48,
+    "cliente": "PAOLA SOFIA PAPILI RUMOROSO",
+    "coordenadas": {
+      "x": 145,
+      "y": 437
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 49,
+    "cliente": "JOSE ALBERTO DURAN ESQUIVEL",
+    "coordenadas": {
+      "x": 145,
+      "y": 497
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 50,
+    "cliente": "JOHNNY FRANCISCO PIEDRA AGUILERA",
+    "coordenadas": {
+      "x": 145,
+      "y": 557
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 51,
+    "cliente": "LEONARDO RODRIGUEZ ZUMBADO",
+    "coordenadas": {
+      "x": 145,
+      "y": 617
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 52,
+    "cliente": "MARITA ANTOINETTE WILLIAMS",
+    "coordenadas": {
+      "x": 145,
+      "y": 677
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 53,
+    "cliente": "RANDALL GUSTAVO LOBO INNECKEN",
+    "coordenadas": {
+      "x": 145,
+      "y": 737
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 54,
+    "cliente": "ALEJANDRA VILLAGRA SOLIS",
+    "coordenadas": {
+      "x": 145,
+      "y": 797
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 55,
+    "cliente": "DANIELA CASTRO MORA",
+    "coordenadas": {
+      "x": 145,
+      "y": 857
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 56,
+    "cliente": "KIMBERLY FARRIER QUESADA",
+    "coordenadas": {
+      "x": 145,
+      "y": 917
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 57,
+    "cliente": "ALBRECHT BERNHARD MARIN SUAREZ",
+    "coordenadas": {
+      "x": 145,
+      "y": 977
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 58,
+    "cliente": "CARLOS MARIO CHAVES RAMIREZ",
+    "coordenadas": {
+      "x": 145,
+      "y": 1037
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 59,
+    "cliente": "Cliente no especificado",
+    "coordenadas": {
+      "x": 145,
+      "y": 1097
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 60,
+    "cliente": "CAROL FUENTES ARAYA",
+    "coordenadas": {
+      "x": 145,
+      "y": 1157
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 61,
+    "cliente": "Cliente no especificado",
+    "coordenadas": {
+      "x": 145,
+      "y": 1217
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 62,
+    "cliente": "MARIA GABRIELA FERNANDEZ SCOTT",
+    "coordenadas": {
+      "x": 145,
+      "y": 1277
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  },
+  {
+    "numeroCasa": 65,
+    "cliente": "Cliente no especificado",
+    "coordenadas": {
+      "x": 145,
+      "y": 1457
+    },
+    "fecha": "2026-02-07T00:00:00.000Z"
+  }
+]
