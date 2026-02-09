@@ -32,15 +32,21 @@ for (let i = 48; i <= 65; i++) {
 }
 
 // ============================================
-// INICIALIZACIÓN Y CARGA DE DATOS HISTÓRICOS
+// INICIALIZACIÓN Y CARGA DE DATOS
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ Sistema Urbano - Primera Etapa v2.0');
     console.log('📅 Fecha de carga:', new Date().toLocaleString('es-ES'));
     
+    // Mostrar año en footer
+    const yearElement = document.getElementById('currentYear');
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
+    
     verificarCoordenadas();
-    cargarDatosCompletos(); // Cargar datos históricos + localStorage
+    cargarDatosCompletos();
 });
 
 function verificarCoordenadas() {
@@ -82,7 +88,7 @@ function cargarDatosCompletos() {
 function cargarDatosHistoricos() {
     return new Promise((resolve, reject) => {
         // Verificar si ya se cargaron datos históricos
-        const datosCargados = localStorage.getItem('datosHistoricosCargados');
+        const datosCargados = localStorage.getItem('datosHistoricosCargados_primerEtapa');
         
         if (datosCargados === 'true') {
             console.log('ℹ️ Datos históricos ya cargados anteriormente');
@@ -92,8 +98,8 @@ function cargarDatosHistoricos() {
         
         console.log('📥 Cargando datos históricos de Access...');
         
-        // Intentar cargar desde archivo JSON
-        fetch('../../data/marcas-combinadas.json?' + Date.now())
+        // RUTA CORRECTA: ../data/marcasCombinadas.json (desde paginas/)
+        fetch('../data/marcasCombinadas.json?' + Date.now())
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
@@ -139,7 +145,7 @@ function cargarDatosHistoricos() {
                     // Guardar en localStorage
                     try {
                         localStorage.setItem('marcasPrimerEtapa', JSON.stringify(todasMarcas));
-                        localStorage.setItem('datosHistoricosCargados', 'true');
+                        localStorage.setItem('datosHistoricosCargados_primerEtapa', 'true');
                         
                         console.log(`✅ Cargadas ${nuevasCargadas} casas históricas nuevas`);
                         console.log(`📊 Total de casas en localStorage: ${todasMarcas.length}`);
@@ -150,7 +156,7 @@ function cargarDatosHistoricos() {
                                 Swal.fire({
                                     icon: 'info',
                                     title: 'Datos históricos cargados',
-                                    html: `Se importaron <strong>${nuevasCargadas}</strong> casas registradas previamente desde Access`,
+                                    html: `Se importaron <strong>${nuevasCargadas}</strong> casas registradas previamente`,
                                     timer: 2500,
                                     showConfirmButton: false,
                                     toast: true,
@@ -202,21 +208,6 @@ function cargarMarcasDesdeStorage() {
         });
         
         console.log(`✅ Cargadas ${marcas.length} marcas desde localStorage`);
-        
-        // Mostrar mensaje si hay muchas casas
-        if (marcas.length > 10 && typeof Swal !== 'undefined') {
-            setTimeout(() => {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Datos cargados',
-                    text: `Se muestran ${marcas.length} casas registradas`,
-                    timer: 1500,
-                    showConfirmButton: false,
-                    toast: true,
-                    position: 'top-end'
-                });
-            }, 300);
-        }
     } catch (error) {
         console.error('❌ Error cargando marcas:', error);
         if (typeof Swal !== 'undefined') {
@@ -765,7 +756,6 @@ function imprimirPlano() {
             }
         });
     } else {
-        // Versión sin Swal
         window.print();
     }
 
@@ -794,24 +784,3 @@ function recalcularPosiciones() {
         }
     }
 }
-
-// ============================================
-// FUNCIÓN DE DEBUG (para desarrollo)
-// ============================================
-
-function debugPrimeraEtapa() {
-    console.log('🔍 DEBUG - Primera Etapa:');
-    console.log('----------------------------------------');
-    console.log('localStorage marcasPrimerEtapa:', localStorage.getItem('marcasPrimerEtapa') ? 'EXISTE' : 'NO EXISTE');
-    console.log('Tamaño localStorage:', localStorage.getItem('marcasPrimerEtapa')?.length || 0, 'bytes');
-    console.log('Datos históricos cargados:', localStorage.getItem('datosHistoricosCargados') || 'NO');
-    console.log('Total casas en coordenadas:', Object.keys(coordenadasCasas).length);
-    console.log('Elementos DOM:');
-    console.log('  - ddlMarcas:', document.getElementById('ddlMarcas') ? 'EXISTE' : 'NO EXISTE');
-    console.log('  - imgPlano:', document.getElementById('imgPlano') ? 'EXISTE' : 'NO EXISTE');
-    console.log('  - marcadoresContainer:', document.getElementById('marcadoresContainer') ? 'EXISTE' : 'NO EXISTE');
-    console.log('----------------------------------------');
-}
-
-// Exponer función de debug globalmente
-window.debugPrimeraEtapa = debugPrimeraEtapa;
