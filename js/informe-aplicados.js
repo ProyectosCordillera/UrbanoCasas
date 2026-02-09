@@ -10,7 +10,7 @@ const PLANO_ALTO_REAL = 1650;
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Sistema Urbano - Informe Aplicados v3.0');
+    console.log('✅ Sistema Urbano - Informe Aplicados v4.0 (SIN localStorage)');
     console.log('📅 Fecha de carga:', new Date().toLocaleString('es-ES'));
     
     // Mostrar año en footer
@@ -19,82 +19,58 @@ document.addEventListener('DOMContentLoaded', function() {
         yearElement.textContent = new Date().getFullYear();
     }
     
-    cargarDatosCombinados();
+    // Cargar datos DIRECTAMENTE de ambas etapas (sin localStorage)
+    cargarDatosDirectamente();
     configurarEventosImagen();
     window.addEventListener('resize', manejarRedimensionamiento);
+    
+    // Botón de actualización
+    const btnActualizar = document.getElementById('btnActualizar');
+    if (btnActualizar) {
+        btnActualizar.addEventListener('click', actualizarDatos);
+    }
 });
 
 // ============================================
-// CARGA DE DATOS COMBINADOS (UN SOLO ARCHIVO)
+// CARGA DE DATOS DIRECTAMENTE (SIN localStorage)
 // ============================================
 
-function cargarDatosCombinados() {
+function cargarDatosDirectamente() {
     const tbody = document.getElementById('tbodyDatos');
     if (!tbody) return;
 
-    console.log('📥 Cargando datos de marcasCombinadas.json...');
+    console.log('📥 Cargando datos DIRECTAMENTE de ambas etapas...');
     
-    // 1. Intentar cargar desde localStorage (datos nuevos)
     let todasMarcas = [];
+    
+    // 1. Cargar datos de Primera Etapa
     try {
-        const stored = localStorage.getItem('marcasCombinadas');
-        if (stored) {
-            todasMarcas = JSON.parse(stored);
-            console.log(`✅ Cargadas ${todasMarcas.length} casas desde localStorage`);
-        }
+        const marcasPrimera = JSON.parse(localStorage.getItem('marcasPrimerEtapa') || '[]');
+        console.log(`✅ Primera Etapa: ${marcasPrimera.length} casas`);
+        todasMarcas = [...todasMarcas, ...marcasPrimera];
     } catch (e) {
-        console.warn('⚠️ Error leyendo localStorage:', e.message);
+        console.warn('⚠️ Error leyendo marcasPrimerEtapa:', e.message);
     }
     
-    // 2. Si localStorage está vacío, cargar desde JSON
-    if (todasMarcas.length === 0) {
-        console.log('🔄 localStorage vacío. Cargando desde JSON...');
+    // 2. Cargar datos de Segunda Etapa
+    try {
+        const marcasSegunda = JSON.parse(localStorage.getItem('marcasSegundaEtapa') || '[]');
+        console.log(`✅ Segunda Etapa: ${marcasSegunda.length} casas`);
+        todasMarcas = [...todasMarcas, ...marcasSegunda];
+    } catch (e) {
+        console.warn('⚠️ Error leyendo marcasSegundaEtapa:', e.message);
+    }
+    
+    // 3. Mostrar datos en tabla
+    if (todasMarcas.length > 0) {
+        mostrarDatosEnTabla(todasMarcas);
         
-        // RUTA CORRECTA: ../data/marcasCombinadas.json (desde paginas/)
-        fetch('../data/marcasCombinadas.json?' + Date.now())
-            .then(response => {
-                if (!response.ok) throw new Error('Archivo JSON no encontrado');
-                return response.json();
-            })
-            .then(data => {
-                todasMarcas = data;
-                console.log(`✅ Cargadas ${todasMarcas.length} casas desde JSON`);
-                
-                // Guardar en localStorage para futuras visitas
-                localStorage.setItem('marcasCombinadas', JSON.stringify(todasMarcas));
-                
-                // Mostrar datos en tabla
-                mostrarDatosEnTabla(todasMarcas);
-                
-                // Colocar marcadores si la imagen ya cargó
-                if (document.getElementById('imgPlano').complete) {
-                    setTimeout(colocarMarcadores, 100);
-                }
-            })
-            .catch(error => {
-                console.error('❌ Error cargando JSON:', error);
-                mostrarError('No se pudieron cargar los datos. Verifique que exista el archivo: ../data/marcasCombinadas.json');
-            });
-            
-        return;
-    }
-    
-    // 3. Mostrar datos de localStorage
-    mostrarDatosEnTabla(todasMarcas);
-    
-    // 4. Si la imagen ya cargó, colocar marcadores inmediatamente
-    if (document.getElementById('imgPlano').complete) {
-        setTimeout(colocarMarcadores, 100);
-    }
-}
-
-function mostrarDatosEnTabla(marcas) {
-    const tbody = document.getElementById('tbodyDatos');
-    if (!tbody) return;
-    
-    tbody.innerHTML = '';
-    
-    if (marcas.length === 0) {
+        // Colocar marcadores si la imagen ya cargó
+        if (document.getElementById('imgPlano').complete) {
+            setTimeout(colocarMarcadores, 100);
+        }
+    } else {
+        // Sin datos
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center py-5">
@@ -108,23 +84,38 @@ function mostrarDatosEnTabla(marcas) {
             </tr>
         `;
         document.getElementById('marcadoresContainer').innerHTML = '';
-        return;
     }
+}
+
+function mostrarDatosEnTabla(marcas) {
+    const tbody = document.getElementById('tbodyDatos');
+    if (!tbody) return;
     
+    tbody.innerHTML = '';
+    
+    // Ordenar por número de casa
     marcas.sort((a, b) => a.numeroCasa - b.numeroCasa);
+    
+    // Contadores
+    let countPrimera = 0;
+    let countSegunda = 0;
     
     marcas.forEach(marca => {
         const fila = document.createElement('tr');
         
+        // Determinar etapa
         let etapa = 'Desconocida';
         if (marca.numeroCasa >= 33 && marca.numeroCasa <= 65) {
             etapa = 'Primera Etapa';
             fila.classList.add('table-info');
+            countPrimera++;
         } else if (marca.numeroCasa >= 1 && marca.numeroCasa <= 32) {
             etapa = 'Segunda Etapa';
             fila.classList.add('table-success');
+            countSegunda++;
         }
         
+        // Celdas
         const celdas = [
             { 
                 content: `<strong>${marca.numeroCasa}</strong><br><small class="badge bg-secondary">${etapa}</small>`, 
@@ -163,36 +154,24 @@ function mostrarDatosEnTabla(marcas) {
         tbody.appendChild(fila);
     });
     
-    console.log(`📊 Total: ${marcas.length} casas`);
+    console.log(`📊 Total: ${marcas.length} casas (${countPrimera} primera, ${countSegunda} segunda)`);
+    
+    // Mensaje de éxito
     if (marcas.length > 0 && typeof Swal !== 'undefined') {
-        Swal.fire({
-            icon: 'success',
-            title: 'Datos cargados',
-            text: `Se muestran ${marcas.length} casas registradas`,
-            timer: 1200,
-            showConfirmButton: false,
-            toast: true,
-            position: 'top-end'
-        });
+        setTimeout(() => {
+            Swal.fire({
+                icon: 'success',
+                title: 'Datos cargados',
+                html: `Se muestran <strong>${marcas.length}</strong> casas registradas:<br>
+                       <small>• ${countPrimera} Primera Etapa<br>
+                       • ${countSegunda} Segunda Etapa</small>`,
+                timer: 2000,
+                showConfirmButton: false,
+                toast: true,
+                position: 'top-end'
+            });
+        }, 300);
     }
-}
-
-function mostrarError(mensaje) {
-    const tbody = document.getElementById('tbodyDatos');
-    if (tbody) {
-        tbody.innerHTML = `
-            <tr>
-                <td colspan="5" class="text-center text-danger py-4">
-                    <i class="bi bi-exclamation-triangle fs-1 mb-2"></i>
-                    <p class="h5">${mensaje}</p>
-                    <button class="btn btn-outline-primary mt-3" onclick="location.reload()">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Reintentar
-                    </button>
-                </td>
-            </tr>
-        `;
-    }
-    document.getElementById('marcadoresContainer').innerHTML = '';
 }
 
 // ============================================
@@ -278,6 +257,7 @@ function colocarMarcadores() {
         marcador.style.left = `${posX}px`;
         marcador.style.top = `${posY}px`;
         
+        // Color por etapa
         if (numeroCasa >= 33 && numeroCasa <= 65) {
             marcador.style.backgroundColor = 'rgba(13, 110, 253, 0.95)';
         } else if (numeroCasa >= 1 && numeroCasa <= 32) {
@@ -314,7 +294,7 @@ function manejarRedimensionamiento() {
 }
 
 // ============================================
-// FUNCIONES DE USUARIO
+// FUNCIÓN DE ACTUALIZACIÓN (Botón "Actualizar Datos")
 // ============================================
 
 function actualizarDatos() {
@@ -327,32 +307,42 @@ function actualizarDatos() {
         });
     }
     
-    localStorage.removeItem('marcasCombinadas');
-    cargarDatosCombinados();
+    // Recargar datos DIRECTAMENTE (sin usar localStorage del informe)
+    cargarDatosDirectamente();
     
     setTimeout(() => {
         if (typeof Swal !== 'undefined') {
             Swal.close();
-            if (document.getElementById('tbodyDatos').children.length > 0) {
+            const total = document.querySelectorAll('#tblCasas tbody tr').length;
+            if (total > 0) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Actualizado',
-                    text: 'Datos recargados correctamente',
-                    timer: 1000,
+                    html: `Se muestran <strong>${total}</strong> casas actualizadas`,
+                    timer: 1500,
                     showConfirmButton: false
                 });
             }
         }
-    }, 800);
+    }, 500);
 }
+
+// ============================================
+// IMPRESIÓN
+// ============================================
 
 function imprimirPlano() {
     const marcadores = document.getElementById('marcadoresContainer').children;
+    
     if (marcadores.length === 0) {
         if (typeof Swal !== 'undefined') {
-            Swal.fire('Advertencia', 'No hay marcadores para imprimir', 'warning');
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin marcadores',
+                text: 'No hay casas registradas para imprimir'
+            });
         } else {
-            alert('Advertencia: No hay marcadores para imprimir');
+            alert('Advertencia: No hay casas registradas para imprimir');
         }
         return;
     }
@@ -360,16 +350,20 @@ function imprimirPlano() {
     window.print();
 }
 
+// ============================================
+// VER RESUMEN ESTADÍSTICO
+// ============================================
+
 function verResumen() {
     try {
-        const marcas = JSON.parse(localStorage.getItem('marcasCombinadas') || '[]');
+        // Leer DIRECTAMENTE de ambas fuentes
+        const marcasPrimera = JSON.parse(localStorage.getItem('marcasPrimerEtapa') || '[]');
+        const marcasSegunda = JSON.parse(localStorage.getItem('marcasSegundaEtapa') || '[]');
         
-        const primera = marcas.filter(m => m.numeroCasa >= 33 && m.numeroCasa <= 65);
-        const segunda = marcas.filter(m => m.numeroCasa >= 1 && m.numeroCasa <= 32);
-        const total = marcas.length;
+        const total = marcasPrimera.length + marcasSegunda.length;
         
-        const primerasCasas = primera.map(m => m.numeroCasa).sort((a, b) => a - b);
-        const ultimasCasas = segunda.map(m => m.numeroCasa).sort((a, b) => a - b);
+        const primerasCasas = marcasPrimera.map(m => m.numeroCasa).sort((a, b) => a - b);
+        const ultimasCasas = marcasSegunda.map(m => m.numeroCasa).sort((a, b) => a - b);
 
         let html = `
             <div class="text-start">
@@ -380,7 +374,7 @@ function verResumen() {
                         <div class="card bg-primary text-white">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-1"><i class="bi bi-house-door me-2"></i>Primera Etapa</h6>
-                                <h2 class="card-text mb-0">${primera.length}</h2>
+                                <h2 class="card-text mb-0">${marcasPrimera.length}</h2>
                                 <small>Casas registradas</small>
                             </div>
                         </div>
@@ -389,7 +383,7 @@ function verResumen() {
                         <div class="card bg-success text-white">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-1"><i class="bi bi-building me-2"></i>Segunda Etapa</h6>
-                                <h2 class="card-text mb-0">${segunda.length}</h2>
+                                <h2 class="card-text mb-0">${marcasSegunda.length}</h2>
                                 <small>Casas registradas</small>
                             </div>
                         </div>
@@ -403,7 +397,7 @@ function verResumen() {
                     </div>
                 </div>
 
-                ${primera.length > 0 ? `
+                ${marcasPrimera.length > 0 ? `
                 <div class="card mb-3">
                     <div class="card-body">
                         <h6 class="card-title text-primary"><i class="bi bi-list-ul me-2"></i>Casas Primera Etapa</h6>
@@ -413,7 +407,7 @@ function verResumen() {
                 </div>
                 ` : ''}
 
-                ${segunda.length > 0 ? `
+                ${marcasSegunda.length > 0 ? `
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-title text-success"><i class="bi bi-list-ul me-2"></i>Casas Segunda Etapa</h6>
@@ -422,6 +416,9 @@ function verResumen() {
                     </div>
                 </div>
                 ` : ''}
+                
+                <hr>
+                <small class="text-muted">Última actualización: ${new Date().toLocaleString('es-ES')}</small>
             </div>
         `;
 
