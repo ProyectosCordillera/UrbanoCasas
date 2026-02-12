@@ -33,11 +33,18 @@ body {
 }
 
 /* Contenido principal */
-.main-content {
-    flex: 1;
-    padding: 20px 0;
-    background-color: #f8f9fa;
-}
+
+   .main-content {
+            position: fixed;
+            top: 72px; /* Altura del navbar */
+            bottom: 60px; /* Altura del footer */
+            left: 0;
+            right: 0;
+            overflow-y: auto; /* Scroll interno */
+            padding-top: 20px;
+            padding-bottom: 20px;
+            background-color: #fff;
+        }
 
 /* Pie de página */
 .page-footer {
