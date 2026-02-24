@@ -518,28 +518,48 @@ function imprimirPlano() {
 
     const numeroCasa = marcadores[0].textContent;
     const casa = parseInt(numeroCasa, 10);
-    
+
     if (!coordenadasCasas.hasOwnProperty(casa)) {
         Swal.fire('Error', 'Coordenadas no encontradas', 'error');
         return false;
     }
 
     const coords = coordenadasCasas[casa];
-    
+
     if (typeof Swal !== 'undefined') {
         Swal.fire({
-            title: 'Imprimiendo...',
+            title: 'Preparando impresión...',
             didOpen: () => {
                 Swal.showLoading();
+
                 setTimeout(() => {
-                    window.print();
-                    Swal.close();
-                }, 1000);
+                    // 🔥 RECALCULAR POSICIÓN PARA IMPRESIÓN
+                    agregarMarcador(casa, coords.x, coords.y);
+
+                    setTimeout(() => {
+                        window.print();
+                        Swal.close();
+
+                        // 🔥 Recalcular otra vez al volver
+                        setTimeout(() => {
+                            agregarMarcador(casa, coords.x, coords.y);
+                        }, 300);
+
+                    }, 300);
+
+                }, 300);
             }
         });
     } else {
-        window.print();
+        agregarMarcador(casa, coords.x, coords.y);
+        setTimeout(() => {
+            window.print();
+            setTimeout(() => {
+                agregarMarcador(casa, coords.x, coords.y);
+            }, 300);
+        }, 300);
     }
+
     return false;
 }
 
