@@ -587,7 +587,6 @@ function prepararImpresionDedicada() {
 }
 
 // Crea una ventana nueva con el contenido optimizado para imprimir
-// Crea una ventana nueva con el contenido optimizado para imprimir
 function crearVentanaImpresion() {
     const imgPlano = document.getElementById('imgPlano');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
@@ -600,164 +599,162 @@ function crearVentanaImpresion() {
         casa: m.getAttribute('data-casa')
     }));
 
-    // 🔥 DIMENSIONES REALES DEL PLANO (sin escala)
-    const PLANO_W = ${PLANO_ANCHO_REAL};  // 1275
-    const PLANO_H = ${PLANO_ALTO_REAL};   // 1650
+    // 🔥 DIMENSIONES REALES DEL PLANO
+    const PLANO_W = PLANO_ANCHO_REAL;  // 1275
+    const PLANO_H = PLANO_ALTO_REAL;   // 1650
+    
+    // 🔥 Serializar datos de forma segura
+    const markersJSON = JSON.stringify(markersData);
+    const imgUrl = imgPlano.src;
 
-    // Construir el HTML de la ventana de impresión
-    const printHTML = `
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Imprimir Plano - Segunda Etapa</title>
-    <style>
-        @page { size: auto; margin: 0; }
-        * {
-            margin: 0; padding: 0; box-sizing: border-box;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            color-adjust: exact !important;
-        }
-        body {
-            width: ${PLANO_W}px;
-            height: ${PLANO_H}px;
-            background: white !important;
-            font-family: Arial, sans-serif;
-            overflow: hidden;
-        }
-        .print-wrapper {
-            position: relative;
-            width: ${PLANO_W}px;
-            height: ${PLANO_H}px;
-            margin: 0;
-            padding: 0;
-        }
-        .print-plano {
-            width: ${PLANO_W}px !important;
-            height: ${PLANO_H}px !important;
-            min-width: ${PLANO_W}px !important;
-            min-height: ${PLANO_H}px !important;
-            max-width: none !important;
-            max-height: none !important;
-            display: block;
-            position: absolute;
-            top: 0;
-            left: 0;
-            object-fit: none;
-            image-rendering: pixelated;
-        }
-        .print-marcadores {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: ${PLANO_W}px;
-            height: ${PLANO_H}px;
-            pointer-events: none;
-            z-index: 100;
-        }
-        .print-marker {
-            position: absolute;
-            transform: translate(-50%, -50%);
-            background: #dc3545 !important;
-            color: white !important;
-            border: 3px solid white !important;
-            border-radius: 50%;
-            width: 32px;
-            height: 32px;
-            display: flex !important;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
-            z-index: 200 !important;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        .print-info {
-            position: fixed;
-            bottom: 10px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            padding: 8px;
-            font-size: 12px;
-            color: #333;
-            background: rgba(255,255,255,0.9);
-            z-index: 300;
-        }
-        @media print {
-            body { width: ${PLANO_W}px; height: ${PLANO_H}px; }
-            .print-wrapper { width: ${PLANO_W}px; height: ${PLANO_H}px; }
-            .print-plano { width: ${PLANO_W}px !important; height: ${PLANO_H}px !important; }
-            .print-marcadores { width: ${PLANO_W}px; height: ${PLANO_H}px; }
-        }
-    </style>
-</head>
-<body>
-    <div class="print-wrapper">
-        <img class="print-plano" id="printImg" src="${imgPlano.src}" alt="Plano" />
-        <div class="print-marcadores" id="printMarcadores"></div>
-    </div>
-    <div class="print-info">
-        <strong>Casa(s):</strong> ${markersData.map(m => m.numero).join(', ')}
-    </div>
-    <script>
-        const markersData = ${JSON.stringify(markersData)};
-        const PLANO_W = ${PLANO_W};
-        const PLANO_H = ${PLANO_H};
-        
-        const img = document.getElementById('printImg');
-        const container = document.getElementById('printMarcadores');
-        
-        function colocarMarcadores() {
-            console.log('🖨️ Imagen cargada:', {
-                naturalW: img.naturalWidth,
-                naturalH: img.naturalHeight,
-                clientW: img.clientWidth,
-                clientH: img.clientHeight
-            });
-            
-            // 🔥 Como forzamos el tamaño exacto, usamos coordenadas DIRECTAS
-            markersData.forEach(marker => {
-                const el = document.createElement('div');
-                el.className = 'print-marker';
-                
-                // ✅ POSICIÓN DIRECTA: sin escala, coordenadas originales = píxeles
-                el.style.left = marker.origX + 'px';
-                el.style.top = marker.origY + 'px';
-                el.textContent = marker.numero;
-                
-                container.appendChild(el);
-                console.log(\`✅ Marcador \${marker.numero} en (\${marker.origX}, \${marker.origY})\`);
-            });
-            
-            // Imprimir después de renderizar
-            setTimeout(() => {
-                if (typeof window.print === 'function') {
-                    window.print();
-                }
-            }, 400);
-        }
-        
-        // Ejecutar cuando la imagen esté lista
-        if (img.complete && img.naturalWidth > 0) {
-            colocarMarcadores();
-        } else {
-            img.onload = colocarMarcadores;
-            img.onerror = function() {
-                console.error('❌ Error cargando imagen en ventana de impresión');
-                alert('Error: No se pudo cargar la imagen del plano');
-            };
-        }
-    <\/script>
-</body>
-</html>`;
+    // Construir el HTML de la ventana de impresión (usando concatenación para evitar errores de sintaxis)
+    const printHTML = 
+'<!DOCTYPE html>\n\
+<html lang="es">\n\
+<head>\n\
+    <meta charset="UTF-8">\n\
+    <title>Imprimir Plano - Segunda Etapa</title>\n\
+    <style>\n\
+        @page { size: auto; margin: 0; }\n\
+        * {\n\
+            margin: 0; padding: 0; box-sizing: border-box;\n\
+            -webkit-print-color-adjust: exact !important;\n\
+            print-color-adjust: exact !important;\n\
+            color-adjust: exact !important;\n\
+        }\n\
+        body {\n\
+            width: ' + PLANO_W + 'px;\n\
+            height: ' + PLANO_H + 'px;\n\
+            background: white !important;\n\
+            font-family: Arial, sans-serif;\n\
+            overflow: hidden;\n\
+        }\n\
+        .print-wrapper {\n\
+            position: relative;\n\
+            width: ' + PLANO_W + 'px;\n\
+            height: ' + PLANO_H + 'px;\n\
+            margin: 0;\n\
+            padding: 0;\n\
+        }\n\
+        .print-plano {\n\
+            width: ' + PLANO_W + 'px !important;\n\
+            height: ' + PLANO_H + 'px !important;\n\
+            min-width: ' + PLANO_W + 'px !important;\n\
+            min-height: ' + PLANO_H + 'px !important;\n\
+            max-width: none !important;\n\
+            max-height: none !important;\n\
+            display: block;\n\
+            position: absolute;\n\
+            top: 0;\n\
+            left: 0;\n\
+            object-fit: none;\n\
+            image-rendering: pixelated;\n\
+        }\n\
+        .print-marcadores {\n\
+            position: absolute;\n\
+            top: 0;\n\
+            left: 0;\n\
+            width: ' + PLANO_W + 'px;\n\
+            height: ' + PLANO_H + 'px;\n\
+            pointer-events: none;\n\
+            z-index: 100;\n\
+        }\n\
+        .print-marker {\n\
+            position: absolute;\n\
+            transform: translate(-50%, -50%);\n\
+            background: #dc3545 !important;\n\
+            color: white !important;\n\
+            border: 3px solid white !important;\n\
+            border-radius: 50%;\n\
+            width: 32px;\n\
+            height: 32px;\n\
+            display: flex !important;\n\
+            align-items: center;\n\
+            justify-content: center;\n\
+            font-weight: bold;\n\
+            font-size: 16px;\n\
+            z-index: 200 !important;\n\
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);\n\
+            -webkit-print-color-adjust: exact !important;\n\
+            print-color-adjust: exact !important;\n\
+        }\n\
+        .print-info {\n\
+            position: fixed;\n\
+            bottom: 10px;\n\
+            left: 0;\n\
+            right: 0;\n\
+            text-align: center;\n\
+            padding: 8px;\n\
+            font-size: 12px;\n\
+            color: #333;\n\
+            background: rgba(255,255,255,0.9);\n\
+            z-index: 300;\n\
+        }\n\
+        @media print {\n\
+            body { width: ' + PLANO_W + 'px; height: ' + PLANO_H + 'px; }\n\
+            .print-wrapper { width: ' + PLANO_W + 'px; height: ' + PLANO_H + 'px; }\n\
+            .print-plano { width: ' + PLANO_W + 'px !important; height: ' + PLANO_H + 'px !important; }\n\
+            .print-marcadores { width: ' + PLANO_W + 'px; height: ' + PLANO_H + 'px; }\n\
+        }\n\
+    </style>\n\
+</head>\n\
+<body>\n\
+    <div class="print-wrapper">\n\
+        <img class="print-plano" id="printImg" src="' + imgUrl + '" alt="Plano" />\n\
+        <div class="print-marcadores" id="printMarcadores"></div>\n\
+    </div>\n\
+    <div class="print-info">\n\
+        <strong>Casa(s):</strong> ' + markersData.map(m => m.numero).join(', ') + '\n\
+    </div>\n\
+    <script>\n\
+        var markersData = ' + markersJSON + ';\n\
+        var PLANO_W = ' + PLANO_W + ';\n\
+        var PLANO_H = ' + PLANO_H + ';\n\
+        \n\
+        var img = document.getElementById("printImg");\n\
+        var container = document.getElementById("printMarcadores");\n\
+        \n\
+        function colocarMarcadores() {\n\
+            console.log("🖨️ Imagen cargada:", {\n\
+                naturalW: img.naturalWidth,\n\
+                naturalH: img.naturalHeight,\n\
+                clientW: img.clientWidth,\n\
+                clientH: img.clientHeight\n\
+            });\n\
+            \n\
+            markersData.forEach(function(marker) {\n\
+                var el = document.createElement("div");\n\
+                el.className = "print-marker";\n\
+                el.style.left = marker.origX + "px";\n\
+                el.style.top = marker.origY + "px";\n\
+                el.textContent = marker.numero;\n\
+                container.appendChild(el);\n\
+                console.log("✅ Marcador " + marker.numero + " en (" + marker.origX + ", " + marker.origY + ")");\n\
+            });\n\
+            \n\
+            setTimeout(function() {\n\
+                if (typeof window.print === "function") {\n\
+                    window.print();\n\
+                }\n\
+            }, 400);\n\
+        }\n\
+        \n\
+        if (img.complete && img.naturalWidth > 0) {\n\
+            colocarMarcadores();\n\
+        } else {\n\
+            img.onload = colocarMarcadores;\n\
+            img.onerror = function() {\n\
+                console.error("❌ Error cargando imagen en ventana de impresión");\n\
+                alert("Error: No se pudo cargar la imagen del plano");\n\
+            };\n\
+        }\n\
+    <\/script>\n\
+</body>\n\
+</html>';
 
     // Abrir ventana nueva con dimensiones específicas
     const printWindow = window.open('', '_blank', 
-        `width=${PLANO_W + 200},height=${PLANO_H + 100},scrollbars=yes`);
+        'width=' + (PLANO_W + 200) + ',height=' + (PLANO_H + 100) + ',scrollbars=yes');
     
     if (!printWindow) {
         mostrarAlerta('error', 'Ventana bloqueada', 'Permite ventanas emergentes para imprimir');
