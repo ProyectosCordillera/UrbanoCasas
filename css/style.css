@@ -62,41 +62,43 @@ body {
 }
 
 /* ========================================
-   🖨️ ESTILOS PARA IMPRESIÓN - NUEVO
+   🖨️ ESTILOS PARA IMPRESIÓN - VERSIÓN 2.0
    ======================================== */
 @media print {
-    /* Ocultar elementos de navegación y UI */
-    .navbar, 
-    .no-print, 
-    footer, 
-    .dropdown-menu,
-    .clock-container,
-    .btn,
-    .form-control,
-    .form-select,
-    .form-label {
+    /* Ocultar TODO lo que no sea el plano */
+    body > *:not(.main-content),
+    .navbar, .no-print, footer, .dropdown-menu,
+    .clock-container, .btn, .form-control,
+    .form-select, .form-label, .card {
         display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        overflow: hidden !important;
     }
 
-    /* Resetear cuerpo para impresión */
+    /* Reset total del cuerpo */
     body, html {
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
         height: auto !important;
         background: white !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        color-adjust: exact;
+        position: static !important;
+        overflow: visible !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
     }
 
-    /* Ajustar contenido principal */
+    /* Contenido principal */
     .main-content {
         flex: none !important;
         padding: 0 !important;
         margin: 0 !important;
         background: white !important;
         position: static !important;
+        display: block !important;
+        width: 100% !important;
     }
 
     /* Contenedor del plano - CRÍTICO */
@@ -107,9 +109,10 @@ body {
         min-height: auto !important;
         margin: 0 !important;
         padding: 0 !important;
-        page-break-inside: avoid;
-        break-inside: avoid;
         display: block !important;
+        overflow: visible !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
     }
 
     /* Imagen del plano */
@@ -120,46 +123,57 @@ body {
         height: auto !important;
         position: relative !important;
         visibility: visible !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        color-adjust: exact;
-        page-break-inside: avoid;
+        opacity: 1 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
+        page-break-inside: avoid !important;
+        float: none !important;
     }
 
-    /* Marcadores sobre el plano */
+    /* Contenedor de marcadores */
     #marcadoresContainer {
         position: absolute !important;
         top: 0 !important;
         left: 0 !important;
         width: 100% !important;
         height: 100% !important;
-        pointer-events: none;
+        pointer-events: none !important;
         display: block !important;
         visibility: visible !important;
-        z-index: 10 !important;
+        opacity: 1 !important;
+        z-index: 1000 !important;
+        overflow: visible !important;
     }
 
-    /* Estilo para cada marcador individual */
-    #marcadoresContainer .marker,
-    #marcadoresContainer [class*="marker"] {
+    /* Cada marcador individual */
+    #marcadoresContainer .marcador,
+    #marcadoresContainer [class*="marcador"] {
         position: absolute !important;
-        display: block !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
         visibility: visible !important;
-        z-index: 20 !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-
-    /* Asegurar que los elementos con posición absoluta se impriman */
-    [style*="position: absolute"] {
+        opacity: 1 !important;
+        z-index: 2000 !important;
+        background: #dc3545 !important;
+        color: white !important;
+        border: 3px solid white !important;
+        border-radius: 50% !important;
+        width: 32px !important;
+        height: 32px !important;
+        font-weight: bold !important;
+        font-size: 16px !important;
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.4) !important;
     }
 
-    /* Forzar impresión de colores y fondos */
-    * {
+    /* Forzar impresión de TODOS los colores y fondos */
+    *, *::before, *::after {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
         color-adjust: exact !important;
+        background-print-color-adjust: exact !important;
     }
 }
