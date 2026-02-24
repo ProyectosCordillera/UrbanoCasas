@@ -310,11 +310,11 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
         return;
     }
 
-    const scaleX = imgPlano.clientWidth / PLANO_ANCHO_REAL;
-    const scaleY = imgPlano.clientHeight / PLANO_ALTO_REAL;
+ // 🔥 USAR UN SOLO SCALE BASADO EN EL ANCHO
+const scale = imgPlano.clientWidth / PLANO_ANCHO_REAL;
 
-    const x = originalX * scaleX;
-    const y = originalY * scaleY;
+const x = originalX * scale;
+const y = originalY * scale;
 
     if (x < 0 || x > imgPlano.clientWidth || y < 0 || y > imgPlano.clientHeight) {
         console.error('⚠ Coordenadas fuera del plano:', { x, y });
