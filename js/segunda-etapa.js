@@ -295,6 +295,7 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
     const marcadoresContainer = document.getElementById('marcadoresContainer');
 
     if (!marcadoresContainer || !imgPlano) return;
+
     marcadoresContainer.innerHTML = '';
 
     if (!imgPlano.complete) {
@@ -304,6 +305,7 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
 
     const scaleX = imgPlano.clientWidth / PLANO_ANCHO_REAL;
     const scaleY = imgPlano.clientHeight / PLANO_ALTO_REAL;
+
     const x = originalX * scaleX;
     const y = originalY * scaleY;
 
@@ -314,38 +316,12 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
 
     const marcador = document.createElement('div');
     marcador.className = 'marcador';
-    
-    // ✅ GUARDAR COORDENADAS ORIGINALES COMO DATA ATTRIBUTES
-    marcador.setAttribute('data-orig-x', originalX);
-    marcador.setAttribute('data-orig-y', originalY);
-    marcador.setAttribute('data-casa', numeroCasa);
-    
-    marcador.style.cssText = `
-        position: absolute;
-        left: ${x}px;
-        top: ${y}px;
-        transform: translate(-50%, -50%);
-        background: #dc3545;
-        color: white;
-        border: 2px solid white;
-        border-radius: 50%;
-        width: 28px;
-        height: 28px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: bold;
-        font-size: 14px;
-        z-index: 100;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    `;
+    marcador.style.left = x + 'px';
+    marcador.style.top = y + 'px';
     marcador.textContent = numeroCasa;
-    marcador.setAttribute('aria-label', `Casa ${numeroCasa}`);
-    
     marcadoresContainer.appendChild(marcador);
-    console.log(`✅ Marcador ${numeroCasa} en X=${x.toFixed(1)}, Y=${y.toFixed(1)} (Orig: ${originalX}, ${originalY})`);
+
+    console.log(`✅ Marcador ${numeroCasa} en X=${x.toFixed(1)}, Y=${y.toFixed(1)}`);
 }
 
 // ============================================
@@ -524,247 +500,45 @@ async function eliminarMarca() {
 }
 
 // ============================================
-// IMPRESIÓN - SOLUCIÓN CON VENTANA DEDICADA
+// IMPRESIÓN (Misma lógica que primera etapa)
 // ============================================
 
 function imprimirPlano() {
-    const imgPlano = document.getElementById('imgPlano');
-    const marcadoresContainer = document.getElementById('marcadoresContainer');
+    const marcadores = document.getElementById('marcadoresContainer').children;
+    if (marcadores.length === 0) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'warning', title: 'Sin marcadores', text: 'Aplique una casa primero' });
+        }
+        return false;
+    }
+
+    const numeroCasa = marcadores[0].textContent;
+    const casa = parseInt(numeroCasa, 10);
     
-    // Validaciones iniciales
-    if (!imgPlano || !marcadoresContainer) {
-        mostrarAlerta('error', 'Elementos del plano no encontrados');
+    if (!coordenadasCasas.hasOwnProperty(casa)) {
+        Swal.fire('Error', 'Coordenadas no encontradas', 'error');
         return false;
     }
 
-    if (marcadoresContainer.children.length === 0) {
-        mostrarAlerta('warning', 'Sin marcadores', 'Aplique una casa primero');
-        return false;
+    const coords = coordenadasCasas[casa];
+    
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Imprimiendo...',
+            didOpen: () => {
+                Swal.showLoading();
+                setTimeout(() => {
+                    window.print();
+                    Swal.close();
+                }, 1000);
+            }
+        });
+    } else {
+        window.print();
     }
-
-    // Esperar que la imagen esté completamente cargada
-    if (!imgPlano.complete || imgPlano.naturalWidth === 0) {
-        mostrarAlerta('info', 'Cargando plano...', null, 2000);
-        imgPlano.onload = () => prepararImpresionDedicada();
-        return false;
-    }
-
-    prepararImpresionDedicada();
     return false;
 }
 
-// Función auxiliar para alertas (Swal o fallback)
-function mostrarAlerta(icon, title, text = null, timer = null) {
-    if (typeof Swal !== 'undefined') {
-        const config = { icon, title, showConfirmButton: !timer };
-        if (text) config.text = text;
-        if (timer) {
-            config.timer = timer;
-            config.showConfirmButton = false;
-        }
-        Swal.fire(config);
-    } else if (text) {
-        alert(`${title}: ${text}`);
-    } else {
-        alert(title);
-    }
-}
-
-// Función principal que crea la ventana de impresión
-function prepararImpresionDedicada() {
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: '🖨️ Preparando impresión...',
-            didOpen: () => Swal.showLoading()
-        });
-    }
-
-    // Pequeño delay para que el Swal se muestre
-    setTimeout(() => {
-        crearVentanaImpresion();
-        if (typeof Swal !== 'undefined') Swal.close();
-    }, 200);
-}
-
-// Crea una ventana nueva con el contenido optimizado para imprimir
-function crearVentanaImpresion() {
-    const imgPlano = document.getElementById('imgPlano');
-    const marcadoresContainer = document.getElementById('marcadoresContainer');
-    
-    // 🔥 Extraer coordenadas ORIGINALES desde data-attributes
-    const markersData = Array.from(marcadoresContainer.children).map(m => ({
-        numero: m.textContent,
-        origX: parseFloat(m.getAttribute('data-orig-x')),
-        origY: parseFloat(m.getAttribute('data-orig-y')),
-        casa: m.getAttribute('data-casa')
-    }));
-
-    // 🔥 DIMENSIONES REALES DEL PLANO
-    const PLANO_W = PLANO_ANCHO_REAL;  // 1275
-    const PLANO_H = PLANO_ALTO_REAL;   // 1650
-    
-    // 🔥 Serializar datos de forma segura
-    const markersJSON = JSON.stringify(markersData);
-    const imgUrl = imgPlano.src;
-
-    // Construir el HTML de la ventana de impresión (usando concatenación para evitar errores de sintaxis)
-    const printHTML = 
-'<!DOCTYPE html>\n\
-<html lang="es">\n\
-<head>\n\
-    <meta charset="UTF-8">\n\
-    <title>Imprimir Plano - Segunda Etapa</title>\n\
-    <style>\n\
-        @page { size: auto; margin: 0; }\n\
-        * {\n\
-            margin: 0; padding: 0; box-sizing: border-box;\n\
-            -webkit-print-color-adjust: exact !important;\n\
-            print-color-adjust: exact !important;\n\
-            color-adjust: exact !important;\n\
-        }\n\
-        body {\n\
-            width: ' + PLANO_W + 'px;\n\
-            height: ' + PLANO_H + 'px;\n\
-            background: white !important;\n\
-            font-family: Arial, sans-serif;\n\
-            overflow: hidden;\n\
-        }\n\
-        .print-wrapper {\n\
-            position: relative;\n\
-            width: ' + PLANO_W + 'px;\n\
-            height: ' + PLANO_H + 'px;\n\
-            margin: 0;\n\
-            padding: 0;\n\
-        }\n\
-        .print-plano {\n\
-            width: ' + PLANO_W + 'px !important;\n\
-            height: ' + PLANO_H + 'px !important;\n\
-            min-width: ' + PLANO_W + 'px !important;\n\
-            min-height: ' + PLANO_H + 'px !important;\n\
-            max-width: none !important;\n\
-            max-height: none !important;\n\
-            display: block;\n\
-            position: absolute;\n\
-            top: 0;\n\
-            left: 0;\n\
-            object-fit: none;\n\
-            image-rendering: pixelated;\n\
-        }\n\
-        .print-marcadores {\n\
-            position: absolute;\n\
-            top: 0;\n\
-            left: 0;\n\
-            width: ' + PLANO_W + 'px;\n\
-            height: ' + PLANO_H + 'px;\n\
-            pointer-events: none;\n\
-            z-index: 100;\n\
-        }\n\
-        .print-marker {\n\
-            position: absolute;\n\
-            transform: translate(-50%, -50%);\n\
-            background: #dc3545 !important;\n\
-            color: white !important;\n\
-            border: 3px solid white !important;\n\
-            border-radius: 50%;\n\
-            width: 32px;\n\
-            height: 32px;\n\
-            display: flex !important;\n\
-            align-items: center;\n\
-            justify-content: center;\n\
-            font-weight: bold;\n\
-            font-size: 16px;\n\
-            z-index: 200 !important;\n\
-            box-shadow: 0 3px 6px rgba(0,0,0,0.4);\n\
-            -webkit-print-color-adjust: exact !important;\n\
-            print-color-adjust: exact !important;\n\
-        }\n\
-        .print-info {\n\
-            position: fixed;\n\
-            bottom: 10px;\n\
-            left: 0;\n\
-            right: 0;\n\
-            text-align: center;\n\
-            padding: 8px;\n\
-            font-size: 12px;\n\
-            color: #333;\n\
-            background: rgba(255,255,255,0.9);\n\
-            z-index: 300;\n\
-        }\n\
-        @media print {\n\
-            body { width: ' + PLANO_W + 'px; height: ' + PLANO_H + 'px; }\n\
-            .print-wrapper { width: ' + PLANO_W + 'px; height: ' + PLANO_H + 'px; }\n\
-            .print-plano { width: ' + PLANO_W + 'px !important; height: ' + PLANO_H + 'px !important; }\n\
-            .print-marcadores { width: ' + PLANO_W + 'px; height: ' + PLANO_H + 'px; }\n\
-        }\n\
-    </style>\n\
-</head>\n\
-<body>\n\
-    <div class="print-wrapper">\n\
-        <img class="print-plano" id="printImg" src="' + imgUrl + '" alt="Plano" />\n\
-        <div class="print-marcadores" id="printMarcadores"></div>\n\
-    </div>\n\
-    <div class="print-info">\n\
-        <strong>Casa(s):</strong> ' + markersData.map(m => m.numero).join(', ') + '\n\
-    </div>\n\
-    <script>\n\
-        var markersData = ' + markersJSON + ';\n\
-        var PLANO_W = ' + PLANO_W + ';\n\
-        var PLANO_H = ' + PLANO_H + ';\n\
-        \n\
-        var img = document.getElementById("printImg");\n\
-        var container = document.getElementById("printMarcadores");\n\
-        \n\
-        function colocarMarcadores() {\n\
-            console.log("🖨️ Imagen cargada:", {\n\
-                naturalW: img.naturalWidth,\n\
-                naturalH: img.naturalHeight,\n\
-                clientW: img.clientWidth,\n\
-                clientH: img.clientHeight\n\
-            });\n\
-            \n\
-            markersData.forEach(function(marker) {\n\
-                var el = document.createElement("div");\n\
-                el.className = "print-marker";\n\
-                el.style.left = marker.origX + "px";\n\
-                el.style.top = marker.origY + "px";\n\
-                el.textContent = marker.numero;\n\
-                container.appendChild(el);\n\
-                console.log("✅ Marcador " + marker.numero + " en (" + marker.origX + ", " + marker.origY + ")");\n\
-            });\n\
-            \n\
-            setTimeout(function() {\n\
-                if (typeof window.print === "function") {\n\
-                    window.print();\n\
-                }\n\
-            }, 400);\n\
-        }\n\
-        \n\
-        if (img.complete && img.naturalWidth > 0) {\n\
-            colocarMarcadores();\n\
-        } else {\n\
-            img.onload = colocarMarcadores;\n\
-            img.onerror = function() {\n\
-                console.error("❌ Error cargando imagen en ventana de impresión");\n\
-                alert("Error: No se pudo cargar la imagen del plano");\n\
-            };\n\
-        }\n\
-    <\/script>\n\
-</body>\n\
-</html>';
-
-    // Abrir ventana nueva con dimensiones específicas
-    const printWindow = window.open('', '_blank', 
-        'width=' + (PLANO_W + 200) + ',height=' + (PLANO_H + 100) + ',scrollbars=yes');
-    
-    if (!printWindow) {
-        mostrarAlerta('error', 'Ventana bloqueada', 'Permite ventanas emergentes para imprimir');
-        return;
-    }
-
-    printWindow.document.open();
-    printWindow.document.write(printHTML);
-    printWindow.document.close();
-}
 // ============================================
 // REDIMENSIONAMIENTO
 // ============================================
