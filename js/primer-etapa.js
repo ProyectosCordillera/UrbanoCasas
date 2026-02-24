@@ -2,8 +2,8 @@
 // CONFIGURACIÓN DE COORDENADAS Y VARIABLES
 // ============================================
 
-const PLANO_ANCHO_REAL = 1414;
-const PLANO_ALTO_REAL = 2000;
+const PLANO_ANCHO_REAL = 1275;
+const PLANO_ALTO_REAL = 1650;
 
 const ZONA_VALIDA = {
     xMin: 50,
