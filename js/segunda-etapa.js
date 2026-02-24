@@ -165,13 +165,14 @@ async function migrarDatosHistoricos() {
 
 async function cargarMarcasDesdeBD() {
     try {
-        // Usamos la misma función del adapter que trae todo unificado
+        // 1. Obtener TODAS las casas de la BD
         const todasLasCasas = await Database.getCasas();
         
-        // Filtramos solo las de la segunda etapa (1 al 32)
+        // 2. FILTRO ESTRICTO: Solo Segunda Etapa (1 al 32)
         const casasSegundaEtapa = todasLasCasas.filter(c => {
             const num = parseInt(c.numero_casa);
-            return num >= 1 && num <= 32;
+            // Verificamos explícitamente el rango
+            return !isNaN(num) && num >= 1 && num <= 32;
         });
 
         const ddlMarcas = document.getElementById('ddlMarcas');
@@ -185,18 +186,26 @@ async function cargarMarcasDesdeBD() {
         // Ordenar numéricamente
         casasSegundaEtapa.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
 
+        console.log(`🔍 Filtrado: Total en BD=${todasLasCasas.length}, Mostrando Segunda Etapa=${casasSegundaEtapa.length}`);
+
+        if (casasSegundaEtapa.length === 0) {
+            console.log('ℹ️ No hay casas registradas en la Segunda Etapa aún.');
+        }
+
         for (const casa of casasSegundaEtapa) {
             const option = document.createElement('option');
             option.value = casa.numero_casa;
             
-            // El nombre viene directo de la vista unificada
-            const nombreCliente = casa.nombre_cliente !== 'Sin propietario' ? casa.nombre_cliente : 'Sin cliente';
+            const nombreCliente = (casa.nombre_cliente && casa.nombre_cliente !== 'Sin propietario') 
+                                  ? casa.nombre_cliente 
+                                  : 'Sin cliente';
+            
             option.textContent = `Casa ${casa.numero_casa} - ${nombreCliente}`;
             
             ddlMarcas.appendChild(option);
         }
 
-        console.log(`✅ Dropdown cargado con ${casasSegundaEtapa.length} marcas de la 2da Etapa.`);
+        console.log(`✅ Dropdown Segunda Etapa cargado con ${casasSegundaEtapa.length} marcas.`);
     } catch (error) {
         console.error('❌ Error cargando marcas desde BD:', error);
         if (typeof Swal !== 'undefined') {
@@ -204,7 +213,6 @@ async function cargarMarcasDesdeBD() {
         }
     }
 }
-
 // ============================================
 // VALIDACIÓN DE ENTRADA (RANGO 1-32)
 // ============================================
