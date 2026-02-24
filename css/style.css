@@ -33,7 +33,6 @@ body {
 }
 
 /* Contenido principal */
-
 .main-content {
     flex: 1;
     padding: 20px 0;
@@ -59,5 +58,108 @@ body {
     
     .logo-img {
         max-height: 40px;
+    }
+}
+
+/* ========================================
+   🖨️ ESTILOS PARA IMPRESIÓN - NUEVO
+   ======================================== */
+@media print {
+    /* Ocultar elementos de navegación y UI */
+    .navbar, 
+    .no-print, 
+    footer, 
+    .dropdown-menu,
+    .clock-container,
+    .btn,
+    .form-control,
+    .form-select,
+    .form-label {
+        display: none !important;
+    }
+
+    /* Resetear cuerpo para impresión */
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        background: white !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+    }
+
+    /* Ajustar contenido principal */
+    .main-content {
+        flex: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        background: white !important;
+        position: static !important;
+    }
+
+    /* Contenedor del plano - CRÍTICO */
+    .plano-container {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        min-height: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        page-break-inside: avoid;
+        break-inside: avoid;
+        display: block !important;
+    }
+
+    /* Imagen del plano */
+    #imgPlano {
+        display: block !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        height: auto !important;
+        position: relative !important;
+        visibility: visible !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        color-adjust: exact;
+        page-break-inside: avoid;
+    }
+
+    /* Marcadores sobre el plano */
+    #marcadoresContainer {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        pointer-events: none;
+        display: block !important;
+        visibility: visible !important;
+        z-index: 10 !important;
+    }
+
+    /* Estilo para cada marcador individual */
+    #marcadoresContainer .marker,
+    #marcadoresContainer [class*="marker"] {
+        position: absolute !important;
+        display: block !important;
+        visibility: visible !important;
+        z-index: 20 !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* Asegurar que los elementos con posición absoluta se impriman */
+    [style*="position: absolute"] {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    /* Forzar impresión de colores y fondos */
+    * {
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        color-adjust: exact !important;
     }
 }
