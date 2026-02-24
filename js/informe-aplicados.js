@@ -10,21 +10,19 @@ const PLANO_ALTO_REAL = 1650;
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Sistema Urbano - Informe Aplicados v4.0 (SIN localStorage)');
+    console.log('✅ Sistema Urbano - Informe Aplicados v5.0 (API Unificada)');
     console.log('📅 Fecha de carga:', new Date().toLocaleString('es-ES'));
     
-    // Mostrar año en footer
     const yearElement = document.getElementById('currentYear');
     if (yearElement) {
         yearElement.textContent = new Date().getFullYear();
     }
     
-    // Cargar datos DIRECTAMENTE de ambas etapas (sin localStorage)
-    cargarDatosDirectamente();
+    // Cargar datos DIRECTAMENTE de la API (PostgreSQL)
+    cargarDatosDesdeAPI();
     configurarEventosImagen();
     window.addEventListener('resize', manejarRedimensionamiento);
     
-    // Botón de actualización
     const btnActualizar = document.getElementById('btnActualizar');
     if (btnActualizar) {
         btnActualizar.addEventListener('click', actualizarDatos);
@@ -32,45 +30,44 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// CARGA DE DATOS DIRECTAMENTE (SIN localStorage)
+// CARGA DE DATOS DESDE LA API (POSTGRESQL)
 // ============================================
 
-function cargarDatosDirectamente() {
+async function cargarDatosDesdeAPI() {
     const tbody = document.getElementById('tbodyDatos');
     if (!tbody) return;
 
-    console.log('📥 Cargando datos DIRECTAMENTE de ambas etapas...');
+    console.log('📥 Consultando todas las casas a la API...');
     
-    let todasMarcas = [];
-    
-    // 1. Cargar datos de Primera Etapa
     try {
-        const marcasPrimera = JSON.parse(localStorage.getItem('marcasPrimerEtapa') || '[]');
-        console.log(`✅ Primera Etapa: ${marcasPrimera.length} casas`);
-        todasMarcas = [...todasMarcas, ...marcasPrimera];
-    } catch (e) {
-        console.warn('⚠️ Error leyendo marcasPrimerEtapa:', e.message);
-    }
-    
-    // 2. Cargar datos de Segunda Etapa
-    try {
-        const marcasSegunda = JSON.parse(localStorage.getItem('marcasSegundaEtapa') || '[]');
-        console.log(`✅ Segunda Etapa: ${marcasSegunda.length} casas`);
-        todasMarcas = [...todasMarcas, ...marcasSegunda];
-    } catch (e) {
-        console.warn('⚠️ Error leyendo marcasSegundaEtapa:', e.message);
-    }
-    
-    // 3. Mostrar datos en tabla
-    if (todasMarcas.length > 0) {
-        mostrarDatosEnTabla(todasMarcas);
+        // Usamos el adapter para obtener TODO (Etapa 1 + Etapa 2)
+        const todasLasCasas = await window.Database.getCasas();
         
-        // Colocar marcadores si la imagen ya cargó
-        if (document.getElementById('imgPlano').complete) {
-            setTimeout(colocarMarcadores, 100);
+        console.log(`✅ API devolvió ${todasLasCasas.length} casas totales.`);
+        
+        if (todasLasCasas.length > 0) {
+            mostrarDatosEnTabla(todasLasCasas);
+            
+            // Colocar marcadores si la imagen ya cargó
+            if (document.getElementById('imgPlano').complete) {
+                setTimeout(colocarMarcadores, 100);
+            }
+        } else {
+            mostrarMensajeVacio();
         }
-    } else {
-        // Sin datos
+    } catch (error) {
+        console.error('❌ Error cargando datos desde API:', error);
+        if (typeof Swal !== 'undefined') {
+            Swal.fire('Error de Conexión', 'No se pudieron cargar los datos de la base de datos. Verifica tu conexión.', 'error');
+        }
+        mostrarMensajeVacio();
+    }
+}
+
+function mostrarMensajeVacio() {
+    const tbody = document.getElementById('tbodyDatos');
+    const container = document.getElementById('marcadoresContainer');
+    if (tbody) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="5" class="text-center py-5">
@@ -83,60 +80,82 @@ function cargarDatosDirectamente() {
                 </td>
             </tr>
         `;
-        document.getElementById('marcadoresContainer').innerHTML = '';
     }
+    if (container) container.innerHTML = '';
 }
 
-function mostrarDatosEnTabla(marcas) {
+// ============================================
+// MOSTRAR DATOS EN TABLA
+// ============================================
+
+function mostrarDatosEnTabla(casas) {
     const tbody = document.getElementById('tbodyDatos');
     if (!tbody) return;
     
     tbody.innerHTML = '';
     
     // Ordenar por número de casa
-    marcas.sort((a, b) => a.numeroCasa - b.numeroCasa);
+    casas.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
     
     // Contadores
     let countPrimera = 0;
     let countSegunda = 0;
     
-    marcas.forEach(marca => {
+    casas.forEach(casa => {
+        const numeroCasa = parseInt(casa.numero_casa);
         const fila = document.createElement('tr');
         
         // Determinar etapa
         let etapa = 'Desconocida';
-        if (marca.numeroCasa >= 33 && marca.numeroCasa <= 65) {
+        let badgeClass = 'bg-secondary';
+        
+        if (numeroCasa >= 33 && numeroCasa <= 65) {
             etapa = 'Primera Etapa';
-            fila.classList.add('table-info');
+            fila.classList.add('table-info'); // Azul claro
+            badgeClass = 'bg-primary';
             countPrimera++;
-        } else if (marca.numeroCasa >= 1 && marca.numeroCasa <= 32) {
+        } else if (numeroCasa >= 1 && numeroCasa <= 32) {
             etapa = 'Segunda Etapa';
-            fila.classList.add('table-success');
+            fila.classList.add('table-success'); // Verde claro
+            badgeClass = 'bg-success';
             countSegunda++;
         }
         
+        // Obtener coordenadas (usamos las del diccionario local si existen, o las de la BD si las tuvieras ahí)
+        // Para este informe, usaremos el diccionario 'coordenadasCasas' que definiremos abajo o importaremos lógica
+        // NOTA: Como el informe usa un plano general, necesitamos saber dónde va cada casa.
+        // Asumiremos que tenemos acceso a las coordenadas lógicas definidas en las otras páginas o las recalculamos.
+        // Para simplificar, usaremos un objeto combinado de coordenadas (ver abajo).
+        
+        const coords = obtenerCoordenadasGenerales(numeroCasa);
+        const coordX = coords ? coords.x : 'N/A';
+        const coordY = coords ? coords.y : 'N/A';
+        
+        // Nombre del cliente (viene de la vista unificada)
+        const nombreCliente = (casa.nombre_cliente && casa.nombre_cliente !== 'Sin propietario') 
+                              ? casa.nombre_cliente 
+                              : 'Sin cliente';
+
         // Celdas
         const celdas = [
             { 
-                content: `<strong>${marca.numeroCasa}</strong><br><small class="badge bg-secondary">${etapa}</small>`, 
+                content: `<strong>${numeroCasa}</strong><br><small class="badge ${badgeClass}">${etapa}</small>`, 
                 className: 'fw-bold' 
             },
             { 
-                content: marca.coordenadas?.x !== undefined ? String(marca.coordenadas.x) : 'N/A', 
+                content: coordX !== 'N/A' ? String(coordX) : 'N/A', 
                 className: 'text-center' 
             },
             { 
-                content: marca.coordenadas?.y !== undefined ? String(marca.coordenadas.y) : 'N/A', 
+                content: coordY !== 'N/A' ? String(coordY) : 'N/A', 
                 className: 'text-center' 
             },
             { 
-                content: marca.cliente || 'Cliente no especificado', 
+                content: nombreCliente, 
                 className: '' 
             },
             { 
-                content: marca.fecha ? 
-                    `<small>${new Date(marca.fecha).toLocaleDateString('es-ES')}</small>` : 
-                    '<small class="text-muted">Sin fecha</small>', 
+                content: '<small class="text-muted">En línea</small>', // Ya no tenemos fecha local, pero está en BD
                 className: 'text-center' 
             }
         ];
@@ -154,15 +173,14 @@ function mostrarDatosEnTabla(marcas) {
         tbody.appendChild(fila);
     });
     
-    console.log(`📊 Total: ${marcas.length} casas (${countPrimera} primera, ${countSegunda} segunda)`);
+    console.log(`📊 Total: ${casas.length} casas (${countPrimera} primera, ${countSegunda} segunda)`);
     
-    // Mensaje de éxito
-    if (marcas.length > 0 && typeof Swal !== 'undefined') {
+    if (casas.length > 0 && typeof Swal !== 'undefined') {
         setTimeout(() => {
             Swal.fire({
                 icon: 'success',
                 title: 'Datos cargados',
-                html: `Se muestran <strong>${marcas.length}</strong> casas registradas:<br>
+                html: `Se muestran <strong>${casas.length}</strong> casas registradas:<br>
                        <small>• ${countPrimera} Primera Etapa<br>
                        • ${countSegunda} Segunda Etapa</small>`,
                 timer: 2000,
@@ -175,6 +193,31 @@ function mostrarDatosEnTabla(marcas) {
 }
 
 // ============================================
+// UTILIDAD: OBTENER COORDENADAS UNIFICADAS
+// ============================================
+// Combinamos las coordenadas de ambas etapas para poder pintar en el plano general
+
+function obtenerCoordenadasGenerales(numeroCasa) {
+    // Coordenadas Etapa 1 (33-65) - Copiadas de primer-etapa.js
+    if (numeroCasa >= 33 && numeroCasa <= 47) {
+        return { x: 455, y: Math.max(50, Math.min(1600, 1268 - (numeroCasa - 33) * 60)) };
+    }
+    if (numeroCasa >= 48 && numeroCasa <= 65) {
+        return { x: 145, y: Math.max(50, Math.min(1600, 437 + (numeroCasa - 48) * 60)) };
+    }
+    
+    // Coordenadas Etapa 2 (1-32) - Copiadas de segunda-etapa.js
+    if (numeroCasa >= 1 && numeroCasa <= 16) {
+        return { x: 925, y: Math.max(50, Math.min(1600, 1265 + (numeroCasa - 1) * -60)) };
+    }
+    if (numeroCasa >= 17 && numeroCasa <= 32) {
+        return { x: 630, y: Math.max(50, Math.min(1600, 365 + (numeroCasa - 17) * 60)) };
+    }
+
+    return null;
+}
+
+// ============================================
 // CONFIGURACIÓN DE IMAGEN
 // ============================================
 
@@ -182,10 +225,11 @@ function configurarEventosImagen() {
     const imgPlano = document.getElementById('imgPlano');
     
     imgPlano.addEventListener('load', function() {
-        console.log(`✅ Plano cargado: ${this.naturalWidth}x${this.naturalHeight}px`);
+        console.log(`✅ Plano General cargado: ${this.naturalWidth}x${this.naturalHeight}px`);
         ajustarContenedorMarcadores();
         
-        if (document.getElementById('tbodyDatos').children.length > 0) {
+        const tbody = document.getElementById('tbodyDatos');
+        if (tbody && tbody.children.length > 0 && !tbody.querySelector('.alert')) {
             setTimeout(colocarMarcadores, 100);
         }
     });
@@ -207,7 +251,8 @@ function configurarEventosImagen() {
     if (imgPlano.complete && imgPlano.naturalWidth > 0) {
         console.log('✅ Plano ya cargado al inicio');
         ajustarContenedorMarcadores();
-        if (document.getElementById('tbodyDatos').children.length > 0) {
+        const tbody = document.getElementById('tbodyDatos');
+        if (tbody && tbody.children.length > 0 && !tbody.querySelector('.alert')) {
             setTimeout(colocarMarcadores, 100);
         }
     }
@@ -231,6 +276,7 @@ function colocarMarcadores() {
     
     const planoAncho = imgPlano.clientWidth || PLANO_ANCHO_REAL;
     const planoAlto = imgPlano.clientHeight || PLANO_ALTO_REAL;
+    // Usamos naturalWidth/Height para la escala correcta
     const escalaX = planoAncho / (imgPlano.naturalWidth || PLANO_ANCHO_REAL);
     const escalaY = planoAlto / (imgPlano.naturalHeight || PLANO_ALTO_REAL);
     
@@ -243,8 +289,14 @@ function colocarMarcadores() {
         const numeroMatch = celdas[0].innerHTML.match(/<strong>(\d+)<\/strong>/);
         const numeroCasa = numeroMatch ? parseInt(numeroMatch[1]) : null;
         
-        const coordX = parseInt(celdas[1].textContent) || null;
-        const coordY = parseInt(celdas[2].textContent) || null;
+        // Leer coordenadas de las celdas 2 y 3 (índices 1 y 2)
+        const textX = celdas[1].textContent.trim();
+        const textY = celdas[2].textContent.trim();
+        
+        if (textX === 'N/A' || textY === 'N/A') return;
+        
+        const coordX = parseInt(textX);
+        const coordY = parseInt(textY);
         
         if (!numeroCasa || isNaN(coordX) || isNaN(coordY)) return;
         
@@ -259,19 +311,20 @@ function colocarMarcadores() {
         
         // Color por etapa
         if (numeroCasa >= 33 && numeroCasa <= 65) {
-            marcador.style.backgroundColor = 'rgba(13, 110, 253, 0.95)';
+            marcador.style.backgroundColor = 'rgba(13, 110, 253, 0.95)'; // Azul Primera
         } else if (numeroCasa >= 1 && numeroCasa <= 32) {
-            marcador.style.backgroundColor = 'rgba(25, 135, 84, 0.95)';
+            marcador.style.backgroundColor = 'rgba(25, 135, 84, 0.95)'; // Verde Segunda
         } else {
-            marcador.style.backgroundColor = 'rgba(220, 53, 69, 0.95)';
+            marcador.style.backgroundColor = 'rgba(220, 53, 69, 0.95)'; // Rojo Otros
         }
         
-        marcador.title = `Casa ${numeroCasa}\nCliente: ${celdas[3].textContent.trim()}`;
+        const cliente = celdas[3].textContent.trim();
+        marcador.title = `Casa ${numeroCasa}\nCliente: ${cliente}`;
         marcadoresContainer.appendChild(marcador);
         colocados++;
     });
     
-    console.log(`📍 ${colocados} marcadores colocados en el plano`);
+    console.log(`📍 ${colocados} marcadores colocados en el plano general`);
 }
 
 function ajustarContenedorMarcadores() {
@@ -286,7 +339,8 @@ function ajustarContenedorMarcadores() {
 function manejarRedimensionamiento() {
     clearTimeout(window.resizeTimeout);
     window.resizeTimeout = setTimeout(() => {
-        if (document.getElementById('tbodyDatos').children.length > 0) {
+        const tbody = document.getElementById('tbodyDatos');
+        if (tbody && tbody.children.length > 0 && !tbody.querySelector('.alert')) {
             ajustarContenedorMarcadores();
             colocarMarcadores();
         }
@@ -294,31 +348,31 @@ function manejarRedimensionamiento() {
 }
 
 // ============================================
-// FUNCIÓN DE ACTUALIZACIÓN (Botón "Actualizar Datos")
+// FUNCIÓN DE ACTUALIZACIÓN
 // ============================================
 
-function actualizarDatos() {
+async function actualizarDatos() {
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             title: 'Actualizando...',
-            html: '<div class="spinner-border text-primary"></div><p class="mt-2">Recargando datos de ambas etapas</p>',
+            html: '<div class="spinner-border text-primary"></div><p class="mt-2">Consultando base de datos...</p>',
             allowOutsideClick: false,
             didOpen: () => Swal.showLoading(null)
         });
     }
     
-    // Recargar datos DIRECTAMENTE (sin usar localStorage del informe)
-    cargarDatosDirectamente();
+    // Recargar desde API
+    await cargarDatosDesdeAPI();
     
     setTimeout(() => {
         if (typeof Swal !== 'undefined') {
             Swal.close();
             const total = document.querySelectorAll('#tblCasas tbody tr').length;
-            if (total > 0) {
+            if (total > 0 && !document.querySelector('#tblCasas .alert')) {
                 Swal.fire({
                     icon: 'success',
                     title: 'Actualizado',
-                    html: `Se muestran <strong>${total}</strong> casas actualizadas`,
+                    html: `Se muestran <strong>${total}</strong> casas actualizadas desde la BD`,
                     timer: 1500,
                     showConfirmButton: false
                 });
@@ -351,19 +405,28 @@ function imprimirPlano() {
 }
 
 // ============================================
-// VER RESUMEN ESTADÍSTICO
+// VER RESUMEN ESTADÍSTICO (ACTUALIZADO PARA API)
 // ============================================
 
-function verResumen() {
+async function verResumen() {
     try {
-        // Leer DIRECTAMENTE de ambas fuentes
-        const marcasPrimera = JSON.parse(localStorage.getItem('marcasPrimerEtapa') || '[]');
-        const marcasSegunda = JSON.parse(localStorage.getItem('marcasSegundaEtapa') || '[]');
+        // Obtener datos frescos de la API
+        const todasLasCasas = await window.Database.getCasas();
         
-        const total = marcasPrimera.length + marcasSegunda.length;
+        const casasPrimera = todasLasCasas.filter(c => {
+            const n = parseInt(c.numero_casa);
+            return n >= 33 && n <= 65;
+        });
         
-        const primerasCasas = marcasPrimera.map(m => m.numeroCasa).sort((a, b) => a - b);
-        const ultimasCasas = marcasSegunda.map(m => m.numeroCasa).sort((a, b) => a - b);
+        const casasSegunda = todasLasCasas.filter(c => {
+            const n = parseInt(c.numero_casa);
+            return n >= 1 && n <= 32;
+        });
+        
+        const total = todasLasCasas.length;
+        
+        const primerasCasasNum = casasPrimera.map(c => parseInt(c.numero_casa)).sort((a, b) => a - b);
+        const segundasCasasNum = casasSegunda.map(c => parseInt(c.numero_casa)).sort((a, b) => a - b);
 
         let html = `
             <div class="text-start">
@@ -374,7 +437,7 @@ function verResumen() {
                         <div class="card bg-primary text-white">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-1"><i class="bi bi-house-door me-2"></i>Primera Etapa</h6>
-                                <h2 class="card-text mb-0">${marcasPrimera.length}</h2>
+                                <h2 class="card-text mb-0">${casasPrimera.length}</h2>
                                 <small>Casas registradas</small>
                             </div>
                         </div>
@@ -383,7 +446,7 @@ function verResumen() {
                         <div class="card bg-success text-white">
                             <div class="card-body p-3">
                                 <h6 class="card-title mb-1"><i class="bi bi-building me-2"></i>Segunda Etapa</h6>
-                                <h2 class="card-text mb-0">${marcasSegunda.length}</h2>
+                                <h2 class="card-text mb-0">${casasSegunda.length}</h2>
                                 <small>Casas registradas</small>
                             </div>
                         </div>
@@ -397,28 +460,28 @@ function verResumen() {
                     </div>
                 </div>
 
-                ${marcasPrimera.length > 0 ? `
+                ${casasPrimera.length > 0 ? `
                 <div class="card mb-3">
                     <div class="card-body">
                         <h6 class="card-title text-primary"><i class="bi bi-list-ul me-2"></i>Casas Primera Etapa</h6>
-                        <p class="mb-1"><strong>Rango:</strong> ${Math.min(...primerasCasas)} - ${Math.max(...primerasCasas)}</p>
-                        <p class="mb-0"><strong>Números:</strong> ${primerasCasas.join(', ')}</p>
+                        <p class="mb-1"><strong>Rango:</strong> ${Math.min(...primerasCasasNum)} - ${Math.max(...primerasCasasNum)}</p>
+                        <p class="mb-0"><strong>Números:</strong> ${primerasCasasNum.join(', ')}</p>
                     </div>
                 </div>
                 ` : ''}
 
-                ${marcasSegunda.length > 0 ? `
+                ${casasSegunda.length > 0 ? `
                 <div class="card">
                     <div class="card-body">
                         <h6 class="card-title text-success"><i class="bi bi-list-ul me-2"></i>Casas Segunda Etapa</h6>
-                        <p class="mb-1"><strong>Rango:</strong> ${Math.min(...ultimasCasas)} - ${Math.max(...ultimasCasas)}</p>
-                        <p class="mb-0"><strong>Números:</strong> ${ultimasCasas.join(', ')}</p>
+                        <p class="mb-1"><strong>Rango:</strong> ${Math.min(...segundasCasasNum)} - ${Math.max(...segundasCasasNum)}</p>
+                        <p class="mb-0"><strong>Números:</strong> ${segundasCasasNum.join(', ')}</p>
                     </div>
                 </div>
                 ` : ''}
                 
                 <hr>
-                <small class="text-muted">Última actualización: ${new Date().toLocaleString('es-ES')}</small>
+                <small class="text-muted">Datos en tiempo real desde PostgreSQL<br>${new Date().toLocaleString('es-ES')}</small>
             </div>
         `;
 
@@ -434,7 +497,7 @@ function verResumen() {
     } catch (error) {
         console.error('Error mostrando resumen:', error);
         if (typeof Swal !== 'undefined') {
-            Swal.fire('Error', 'No se pudo generar el resumen estadístico', 'error');
+            Swal.fire('Error', 'No se pudo generar el resumen estadístico desde la BD', 'error');
         }
     }
 }
