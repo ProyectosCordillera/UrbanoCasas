@@ -15,7 +15,12 @@
 .plano-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 1275 / 1650;
+}
+
+.plano-container img {
+    display: block;
+    width: 100%;
+    height: auto;
 }
 
 /* CAPA DE MARCADORES */
