@@ -522,79 +522,213 @@ async function eliminarMarca() {
 }
 
 // ============================================
-// IMPRESIÓN - VERSIÓN CORREGIDA
+// IMPRESIÓN - SOLUCIÓN CON VENTANA DEDICADA
 // ============================================
 
 function imprimirPlano() {
     const imgPlano = document.getElementById('imgPlano');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
     
-    // Validación 1: Verificar que existan los elementos
+    // Validaciones iniciales
     if (!imgPlano || !marcadoresContainer) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Elementos del plano no encontrados' });
-        }
+        mostrarAlerta('error', 'Elementos del plano no encontrados');
         return false;
     }
 
-    // Validación 2: Verificar que haya marcadores
     if (marcadoresContainer.children.length === 0) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({ icon: 'warning', title: 'Sin marcadores', text: 'Aplique una casa primero' });
-        }
+        mostrarAlerta('warning', 'Sin marcadores', 'Aplique una casa primero');
         return false;
     }
 
-    // Validación 3: Asegurar que la imagen del plano esté completamente cargada
+    // Esperar que la imagen esté completamente cargada
     if (!imgPlano.complete || imgPlano.naturalWidth === 0) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({ 
-                icon: 'info', 
-                title: 'Cargando plano...', 
-                text: 'Espere mientras se prepara la impresión',
-                timer: 2000,
-                showConfirmButton: false
-            });
-        }
-        imgPlano.onload = () => ejecutarImpresion();
+        mostrarAlerta('info', 'Cargando plano...', null, 2000);
+        imgPlano.onload = () => prepararImpresionDedicada();
         return false;
     }
 
-    // Ejecutar impresión
-    ejecutarImpresion();
+    prepararImpresionDedicada();
     return false;
 }
 
-// Función auxiliar para ejecutar la impresión con preparación adecuada
-function ejecutarImpresion() {
-    // Forzar reflow para que el navegador aplique los estilos @media print
-    const planoContainer = document.querySelector('.plano-container');
-    if (planoContainer) {
-        planoContainer.offsetHeight; // 🔥 Trigger reflow
-    }
-
-    // Pequeño delay para asegurar que los estilos de impresión se apliquen
-    setTimeout(() => {
-        // Opción con Swal (si está disponible)
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: '🖨️ Preparando impresión...',
-                didOpen: () => {
-                    Swal.showLoading();
-                    // Delay mínimo para que el diálogo se muestre antes del print
-                    setTimeout(() => {
-                        window.print();
-                        Swal.close();
-                    }, 300);
-                }
-            });
-        } else {
-            // Fallback sin Swal
-            window.print();
+// Función auxiliar para alertas (Swal o fallback)
+function mostrarAlerta(icon, title, text = null, timer = null) {
+    if (typeof Swal !== 'undefined') {
+        const config = { icon, title, showConfirmButton: !timer };
+        if (text) config.text = text;
+        if (timer) {
+            config.timer = timer;
+            config.showConfirmButton = false;
         }
-    }, 150); // ⏱️ 150ms es suficiente para aplicar estilos CSS print
+        Swal.fire(config);
+    } else if (text) {
+        alert(`${title}: ${text}`);
+    } else {
+        alert(title);
+    }
 }
 
+// Función principal que crea la ventana de impresión
+function prepararImpresionDedicada() {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '🖨️ Preparando impresión...',
+            didOpen: () => Swal.showLoading()
+        });
+    }
+
+    // Pequeño delay para que el Swal se muestre
+    setTimeout(() => {
+        crearVentanaImpresion();
+        if (typeof Swal !== 'undefined') Swal.close();
+    }, 200);
+}
+
+// Crea una ventana nueva con el contenido optimizado para imprimir
+function crearVentanaImpresion() {
+    const imgPlano = document.getElementById('imgPlano');
+    const marcadoresContainer = document.getElementById('marcadoresContainer');
+    const anchoReal = PLANO_ANCHO_REAL;
+    const altoReal = PLANO_ALTO_REAL;
+
+    // Calcular escala actual del plano en pantalla
+    const scaleX = imgPlano.clientWidth / anchoReal;
+    const scaleY = imgPlano.clientHeight / altoReal;
+
+    // Construir el HTML de la ventana de impresión
+    const printHTML = `
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Imprimir Plano - Segunda Etapa</title>
+    <style>
+        @page {
+            size: auto;
+            margin: 5mm;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+        body {
+            width: 100%;
+            height: auto;
+            background: white !important;
+            font-family: Arial, sans-serif;
+        }
+        .print-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: ${anchoReal}px;
+            margin: 0 auto;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        .print-plano {
+            width: 100%;
+            height: auto;
+            display: block;
+            position: relative;
+        }
+        .print-marcadores {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .print-marker {
+            position: absolute;
+            transform: translate(-50%, -50%);
+            background: #dc3545 !important;
+            color: white !important;
+            border: 3px solid white !important;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 16px;
+            z-index: 200 !important;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        .print-info {
+            text-align: center;
+            padding: 10px;
+            font-size: 14px;
+            color: #333;
+            page-break-after: always;
+        }
+        @media print {
+            body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .print-wrapper, .print-plano, .print-marcadores, .print-marker {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="print-info">
+        <strong>Plano Segunda Etapa</strong> | Casa(s): ${Array.from(marcadoresContainer.children).map(m => m.textContent).join(', ')}
+    </div>
+    <div class="print-wrapper">
+        <img class="print-plano" src="${imgPlano.src}" alt="Plano" />
+        <div class="print-marcadores" id="printMarcadores"></div>
+    </div>
+    <script>
+        // Clonar marcadores con posiciones calculadas
+        const originalMarkers = ${JSON.stringify(Array.from(marcadoresContainer.children).map(m => ({
+            numero: m.textContent,
+            left: m.style.left,
+            top: m.style.top
+        })))};
+        
+        const container = document.getElementById('printMarcadores');
+        originalMarkers.forEach(marker => {
+            const el = document.createElement('div');
+            el.className = 'print-marker';
+            el.style.left = marker.left;
+            el.style.top = marker.top;
+            el.textContent = marker.numero;
+            container.appendChild(el);
+        });
+        
+        // Imprimir automáticamente al cargar
+        window.onload = function() {
+            setTimeout(() => {
+                window.print();
+                // Opcional: cerrar ventana después de imprimir (no funciona en todos los navegadores)
+                // window.close();
+            }, 500);
+        };
+    <\/script>
+</body>
+</html>`;
+
+    // Abrir ventana nueva
+    const printWindow = window.open('', '_blank', 'width=1200,height=800');
+    
+    if (!printWindow) {
+        mostrarAlerta('error', 'Ventana bloqueada', 'Permite las ventanas emergentes para imprimir');
+        return;
+    }
+
+    printWindow.document.open();
+    printWindow.document.write(printHTML);
+    printWindow.document.close();
+}
 // ============================================
 // REDIMENSIONAMIENTO
 // ============================================
