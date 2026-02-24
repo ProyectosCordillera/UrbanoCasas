@@ -63,7 +63,8 @@ body {
 
 .plano-container {
     position: relative;
-    display: inline-block;
+    width: 100%;
+    aspect-ratio: 1275 / 1650; /* 🔥 CLAVE */
 }
 
 #marcadoresContainer {
@@ -120,33 +121,22 @@ body {
     }
 
     /* Contenedor del plano - CRÍTICO */
-    .plano-container {
+   .plano-container {
         position: relative !important;
         width: 100% !important;
-        height: auto !important;
-        min-height: auto !important;
+        aspect-ratio: 1275 / 1650 !important; /* 🔥 mantiene proporción */
         margin: 0 !important;
         padding: 0 !important;
-        display: block !important;
-        overflow: visible !important;
         page-break-inside: avoid !important;
-        break-inside: avoid !important;
     }
 
     /* Imagen del plano */
-    #imgPlano {
-        display: block !important;
+   #imgPlano {
+        position: absolute !important;
+        inset: 0 !important;
         width: 100% !important;
-        max-width: 100% !important;
-        height: auto !important;
-        position: relative !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-        page-break-inside: avoid !important;
-        float: none !important;
+        height: 100% !important; /* 🔥 ahora sí */
+        object-fit: contain !important;
     }
 
     /* Contenedor de marcadores */
