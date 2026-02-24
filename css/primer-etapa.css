@@ -36,8 +36,8 @@
 
 .marcador {
     position: absolute;
-    width: 60px;  /* Tamaño aumentado */
-    height: 60px; /* Tamaño aumentado */
+    width: 52px;  /* Tamaño aumentado */
+    height: 52px; /* Tamaño aumentado */
     background-color: red;
     border-radius: 50%;
     transform: translate(-50%, -50%);
@@ -48,7 +48,7 @@
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 24px; /* Tamaño de letra aumentado */
+    font-size: 20px; /* Tamaño de letra aumentado */
     z-index: 100;
 }
 
