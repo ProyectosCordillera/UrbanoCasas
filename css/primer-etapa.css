@@ -13,9 +13,10 @@
 
 .plano-container {
     position: relative;
-    display: inline-block;
-    margin-top: 20px;
+    width: 100%;
     max-width: 100%;
+    aspect-ratio: 1275 / 1650; /* 🔥 MUY IMPORTANTE */
+    margin-top: 20px;
 }
 
 .marcador {
@@ -38,6 +39,7 @@
 
 /* Estilos para impresión */
 @media print {
+
     body * {
         visibility: hidden;
         margin: 0;
@@ -49,26 +51,31 @@
     }
 
     .plano-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: auto;
-        margin: 0;
+        position: relative !important;
+        width: 100% !important;
+        aspect-ratio: 1275 / 1650 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        page-break-inside: avoid !important;
     }
-    
+
+    #imgPlano {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: contain !important;
+    }
+
     .marcador {
-        /* Reducir tamaño para impresión */
         width: 37px !important;
         height: 37px !important;
         font-size: 16px !important;
-        
-        /* Mantener color rojo */
         background-color: red !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-    
+
     .no-print {
         display: none !important;
     }
