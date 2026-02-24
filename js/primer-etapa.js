@@ -5,11 +5,11 @@
 const PLANO_ANCHO_REAL = 1275;
 const PLANO_ALTO_REAL = 1650;
 
-const ZONA_VALIDA = {
-    xMin: 50,
-    xMax: 1225,
-    yMin: 50,
-    yMax: 1600
+const ZONA_LOTES = {
+  x: 120,      // desde el borde izquierdo del plano
+  y: 250,      // desde arriba
+  width: 480,  // ancho real de la zona amarilla
+  height: 1500 // alto real de la zona amarilla
 };
 
 // Diccionario de coordenadas ajustado para casas 33-65
