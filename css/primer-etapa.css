@@ -37,23 +37,26 @@
 /* Estilos para impresión */
 @media print {
 
-    body * {
-        visibility: hidden;
-        margin: 0;
-        padding: 0;
+    body, html {
+        margin: 0 !important;
+        padding: 0 !important;
     }
 
-    .plano-container, .plano-container * {
-        visibility: visible;
+    /* Oculta solo lo innecesario */
+    nav,
+    footer,
+    .no-print,
+    .btn,
+    .card-header {
+        display: none !important;
     }
 
+    /* Expande el plano */
     .plano-container {
         position: relative !important;
         width: 100% !important;
         aspect-ratio: 1275 / 1650 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        page-break-inside: avoid !important;
+        margin: 0 auto !important;
     }
 
     #imgPlano {
@@ -64,28 +67,18 @@
         object-fit: contain !important;
     }
 
-   .marcador {
-    width: 37px !important;
-    height: 37px !important;
-    font-size: 16px !important;
-    background-color: red !important;
-
-    transform: translate(-50%, -50%) !important; /* 🔥 AGREGA ESTO */
-
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-}
-
-    .no-print {
-        display: none !important;
+    .marcador {
+        width: 37px !important;
+        height: 37px !important;
+        font-size: 16px !important;
+        background-color: red !important;
+        transform: translate(-50%, -50%) !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
     }
 
     @page {
-        size: auto;
-        margin: 0mm;
+        size: A4 portrait;
+        margin: 5mm;
     }
 }
