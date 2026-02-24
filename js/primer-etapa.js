@@ -551,13 +551,8 @@ function imprimirPlano() {
             }
         });
     } else {
-        agregarMarcador(casa, coords.x, coords.y);
-        setTimeout(() => {
-            window.print();
-            setTimeout(() => {
-                agregarMarcador(casa, coords.x, coords.y);
-            }, 300);
-        }, 300);
+     agregarMarcador(casa, coords.x, coords.y);
+setTimeout(() => window.print(), 200);
     }
 
     return false;
