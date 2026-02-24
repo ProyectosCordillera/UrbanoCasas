@@ -11,12 +11,7 @@
     border-color: #6a1b9a;
 }
 
-.plano-container {
-    position: relative;
-    display: inline-block;
-    margin-top: 20px;
-    max-width: 100%;
-}
+
 
 .marcador {
     position: absolute;
@@ -38,37 +33,39 @@
 
 /* Estilos para impresión */
 @media print {
+
     body * {
         visibility: hidden;
         margin: 0;
         padding: 0;
     }
 
-    .plano-container, .plano-container * {
+    .plano-container,
+    .plano-container * {
         visibility: visible;
     }
 
     .plano-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: auto;
-        margin: 0;
+        position: relative !important;   /* 🔥 NO absolute */
+        width: 100% !important;
+        margin: 0 !important;
     }
-    
+
+    .plano-container img {
+        display: block;
+        width: 100% !important;
+        height: auto !important;
+    }
+
     .marcador {
-        /* Reducir tamaño para impresión */
         width: 37px !important;
         height: 37px !important;
         font-size: 16px !important;
-        
-        /* Mantener color rojo */
         background-color: red !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-    
+
     .no-print {
         display: none !important;
     }
