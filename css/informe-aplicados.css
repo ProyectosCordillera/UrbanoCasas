@@ -63,84 +63,54 @@
 
 /* Estilos para impresión - VERSIÓN FINAL */
 @media print {
-    /* Reset completo */
+
     body, html {
         margin: 0 !important;
         padding: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        overflow: visible !important;
     }
-    
-    /* Ocultar todo excepto el área imprimible */
-    body * {
-        visibility: hidden;
+
+    /* Ocultar solo lo que no se imprime */
+    .no-print,
+    nav,
+    footer,
+    .card-header,
+    #btnImp,
+    #btnActualizar {
+        display: none !important;
     }
-    
-    /* Mostrar solo el contenido necesario */
-    .printable, 
-    .printable * {
-        visibility: visible !important;
-    }
-    
-    /* Contenedor principal */
+
+    /* Expandir plano a toda la hoja */
     .printable {
-        position: relative !important;
         width: 100% !important;
-        height: 100vh !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
     }
-    
-    /* Contenedor del plano */
+
     .plano-container {
         position: relative !important;
-        width: 95% !important;
-        height: 95% !important;
+        width: 100% !important;
+        aspect-ratio: 1275 / 1650 !important; /* 🔥 ajusta si tu plano general tiene otra proporción */
         margin: 0 auto !important;
     }
-    
-    /* Imagen del plano */
+
     .plano-image {
+        position: absolute !important;
+        inset: 0 !important;
         width: 100% !important;
         height: 100% !important;
         object-fit: contain !important;
         border: none !important;
         box-shadow: none !important;
     }
-    
-    /* Marcadores con posición exacta */
+
     .marcador {
-        position: absolute !important;
-        width: 34px !important;
-        height: 34px !important;
+        width: 30px !important;
+        height: 30px !important;
         font-size: 12px !important;
-        background-color: #0d6efd !important;
-        border: 1px solid white !important;
-        transform: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
 
-    /* Mostrar coordenadas en impresión */
-    #tblCasas th:nth-child(2),
-    #tblCasas td:nth-child(2),
-    #tblCasas th:nth-child(3),
-    #tblCasas td:nth-child(3) {
-        display: table-cell !important;
-    }
-    
-    /* Configuración de página */
     @page {
         size: A4 portrait;
-        margin: 5mm !important;
+        margin: 5mm;
     }
 }
