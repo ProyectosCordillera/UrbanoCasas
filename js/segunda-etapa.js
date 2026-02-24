@@ -303,25 +303,21 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
         return;
     }
 
-    const scaleX = imgPlano.clientWidth / PLANO_ANCHO_REAL;
-    const scaleY = imgPlano.clientHeight / PLANO_ALTO_REAL;
-
-    const x = originalX * scaleX;
-    const y = originalY * scaleY;
-
-    if (x < 0 || x > imgPlano.clientWidth || y < 0 || y > imgPlano.clientHeight) {
-        console.error('⚠ Coordenadas fuera del plano:', { x, y });
-        return;
-    }
+    // 🔥 CÁLCULO PROPORCIONAL (NO PIXELES)
+    const xPercent = (originalX / PLANO_ANCHO_REAL) * 100;
+    const yPercent = (originalY / PLANO_ALTO_REAL) * 100;
 
     const marcador = document.createElement('div');
     marcador.className = 'marcador';
-    marcador.style.left = x + 'px';
-    marcador.style.top = y + 'px';
+
+    marcador.style.left = xPercent + '%';
+    marcador.style.top = yPercent + '%';
+
     marcador.textContent = numeroCasa;
+
     marcadoresContainer.appendChild(marcador);
 
-    console.log(`✅ Marcador ${numeroCasa} en X=${x.toFixed(1)}, Y=${y.toFixed(1)}`);
+    console.log(`✅ Marcador ${numeroCasa} en ${xPercent.toFixed(2)}%, ${yPercent.toFixed(2)}%`);
 }
 
 // ============================================
