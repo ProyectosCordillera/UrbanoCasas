@@ -170,9 +170,17 @@ async function migrarDatosHistoricos() {
 
 async function cargarMarcasDesdeBD() {
     try {
-        const casas = await Database.getCasas();
-        const ddlMarcas = document.getElementById('ddlMarcas');
+        // 1. Obtener TODAS las casas de la BD
+        const todasLasCasas = await Database.getCasas();
+        
+        // 2. FILTRO ESTRICTO: Solo Primera Etapa (33 al 65)
+        const casasPrimeraEtapa = todasLasCasas.filter(c => {
+            const num = parseInt(c.numero_casa);
+            // Verificamos explícitamente el rango
+            return !isNaN(num) && num >= 33 && num <= 65;
+        });
 
+        const ddlMarcas = document.getElementById('ddlMarcas');
         if (!ddlMarcas) {
             console.error('❌ Elemento ddlMarcas no encontrado');
             return;
@@ -181,23 +189,29 @@ async function cargarMarcasDesdeBD() {
         ddlMarcas.innerHTML = '<option value="0">Seleccione una marca</option>';
 
         // Ordenar numéricamente
-        casas.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
+        casasPrimeraEtapa.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
 
-        for (const casa of casas) {
-            // Obtener cliente asociado
-            const cliente = await Database.getClienteByCasa(casa.numero_casa);
+        console.log(`🔍 Filtrado: Total en BD=${todasLasCasas.length}, Mostrando Primera Etapa=${casasPrimeraEtapa.length}`);
 
+        if (casasPrimeraEtapa.length === 0) {
+            console.log('ℹ️ No hay casas registradas en la Primera Etapa aún.');
+        }
+
+        for (const casa of casasPrimeraEtapa) {
             const option = document.createElement('option');
             option.value = casa.numero_casa;
             
-            // ✅ CORRECCIÓN CLAVE: Usar 'cliente.nombre' (minúscula) según api-adapter.js
-            const nombreCliente = cliente ? cliente.nombre : 'Sin cliente';
+            // Mostrar nombre si existe, sino "Sin cliente"
+            const nombreCliente = (casa.nombre_cliente && casa.nombre_cliente !== 'Sin propietario') 
+                                  ? casa.nombre_cliente 
+                                  : 'Sin cliente';
+            
             option.textContent = `Casa ${casa.numero_casa} - ${nombreCliente}`;
             
             ddlMarcas.appendChild(option);
         }
 
-        console.log(`✅ Dropdown cargado con ${casas.length} marcas.`);
+        console.log(`✅ Dropdown Primera Etapa cargado con ${casasPrimeraEtapa.length} marcas.`);
     } catch (error) {
         console.error('❌ Error cargando marcas desde BD:', error);
         if (typeof Swal !== 'undefined') {
