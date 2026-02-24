@@ -314,11 +314,33 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
         return;
     }
 
+    // ✅ Marcador optimizado para impresión
     const marcador = document.createElement('div');
     marcador.className = 'marcador';
-    marcador.style.left = x + 'px';
-    marcador.style.top = y + 'px';
+    marcador.style.cssText = `
+        position: absolute;
+        left: ${x}px;
+        top: ${y}px;
+        transform: translate(-50%, -50%);
+        background: #dc3545;
+        color: white;
+        border: 2px solid white;
+        border-radius: 50%;
+        width: 28px;
+        height: 28px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 100;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    `;
     marcador.textContent = numeroCasa;
+    marcador.setAttribute('aria-label', `Casa ${numeroCasa}`);
+    
     marcadoresContainer.appendChild(marcador);
 
     console.log(`✅ Marcador ${numeroCasa} en X=${x.toFixed(1)}, Y=${y.toFixed(1)}`);
@@ -500,43 +522,77 @@ async function eliminarMarca() {
 }
 
 // ============================================
-// IMPRESIÓN (Misma lógica que primera etapa)
+// IMPRESIÓN - VERSIÓN CORREGIDA
 // ============================================
 
 function imprimirPlano() {
-    const marcadores = document.getElementById('marcadoresContainer').children;
-    if (marcadores.length === 0) {
+    const imgPlano = document.getElementById('imgPlano');
+    const marcadoresContainer = document.getElementById('marcadoresContainer');
+    
+    // Validación 1: Verificar que existan los elementos
+    if (!imgPlano || !marcadoresContainer) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Elementos del plano no encontrados' });
+        }
+        return false;
+    }
+
+    // Validación 2: Verificar que haya marcadores
+    if (marcadoresContainer.children.length === 0) {
         if (typeof Swal !== 'undefined') {
             Swal.fire({ icon: 'warning', title: 'Sin marcadores', text: 'Aplique una casa primero' });
         }
         return false;
     }
 
-    const numeroCasa = marcadores[0].textContent;
-    const casa = parseInt(numeroCasa, 10);
-    
-    if (!coordenadasCasas.hasOwnProperty(casa)) {
-        Swal.fire('Error', 'Coordenadas no encontradas', 'error');
+    // Validación 3: Asegurar que la imagen del plano esté completamente cargada
+    if (!imgPlano.complete || imgPlano.naturalWidth === 0) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ 
+                icon: 'info', 
+                title: 'Cargando plano...', 
+                text: 'Espere mientras se prepara la impresión',
+                timer: 2000,
+                showConfirmButton: false
+            });
+        }
+        imgPlano.onload = () => ejecutarImpresion();
         return false;
     }
 
-    const coords = coordenadasCasas[casa];
-    
-    if (typeof Swal !== 'undefined') {
-        Swal.fire({
-            title: 'Imprimiendo...',
-            didOpen: () => {
-                Swal.showLoading();
-                setTimeout(() => {
-                    window.print();
-                    Swal.close();
-                }, 1000);
-            }
-        });
-    } else {
-        window.print();
-    }
+    // Ejecutar impresión
+    ejecutarImpresion();
     return false;
+}
+
+// Función auxiliar para ejecutar la impresión con preparación adecuada
+function ejecutarImpresion() {
+    // Forzar reflow para que el navegador aplique los estilos @media print
+    const planoContainer = document.querySelector('.plano-container');
+    if (planoContainer) {
+        planoContainer.offsetHeight; // 🔥 Trigger reflow
+    }
+
+    // Pequeño delay para asegurar que los estilos de impresión se apliquen
+    setTimeout(() => {
+        // Opción con Swal (si está disponible)
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: '🖨️ Preparando impresión...',
+                didOpen: () => {
+                    Swal.showLoading();
+                    // Delay mínimo para que el diálogo se muestre antes del print
+                    setTimeout(() => {
+                        window.print();
+                        Swal.close();
+                    }, 300);
+                }
+            });
+        } else {
+            // Fallback sin Swal
+            window.print();
+        }
+    }, 150); // ⏱️ 150ms es suficiente para aplicar estilos CSS print
 }
 
 // ============================================
