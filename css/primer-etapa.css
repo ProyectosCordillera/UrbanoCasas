@@ -64,14 +64,21 @@
         object-fit: contain !important;
     }
 
-    .marcador {
-        width: 37px !important;
-        height: 37px !important;
-        font-size: 16px !important;
-        background-color: red !important;
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
+   .marcador {
+    width: 37px !important;
+    height: 37px !important;
+    font-size: 16px !important;
+    background-color: red !important;
+
+    transform: translate(-50%, -50%) !important; /* 🔥 AGREGA ESTO */
+
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}
 
     .no-print {
         display: none !important;
