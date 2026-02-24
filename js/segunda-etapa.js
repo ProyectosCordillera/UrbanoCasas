@@ -295,7 +295,6 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
     const marcadoresContainer = document.getElementById('marcadoresContainer');
 
     if (!marcadoresContainer || !imgPlano) return;
-
     marcadoresContainer.innerHTML = '';
 
     if (!imgPlano.complete) {
@@ -305,7 +304,6 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
 
     const scaleX = imgPlano.clientWidth / PLANO_ANCHO_REAL;
     const scaleY = imgPlano.clientHeight / PLANO_ALTO_REAL;
-
     const x = originalX * scaleX;
     const y = originalY * scaleY;
 
@@ -314,9 +312,14 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
         return;
     }
 
-    // ✅ Marcador optimizado para impresión
     const marcador = document.createElement('div');
     marcador.className = 'marcador';
+    
+    // ✅ GUARDAR COORDENADAS ORIGINALES COMO DATA ATTRIBUTES
+    marcador.setAttribute('data-orig-x', originalX);
+    marcador.setAttribute('data-orig-y', originalY);
+    marcador.setAttribute('data-casa', numeroCasa);
+    
     marcador.style.cssText = `
         position: absolute;
         left: ${x}px;
@@ -342,8 +345,7 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
     marcador.setAttribute('aria-label', `Casa ${numeroCasa}`);
     
     marcadoresContainer.appendChild(marcador);
-
-    console.log(`✅ Marcador ${numeroCasa} en X=${x.toFixed(1)}, Y=${y.toFixed(1)}`);
+    console.log(`✅ Marcador ${numeroCasa} en X=${x.toFixed(1)}, Y=${y.toFixed(1)} (Orig: ${originalX}, ${originalY})`);
 }
 
 // ============================================
@@ -585,15 +587,18 @@ function prepararImpresionDedicada() {
 }
 
 // Crea una ventana nueva con el contenido optimizado para imprimir
+// Crea una ventana nueva con el contenido optimizado para imprimir
 function crearVentanaImpresion() {
     const imgPlano = document.getElementById('imgPlano');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
-    const anchoReal = PLANO_ANCHO_REAL;
-    const altoReal = PLANO_ALTO_REAL;
-
-    // Calcular escala actual del plano en pantalla
-    const scaleX = imgPlano.clientWidth / anchoReal;
-    const scaleY = imgPlano.clientHeight / altoReal;
+    
+    // 🔥 CRÍTICO: Extraer coordenadas ORIGINALES, no píxeles
+    const markersData = Array.from(marcadoresContainer.children).map(m => ({
+        numero: m.textContent,
+        origX: parseFloat(m.getAttribute('data-orig-x')),  // ✅ Coordenada real
+        origY: parseFloat(m.getAttribute('data-orig-y')),   // ✅ Coordenada real
+        casa: m.getAttribute('data-casa')
+    }));
 
     // Construir el HTML de la ventana de impresión
     const printHTML = `
@@ -603,46 +608,28 @@ function crearVentanaImpresion() {
     <meta charset="UTF-8">
     <title>Imprimir Plano - Segunda Etapa</title>
     <style>
-        @page {
-            size: auto;
-            margin: 5mm;
-        }
+        @page { size: auto; margin: 5mm; }
         * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+            margin: 0; padding: 0; box-sizing: border-box;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
             color-adjust: exact !important;
         }
         body {
-            width: 100%;
-            height: auto;
-            background: white !important;
+            width: 100%; height: auto; background: white !important;
             font-family: Arial, sans-serif;
         }
         .print-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: ${anchoReal}px;
-            margin: 0 auto;
-            page-break-inside: avoid;
-            break-inside: avoid;
+            position: relative; width: 100%; max-width: 100%;
+            margin: 0 auto; page-break-inside: avoid; break-inside: avoid;
         }
         .print-plano {
-            width: 100%;
-            height: auto;
-            display: block;
-            position: relative;
+            width: 100%; height: auto; display: block; position: relative;
         }
         .print-marcadores {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 100;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: 100;
         }
         .print-marker {
             position: absolute;
@@ -651,68 +638,74 @@ function crearVentanaImpresion() {
             color: white !important;
             border: 3px solid white !important;
             border-radius: 50%;
-            width: 32px;
-            height: 32px;
+            width: 32px; height: 32px;
             display: flex !important;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 16px;
+            align-items: center; justify-content: center;
+            font-weight: bold; font-size: 16px;
             z-index: 200 !important;
             box-shadow: 0 3px 6px rgba(0,0,0,0.4);
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
         .print-info {
-            text-align: center;
-            padding: 10px;
-            font-size: 14px;
-            color: #333;
+            text-align: center; padding: 10px;
+            font-size: 14px; color: #333;
             page-break-after: always;
-        }
-        @media print {
-            body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            .print-wrapper, .print-plano, .print-marcadores, .print-marker {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
         }
     </style>
 </head>
 <body>
     <div class="print-info">
-        <strong>Plano Segunda Etapa</strong> | Casa(s): ${Array.from(marcadoresContainer.children).map(m => m.textContent).join(', ')}
+        <strong>Plano Segunda Etapa</strong> | Casa(s): ${markersData.map(m => m.numero).join(', ')}
     </div>
     <div class="print-wrapper">
-        <img class="print-plano" src="${imgPlano.src}" alt="Plano" />
+        <img class="print-plano" id="printImg" src="${imgPlano.src}" alt="Plano" />
         <div class="print-marcadores" id="printMarcadores"></div>
     </div>
     <script>
-        // Clonar marcadores con posiciones calculadas
-        const originalMarkers = ${JSON.stringify(Array.from(marcadoresContainer.children).map(m => ({
-            numero: m.textContent,
-            left: m.style.left,
-            top: m.style.top
-        })))};
+        // 🔥 DATOS CRÍTICOS: Coordenadas originales y dimensiones reales del plano
+        const markersData = ${JSON.stringify(markersData)};
+        const PLANO_ANCHO_REAL = ${PLANO_ANCHO_REAL};
+        const PLANO_ALTO_REAL = ${PLANO_ALTO_REAL};
         
+        const img = document.getElementById('printImg');
         const container = document.getElementById('printMarcadores');
-        originalMarkers.forEach(marker => {
-            const el = document.createElement('div');
-            el.className = 'print-marker';
-            el.style.left = marker.left;
-            el.style.top = marker.top;
-            el.textContent = marker.numero;
-            container.appendChild(el);
-        });
         
-        // Imprimir automáticamente al cargar
-        window.onload = function() {
+        // ✅ Esperar que la imagen cargue PARA CALCULAR ESCALA CORRECTA
+        img.onload = function() {
+            // Calcular escala basada en el tamaño REAL de la imagen en esta ventana
+            const scaleX = img.clientWidth / PLANO_ANCHO_REAL;
+            const scaleY = img.clientHeight / PLANO_ALTO_REAL;
+            
+            console.log('🖨️ Escala en impresión:', { scaleX, scaleY, imgW: img.clientWidth, imgH: img.clientHeight });
+            
+            // Crear marcadores con posiciones RECALCULADAS
+            markersData.forEach(marker => {
+                const el = document.createElement('div');
+                el.className = 'print-marker';
+                
+                // 🔥 RECÁLCULO: coordenada original × escala actual
+                const x = marker.origX * scaleX;
+                const y = marker.origY * scaleY;
+                
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+                el.textContent = marker.numero;
+                
+                container.appendChild(el);
+                console.log(\`✅ Marcador \${marker.numero} en (\${x.toFixed(1)}, \${y.toFixed(1)})\`);
+            });
+            
+            // Imprimir después de que todo esté renderizado
             setTimeout(() => {
                 window.print();
-                // Opcional: cerrar ventana después de imprimir (no funciona en todos los navegadores)
-                // window.close();
-            }, 500);
+            }, 300);
         };
+        
+        // Fallback si la imagen ya está en caché y onload no se dispara
+        if (img.complete) {
+            img.onload();
+        }
     <\/script>
 </body>
 </html>`;
