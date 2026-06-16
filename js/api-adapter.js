@@ -10,15 +10,26 @@
 
 // Lista de URLs a intentar en orden de prioridad
 const API_URLS = [
+    // 1. Dominio DuckDNS + Puerto 8443
+    'https://pcordillera.duckdns.org:8443/api-casas/api/casas', 
+    
+    // 2. IP directa + Puerto 8443
+    'https://170.84.108.45:8443/api-casas/api/casas',
+    
+    // 3. Local + Puerto 8443
+    'https://192.168.1.69:8443/api-casas/api/casas'
+];
+
+//const API_URLS = [
     // 1. NUEVA URL PRINCIPAL: Dominio DuckDNS + HTTPS (Puerto 443 implícito)
-    'https://pcordillera.duckdns.org/api-casas/api/casas', 
+  //  'https://pcordillera.duckdns.org/api-casas/api/casas', 
     
     // 2. Fallback: Si por alguna razón el dominio falla, intenta la IP directa (puede dar error de cert si no se actualizó el binding de IP)
-    'https://170.84.108.45/api-casas/api/casas',
+ //   'https://170.84.108.45/api-casas/api/casas',
     
     // 3. Local (Solo si estás en la misma red WiFi probando en local)
-    'https://192.168.1.69/api-casas/api/casas'
-];
+ //   'https://192.168.1.69/api-casas/api/casas'
+//];
 
 let API_BASE = sessionStorage.getItem('apiBaseUrl') || null;
 
