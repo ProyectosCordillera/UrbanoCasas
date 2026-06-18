@@ -9,12 +9,10 @@
 // ============================================
 
 // Lista de URLs a intentar en orden de prioridad (HTTPS)
+// Lista de URLs a intentar en orden de prioridad (HTTPS)
 const API_URLS = [
-    // 1. Dominio DuckDNS + HTTPS (Puerto 443) - ÚNICA URL VÁLIDA
-    'https://pcordillera.duckdns.org/api-casas/api/casas', 
-    
-    // 2. Fallback con puerto 8444 (si decides usarlo)
-    'https://pcordillera.duckdns.org:8444/api-casas/api/casas'
+    // ÚNICA URL VÁLIDA: Puerto 443 con certificado Let's Encrypt
+    'https://pcordillera.duckdns.org/api-casas/api/casas'
 ];
 
 //const API_URLS = [
