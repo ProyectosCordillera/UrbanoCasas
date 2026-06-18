@@ -8,17 +8,13 @@
 // 1. CONFIGURACIÓN DE URLS Y CONEXIÓN
 // ============================================
 
-// Lista de URLs a intentar en orden de prioridad
 // Lista de URLs a intentar en orden de prioridad (HTTPS)
 const API_URLS = [
-    // 1. Dominio DuckDNS + HTTPS (Puerto 443)
+    // 1. Dominio DuckDNS + HTTPS (Puerto 443) - ÚNICA URL VÁLIDA
     'https://pcordillera.duckdns.org/api-casas/api/casas', 
     
-    // 2. IP directa + HTTPS (puede dar error de certificado)
-    'https://170.84.108.45/api-casas/api/casas',
-    
-    // 3. Local HTTPS (Solo si estás en la misma red)
-    'https://192.168.1.69/api-casas/api/casas'
+    // 2. Fallback con puerto 8444 (si decides usarlo)
+    'https://pcordillera.duckdns.org:8444/api-casas/api/casas'
 ];
 
 //const API_URLS = [
