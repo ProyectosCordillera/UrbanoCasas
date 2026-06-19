@@ -5,6 +5,25 @@ body {
     min-height: 100vh;
     margin: 0;
     padding: 0;
+    /* 🖼️ IMAGEN DE FONDO */
+    background-image: url('../img/SundaraProyecto.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    position: relative;
+}
+
+/* 🖼️ OVERLAY para legibilidad del contenido */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.85);
+    z-index: -1;
 }
 
 /* Logo */
@@ -21,6 +40,8 @@ body {
 /* Menú de navegación */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    position: relative;
+    z-index: 10;
 }
 
 .menu-link {
@@ -36,7 +57,9 @@ body {
 .main-content {
     flex: 1;
     padding: 20px 0;
-    background-color: #f8f9fa;
+    background-color: transparent; /* 🔥 Cambiado de #f8f9fa a transparent */
+    position: relative;
+    z-index: 1;
 }
 
 /* Pie de página */
@@ -44,6 +67,8 @@ body {
     background-color: #343a40;
     color: white;
     padding: 15px 0;
+    position: relative;
+    z-index: 1;
 }
 
 .footer-text {
@@ -64,7 +89,7 @@ body {
 .plano-container {
     position: relative;
     width: 100%;
-    aspect-ratio: 1275 / 1650; /* 🔥 CLAVE */
+    aspect-ratio: 1275 / 1650;
 }
 
 #marcadoresContainer {
@@ -109,6 +134,11 @@ body {
         color-adjust: exact !important;
     }
 
+    /* 🔥 ELIMINAR IMAGEN DE FONDO EN IMPRESIÓN */
+    body::before {
+        display: none !important;
+    }
+
     /* Contenido principal */
     .main-content {
         flex: none !important;
@@ -124,7 +154,7 @@ body {
    .plano-container {
         position: relative !important;
         width: 100% !important;
-        aspect-ratio: 1275 / 1650 !important; /* 🔥 mantiene proporción */
+        aspect-ratio: 1275 / 1650 !important;
         margin: 0 !important;
         padding: 0 !important;
         page-break-inside: avoid !important;
@@ -135,7 +165,7 @@ body {
         position: absolute !important;
         inset: 0 !important;
         width: 100% !important;
-        height: 100% !important; /* 🔥 ahora sí */
+        height: 100% !important;
         object-fit: contain !important;
     }
 
