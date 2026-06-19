@@ -1,4 +1,6 @@
-/* Estilos generales */
+/* ========================================
+   ESTILOS GENERALES
+   ======================================== */
 body {
     display: flex;
     flex-direction: column;
@@ -7,14 +9,14 @@ body {
     padding: 0;
     /* 🖼️ IMAGEN DE FONDO */
     background-image: url('../img/SundaraProyecto.png');
-    background-size: cover;
+    background-size: 110% 110%;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
     position: relative;
 }
 
-/* 🖼️ OVERLAY para legibilidad del contenido */
+/* ️ OVERLAY CON VIÑETA ELEGANTE */
 body::before {
     content: '';
     position: fixed;
@@ -22,11 +24,17 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.85);
+    background: radial-gradient(
+        ellipse at center, 
+        rgba(255, 255, 255, 0.5) 0%, 
+        rgba(255, 255, 255, 0.85) 70%
+    );
     z-index: -1;
 }
 
-/* Logo */
+/* ========================================
+   LOGO
+   ======================================== */
 .logo-container {
     display: flex;
     align-items: center;
@@ -37,7 +45,9 @@ body::before {
     width: auto;
 }
 
-/* Menú de navegación */
+/* ========================================
+   MENÚ DE NAVEGACIÓN
+   ======================================== */
 .navbar {
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     position: relative;
@@ -53,16 +63,30 @@ body::before {
     color: #007bff !important;
 }
 
-/* Contenido principal */
+/* ========================================
+   CONTENIDO PRINCIPAL
+   ======================================== */
 .main-content {
     flex: 1;
-    padding: 20px 0;
-    background-color: transparent; /* 🔥 Cambiado de #f8f9fa a transparent */
+    padding: 40px 0;
     position: relative;
     z-index: 1;
+    background-color: transparent;
 }
 
-/* Pie de página */
+/* 🎨 TARJETA GLASSMORPHISM - Efecto elegante */
+.main-content .container {
+    background: rgba(255, 255, 255, 0.85);
+    border-radius: 15px;
+    padding: 40px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+}
+
+/* ========================================
+   PIE DE PÁGINA
+   ======================================== */
 .page-footer {
     background-color: #343a40;
     color: white;
@@ -75,10 +99,18 @@ body::before {
     color: rgba(255,255,255,0.7);
 }
 
-/* Responsive */
+/* ========================================
+   RESPONSIVE
+   ======================================== */
 @media (max-width: 768px) {
     .main-content {
-        padding: 10px 0;
+        padding: 20px 0;
+    }
+    
+    .main-content .container {
+        padding: 25px 20px;
+        border-radius: 10px;
+        margin: 0 10px;
     }
     
     .logo-img {
@@ -86,6 +118,9 @@ body::before {
     }
 }
 
+/* ========================================
+   MARCADORES DEL PLANO
+   ======================================== */
 .plano-container {
     position: relative;
     width: 100%;
@@ -134,7 +169,7 @@ body::before {
         color-adjust: exact !important;
     }
 
-    /* 🔥 ELIMINAR IMAGEN DE FONDO EN IMPRESIÓN */
+    /* 🔥 ELIMINAR IMAGEN DE FONDO Y OVERLAY EN IMPRESIÓN */
     body::before {
         display: none !important;
     }
@@ -150,8 +185,18 @@ body::before {
         width: 100% !important;
     }
 
+    /* Quitar efecto tarjeta al imprimir */
+    .main-content .container {
+        background: white !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+    }
+
     /* Contenedor del plano - CRÍTICO */
-   .plano-container {
+    .plano-container {
         position: relative !important;
         width: 100% !important;
         aspect-ratio: 1275 / 1650 !important;
@@ -161,7 +206,7 @@ body::before {
     }
 
     /* Imagen del plano */
-   #imgPlano {
+    #imgPlano {
         position: absolute !important;
         inset: 0 !important;
         width: 100% !important;
