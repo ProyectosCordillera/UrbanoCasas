@@ -1,16 +1,31 @@
-  // Función para actualizar el reloj
-        function updateClock() {
-            const now = new Date();
-            const hours = String(now.getHours()).padStart(2, '0');
-            const minutes = String(now.getMinutes()).padStart(2, '0');
-            const seconds = String(now.getSeconds()).padStart(2, '0');
-            
-            document.getElementById('digitalClock').textContent = `${hours}:${minutes}:${seconds}`;
-        }
-        
-        // Actualizar el reloj inmediatamente y luego cada segundo
-        updateClock();
-        setInterval(updateClock, 1000);
-        
-        // Actualizar año en el footer
-        document.getElementById('currentYear').textContent = new Date().getFullYear();
+// js/RelojDigital.js
+document.addEventListener('DOMContentLoaded', function () {
+    actualizarReloj();
+    setInterval(actualizarReloj, 1000);
+});
+
+function actualizarReloj() {
+    const clockElement = document.getElementById('digitalClock');
+    
+    // ✅ Verificar que el elemento existe antes de modificarlo
+    if (!clockElement) {
+        console.warn('⚠️ Elemento #digitalClock no encontrado');
+        return;
+    }
+    
+    const ahora = new Date();
+    const horas = String(ahora.getHours()).padStart(2, '0');
+    const minutos = String(ahora.getMinutes()).padStart(2, '0');
+    const segundos = String(ahora.getSeconds()).padStart(2, '0');
+    
+    clockElement.textContent = `${horas}:${minutos}:${segundos}`;
+}
+
+// Actualizar año en el footer
+document.addEventListener('DOMContentLoaded', function () {
+    const yearElement = document.getElementById('currentYear');
+    
+    if (yearElement) {
+        yearElement.textContent = new Date().getFullYear();
+    }
+});
