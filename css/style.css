@@ -6,9 +6,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    
-    /* ✅ CORRECCIÓN 1: Espacio para el menú fijo + 2cm aprox */
-    padding: 85px 0 0 0 !important; 
+    padding: 0 !important;
     
     /* ️ IMAGEN DE FONDO */
     background-image: url('../img/SundaraProyecto.png');
@@ -35,7 +33,15 @@ body::before {
     z-index: -1;
 }
 
-/* ✅ CORRECCIÓN EXTRA: Ocultar los divs espaciadores viejos si existen en el HTML */
+/* ✅ Forzar el menú al borde superior */
+.navbar.fixed-top {
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    z-index: 1030 !important;
+}
+
+/* ✅ Ocultar los divs espaciadores viejos si existen en el HTML */
 div[style*="height: 70px"], 
 div[style*="height: 80px"] {
     display: none !important;
@@ -159,12 +165,12 @@ div[style*="height: 80px"] {
 }
 
 /* ========================================
-   CONTENIDO PRINCIPAL (AJUSTADO)
+   CONTENIDO PRINCIPAL (ÚNICO BLOQUE - SIN DUPLICAR)
    ======================================== */
 .main-content {
     flex: 1;
-    /* ✅ CORRECCIÓN 2: Reducido de 40px a 10px arriba */
-    padding: 10px 0 40px 0 !important; 
+    margin-top: 70px !important; /* ✅ Espacio para el menú fixed-top */
+    padding: 10px 0 40px 0 !important;
     position: relative;
     z-index: 1;
     background-color: transparent;
@@ -174,12 +180,11 @@ div[style*="height: 80px"] {
 .main-content .container {
     background: rgba(255, 255, 255, 0.85);
     border-radius: 15px;
-    /* ✅ CORRECCIÓN 3: Reducido de 40px a 20px */
-    padding: 20px !important; 
+    padding: 20px !important;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
-    margin-top: 0 !important; /* Forzar sin margen superior extra */
+    margin-top: 0 !important;
 }
 
 /* ========================================
@@ -255,114 +260,5 @@ div[style*="height: 80px"] {
 
 .marcador {
     position: absolute;
-    transform: translate(-50%, -50%);
-}
-
-/* ========================================
-   🖨️ ESTILOS PARA IMPRESIÓN
-   ======================================== */
-@media print {
-    body > *:not(.main-content),
-    .navbar, .no-print, footer, .dropdown-menu,
-    .clock-container, .btn, .form-control,
-    .form-select, .form-label, .card {
-        display: none !important;
-        visibility: hidden !important;
-        height: 0 !important;
-        overflow: hidden !important;
-    }
-
-    body, html {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100% !important;
-        height: auto !important;
-        background: white !important;
-        position: static !important;
-        overflow: visible !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-    }
-
-    body::before { display: none !important; }
-
-    .main-content {
-        flex: none !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        background: white !important;
-        position: static !important;
-        display: block !important;
-        width: 100% !important;
-    }
-
-    .main-content .container {
-        background: white !important;
-        border-radius: 0 !important;
-        padding: 0 !important;
-        box-shadow: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
-    }
-
-    .plano-container {
-        position: relative !important;
-        width: 100% !important;
-        aspect-ratio: 1275 / 1650 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        page-break-inside: avoid !important;
-    }
-
-    #imgPlano {
-        position: absolute !important;
-        inset: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important;
-    }
-
-    #marcadoresContainer {
-        position: absolute !important;
-        top: 0 !important;
-        left: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        pointer-events: none !important;
-        display: block !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        z-index: 1000 !important;
-        overflow: visible !important;
-    }
-
-    #marcadoresContainer .marcador,
-    #marcadoresContainer [class*="marcador"] {
-        position: absolute !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        visibility: visible !important;
-        opacity: 1 !important;
-        z-index: 2000 !important;
-        background: #dc3545 !important;
-        color: white !important;
-        border: 3px solid white !important;
-        border-radius: 50% !important;
-        width: 52px !important;
-        height: 52px !important;
-        font-weight: bold !important;
-        font-size: 20px !important;
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.4) !important;
-    }
-
-    *, *::before, *::after {
-        -webkit-print-color-adjust: exact !important;
-        print-color-adjust: exact !important;
-        color-adjust: exact !important;
-        background-print-color-adjust: exact !important;
-    }
-}
+    transform: translate(-50%, -50
+    transform: translate(-50%, -50
