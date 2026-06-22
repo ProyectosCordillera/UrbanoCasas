@@ -12,143 +12,127 @@
     <!-- CSS Personalizado -->
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/styleReloj.css">
-    <link rel="stylesheet" href="css/sidebar.css"> <!-- Nuevo CSS para el sidebar -->
 </head>
 <body>
-
-    <!-- Botón toggle para móviles -->
-    <button class="sidebar-toggle d-lg-none" id="sidebarToggle" type="button">
-        <i class="bi bi-list"></i>
-    </button>
-
-    <!-- OVERLAY para cerrar sidebar en móviles -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <!-- SIDEBAR VERTICAL -->
-    <nav class="sidebar" id="sidebar">
-        <!-- Logo -->
-        <div class="sidebar-header">
-            <a href="https://proyectoscordillera.github.io/UrbanoCasas/index.html" title="Ir a Inicio">
-                <img src="img/LOGOSUNDARA.jpg" alt="Logo Sundara" class="sidebar-logo img-fluid">
+    <!-- Menú de navegación HORIZONTAL -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <!-- Logo con redirección -->
+            <a class="navbar-brand me-2 logo-container" href="https://proyectoscordillera.github.io/UrbanoCasas/index.html" title="Ir a Inicio">
+                <img src="img/LOGOSUNDARA.jpg" alt="Logo Sundara - Ir a Inicio" class="img-fluid logo-img">
             </a>
-        </div>
-
-        <!-- Menú vertical -->
-        <ul class="sidebar-menu list-unstyled">
-            <!-- Primer Etapa -->
-            <li class="sidebar-item dropdown">
-                <a class="sidebar-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-house-door me-2"></i>Primer Etapa
-                </a>
-                <ul class="dropdown-menu sidebar-dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" href="paginas/primer-etapa.html">
-                            <i class="bi bi-map me-2"></i>Plano
+            
+            <!-- Botón para móviles -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Menú colapsable -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    
+                    <!-- DROPDOWN 1: ETAPAS (contiene las 7 etapas) -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle menu-link" href="#" id="etapasDropdown" 
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-layers me-2"></i>Etapas
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="etapasDropdown">
+                            <li>
+                                <a class="dropdown-item" href="paginas/primer-etapa.html">
+                                    <i class="bi bi-1-circle me-2"></i>Primera Etapa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/segunda-etapa.html">
+                                    <i class="bi bi-2-circle me-2"></i>Segunda Etapa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/tercera-etapa.html">
+                                    <i class="bi bi-3-circle me-2"></i>Tercera Etapa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/cuarta-etapa.html">
+                                    <i class="bi bi-4-circle me-2"></i>Cuarta Etapa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/quinta-etapa.html">
+                                    <i class="bi bi-5-circle me-2"></i>Quinta Etapa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/sexta-etapa.html">
+                                    <i class="bi bi-6-circle me-2"></i>Sexta Etapa
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/septima-etapa.html">
+                                    <i class="bi bi-7-circle me-2"></i>Séptima Etapa
+                                </a>
+                            </li>
+                        </ul>
                     </li>
-                </ul>
-            </li>
-
-            <!-- Segunda Etapa -->
-            <li class="sidebar-item dropdown">
-                <a class="sidebar-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-building me-2"></i>Segunda Etapa
-                </a>
-                <ul class="dropdown-menu sidebar-dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" href="paginas/segunda-etapa.html">
-                            <i class="bi bi-map me-2"></i>Plano
+                    
+                    <!-- DROPDOWN 2: INFORMES -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle menu-link" href="#" id="informesDropdown" 
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-file-earmark-bar-graph me-2"></i>Informes
                         </a>
+                        <ul class="dropdown-menu" aria-labelledby="informesDropdown">
+                            <li>
+                                <a class="dropdown-item" href="paginas/informe-aplicados.html">
+                                    <i class="bi bi-file-earmark-text me-2"></i>Informe Aplicados
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/informe-etapas.html">
+                                    <i class="bi bi-file-earmark-ruled me-2"></i>Informe por Etapas
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="paginas/informe-general.html">
+                                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Informe General
+                                </a>
+                            </li>
+                        </ul>
                     </li>
+                    
                 </ul>
-            </li>
 
-            <!-- Tercera Etapa (ejemplo para las 7) -->
-            <li class="sidebar-item dropdown">
-                <a class="sidebar-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-houses me-2"></i>Tercera Etapa
-                </a>
-                <ul class="dropdown-menu sidebar-dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" href="paginas/tercera-etapa.html">
-                            <i class="bi bi-map me-2"></i>Plano
-                        </a>
-                    </li>
-                </ul>
-            </li>
-
-            <!-- Cuarta a Sexta Etapa (agrega las que necesites) -->
-            <li class="sidebar-item dropdown">
-                <a class="sidebar-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-buildings me-2"></i>Cuarta Etapa
-                </a>
-                <ul class="dropdown-menu sidebar-dropdown-menu">
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-map me-2"></i>Plano</a></li>
-                </ul>
-            </li>
-
-            <li class="sidebar-item dropdown">
-                <a class="sidebar-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-building-check me-2"></i>Quinta Etapa
-                </a>
-                <ul class="dropdown-menu sidebar-dropdown-menu">
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-map me-2"></i>Plano</a></li>
-                </ul>
-            </li>
-
-            <li class="sidebar-item dropdown">
-                <a class="sidebar-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-building-gear me-2"></i>Sexta Etapa
-                </a>
-                <ul class="dropdown-menu sidebar-dropdown-menu">
-                    <li><a class="dropdown-item" href="#"><i class="bi bi-map me-2"></i>Plano</a></li>
-                </ul>
-            </li>
-
-            <!-- Informe Aplicados -->
-            <li class="sidebar-item dropdown">
-                <a class="sidebar-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                    <i class="bi bi-file-earmark-bar-graph me-2"></i>Informe Aplicados
-                </a>
-                <ul class="dropdown-menu sidebar-dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" href="paginas/informe-aplicados.html">
-                            <i class="bi bi-file-earmark-text me-2"></i>Informe
-                        </a>
-                    </li>
-                </ul>
-            </li>
-        </ul>
-
-        <!-- Reloj al fondo del sidebar -->
-        <div class="sidebar-footer">
-            <div class="clock-container">
-                <i class="bi bi-clock clock-icon"></i>
-                <div id="digitalClock" class="digital-clock">00:00:00</div>
+                <!-- Reloj Digital - Alineado a la derecha -->
+                <div class="clock-container">
+                    <i class="bi bi-clock clock-icon"></i>
+                    <div id="digitalClock" class="digital-clock">00:00:00</div>
+                </div>
             </div>
         </div>
     </nav>
-
-    <!-- CONTENIDO PRINCIPAL (se desplaza a la derecha del sidebar) -->
-    <div class="main-wrapper">
-        <main class="main-content container-fluid">
-            <div class="container py-5">
-                <h1 class="text-center mb-4">Bienvenido al Sistema Urbano</h1>
-                <p class="text-center lead">Seleccione una opción del menú para comenzar</p>
-            </div>
-        </main>
-
-        <footer class="page-footer">
-            <div class="container-fluid text-center">
-                <span class="footer-text">© <span id="currentYear"></span> Sistema Urbano</span>
-            </div>
-        </footer>
-    </div>
-
-    <!-- Scripts -->
+    
+    <!-- Contenido principal -->
+    <main class="container-fluid main-content">
+        <div class="container py-5">
+            <h1 class="text-center mb-4">Bienvenido al Sistema Urbano</h1>
+            <p class="text-center lead">Seleccione una opción del menú para comenzar</p>
+        </div>
+    </main>
+    
+    <!-- Pie de página -->
+    <footer class="mt-auto page-footer">
+        <div class="container-fluid text-center">
+            <span class="footer-text">© <span id="currentYear"></span> Sistema Urbano</span>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS Bundle con Popper -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript Personalizado -->
     <script src="js/script.js"></script>
     <script src="js/RelojDigital.js"></script>
-    <script src="js/sidebar.js"></script> <!-- Nuevo JS para toggle móvil -->
 </body>
 </html>
