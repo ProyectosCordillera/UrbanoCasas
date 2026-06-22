@@ -6,15 +6,17 @@ body {
     flex-direction: column;
     min-height: 100vh;
     margin: 0;
-    padding: 0;
-    /* 🖼️ IMAGEN DE FONDO */
+    
+    /* ✅ CORRECCIÓN 1: Espacio para el menú fijo + 2cm aprox */
+    padding: 85px 0 0 0 !important; 
+    
+    /* ️ IMAGEN DE FONDO */
     background-image: url('../img/SundaraProyecto.png');
     background-size: 110% 110%;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
     position: relative;
-  
 }
 
 /* ️ OVERLAY CON VIÑETA ELEGANTE */
@@ -31,6 +33,12 @@ body::before {
         rgba(255, 255, 255, 0.85) 70%
     );
     z-index: -1;
+}
+
+/* ✅ CORRECCIÓN EXTRA: Ocultar los divs espaciadores viejos si existen en el HTML */
+div[style*="height: 70px"], 
+div[style*="height: 80px"] {
+    display: none !important;
 }
 
 /* ========================================
@@ -80,21 +88,12 @@ body::before {
 }
 
 /* ========================================
-   🆕 DROPDOWNS AGRUPADOS (ETAPAS E INFORMES)
+   DROPDOWNS AGRUPADOS (ETAPAS E INFORMES)
    ======================================== */
 
-/* 🔥 IMPORTANTE: El dropdown SIEMPRE debe estar oculto por defecto */
+/* El dropdown oculto por defecto */
 .dropdown-menu {
     display: none !important;
-}
-
-/* 🔥 Solo se muestra cuando Bootstrap agrega la clase .show */
-.dropdown-menu.show {
-    display: block !important;
-}
-
-/* Contenedor del dropdown (estilos visuales) */
-.dropdown-menu {
     border: none;
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
@@ -107,15 +106,14 @@ body::before {
     animation: fadeInDown 0.25s ease;
 }
 
+/* Solo se muestra cuando Bootstrap agrega .show */
+.dropdown-menu.show {
+    display: block !important;
+}
+
 @keyframes fadeInDown {
-    from {
-        opacity: 0;
-        transform: translateY(-8px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* Items del dropdown */
@@ -142,13 +140,7 @@ body::before {
     min-width: 20px;
 }
 
-/* Separador visual entre grupos (opcional) */
-.dropdown-menu .dropdown-divider {
-    margin: 0.4rem 0;
-    border-color: rgba(0, 0, 0, 0.08);
-}
-
-/* 🆕 Dropdown de ETAPAS en línea VERTICAL (una debajo de otra) */
+/* Dropdown de ETAPAS en línea VERTICAL */
 .dropdown-menu.dropdown-etapas.show {
     display: block !important;
     min-width: 240px;
@@ -167,24 +159,27 @@ body::before {
 }
 
 /* ========================================
-   CONTENIDO PRINCIPAL
+   CONTENIDO PRINCIPAL (AJUSTADO)
    ======================================== */
 .main-content {
     flex: 1;
-    padding: 40px 0;
+    /* ✅ CORRECCIÓN 2: Reducido de 40px a 10px arriba */
+    padding: 10px 0 40px 0 !important; 
     position: relative;
     z-index: 1;
     background-color: transparent;
 }
 
-/* 🎨 TARJETA GLASSMORPHISM - Efecto elegante */
+/* 🎨 TARJETA GLASSMORPHISM */
 .main-content .container {
     background: rgba(255, 255, 255, 0.85);
     border-radius: 15px;
-    padding: 40px;
+    /* ✅ CORRECCIÓN 3: Reducido de 40px a 20px */
+    padding: 20px !important; 
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(5px);
     -webkit-backdrop-filter: blur(5px);
+    margin-top: 0 !important; /* Forzar sin margen superior extra */
 }
 
 /* ========================================
@@ -206,7 +201,6 @@ body::before {
    RESPONSIVE
    ======================================== */
 @media (max-width: 991.98px) {
-    /* Menú colapsado en móviles */
     .navbar-collapse {
         background-color: rgba(255, 255, 255, 0.98);
         padding: 1rem;
@@ -228,11 +222,11 @@ body::before {
 
 @media (max-width: 768px) {
     .main-content {
-        padding: 20px 0;
+        padding: 10px 0 !important;
     }
     
     .main-content .container {
-        padding: 25px 20px;
+        padding: 15px !important;
         border-radius: 10px;
         margin: 0 10px;
     }
@@ -265,10 +259,9 @@ body::before {
 }
 
 /* ========================================
-   🖨️ ESTILOS PARA IMPRESIÓN - VERSIÓN 2.0
+   🖨️ ESTILOS PARA IMPRESIÓN
    ======================================== */
 @media print {
-    /* Ocultar TODO lo que no sea el plano */
     body > *:not(.main-content),
     .navbar, .no-print, footer, .dropdown-menu,
     .clock-container, .btn, .form-control,
@@ -279,7 +272,6 @@ body::before {
         overflow: hidden !important;
     }
 
-    /* Reset total del cuerpo */
     body, html {
         margin: 0 !important;
         padding: 0 !important;
@@ -293,12 +285,8 @@ body::before {
         color-adjust: exact !important;
     }
 
-    /* 🔥 ELIMINAR IMAGEN DE FONDO Y OVERLAY EN IMPRESIÓN */
-    body::before {
-        display: none !important;
-    }
+    body::before { display: none !important; }
 
-    /* Contenido principal */
     .main-content {
         flex: none !important;
         padding: 0 !important;
@@ -309,7 +297,6 @@ body::before {
         width: 100% !important;
     }
 
-    /* Quitar efecto tarjeta al imprimir */
     .main-content .container {
         background: white !important;
         border-radius: 0 !important;
@@ -319,7 +306,6 @@ body::before {
         -webkit-backdrop-filter: none !important;
     }
 
-    /* Contenedor del plano - CRÍTICO */
     .plano-container {
         position: relative !important;
         width: 100% !important;
@@ -329,7 +315,6 @@ body::before {
         page-break-inside: avoid !important;
     }
 
-    /* Imagen del plano */
     #imgPlano {
         position: absolute !important;
         inset: 0 !important;
@@ -338,7 +323,6 @@ body::before {
         object-fit: contain !important;
     }
 
-    /* Contenedor de marcadores */
     #marcadoresContainer {
         position: absolute !important;
         top: 0 !important;
@@ -353,7 +337,6 @@ body::before {
         overflow: visible !important;
     }
 
-    /* Cada marcador individual */
     #marcadoresContainer .marcador,
     #marcadoresContainer [class*="marcador"] {
         position: absolute !important;
@@ -376,7 +359,6 @@ body::before {
         box-shadow: 0 3px 6px rgba(0,0,0,0.4) !important;
     }
 
-    /* Forzar impresión de TODOS los colores y fondos */
     *, *::before, *::after {
         -webkit-print-color-adjust: exact !important;
         print-color-adjust: exact !important;
