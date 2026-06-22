@@ -162,7 +162,7 @@ div[style*="height: 80px"] {
    ======================================== */
 .main-content {
     flex: 1;
-    margin-top: 25px !important;
+    margin-top: 15px !important;
     padding: 10px 0 40px 0 !important;
     position: relative;
     z-index: 1;
