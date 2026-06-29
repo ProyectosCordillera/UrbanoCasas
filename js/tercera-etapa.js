@@ -388,3 +388,11 @@ function recalcularPosiciones() {
         }
     }
 }
+// Solución: hacer el container transparente a clics
+document.addEventListener('DOMContentLoaded', function() {
+    const container = document.getElementById('marcadoresContainer');
+    if (container) {
+        container.style.pointerEvents = 'none';
+        console.log('✅ Container configurado para no bloquear clics');
+    }
+});
