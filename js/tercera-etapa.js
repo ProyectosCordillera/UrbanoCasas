@@ -12,25 +12,35 @@ const ZONA_VALIDA = {
     yMax: 1600
 };
 
-// Diccionario de coordenadas ajustado para tercera etapa (Casas 66-97)
+// Diccionario de coordenadas para tercera etapa (Casas 66-97)
 const coordenadasCasas = {};
 
-// Coordenadas para las casas 66-81 (zona derecha - Calle 03 Este)
-// De arriba hacia abajo
+// Lado DERECHO (Calle 03 Este) - Casas 66-81
+// De ARRIBA hacia ABAJO (y aumenta 70 píxeles por casa)
+const X_DERECHA = 850;
+const Y_INICIAL_DERECHA = 180;
+const ESPACIADO = 70;
+
 for (let i = 66; i <= 81; i++) {
     coordenadasCasas[i] = {
-        x: 925,
-        y: Math.max(ZONA_VALIDA.yMin, Math.min(ZONA_VALIDA.yMax, 1265 + (i - 66) * -60))
+        x: X_DERECHA,
+        y: Y_INICIAL_DERECHA + (i - 66) * ESPACIADO
     };
 }
 
-// Coordenadas para las casas 82-97 (zona izquierda - Calle 03 Oeste)
-// De abajo hacia arriba (82 está abajo, 97 arriba)
+// Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
+// De ABAJO hacia ARRIBA (y disminuye 70 píxeles por casa)
+// NOTA: Casa 85 no existe en el plano
+const X_IZQUIERDA = 425;
+const Y_INICIAL_IZQUIERDA = 1230;
+
 for (let i = 82; i <= 97; i++) {
-    coordenadasCasas[i] = {
-        x: 630,
-        y: Math.max(ZONA_VALIDA.yMin, Math.min(ZONA_VALIDA.yMax, 365 + (97 - i) * 60))
-    };
+    if (i !== 85) {  // Saltar casa 85 que no existe
+        coordenadasCasas[i] = {
+            x: X_IZQUIERDA,
+            y: Y_INICIAL_IZQUIERDA - (i - 82) * ESPACIADO
+        };
+    }
 }
 
 // ============================================
@@ -560,3 +570,38 @@ function recalcularPosiciones() {
         }
     }
 }
+
+// ============================================
+// HERRAMIENTA DE AJUSTE DE COORDENADAS (TEMPORAL)
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const imgPlano = document.getElementById('imgPlano');
+    if (imgPlano) {
+        imgPlano.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            // Convertir a coordenadas del sistema
+            const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
+            const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
+            
+            console.log(`coordenadasCasas[XX] = { x: ${sistemaX}, y: ${sistemaY} };`);
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: 'Coordenadas del clic',
+                    html: `X: <strong>${sistemaX}</strong><br>Y: <strong>${sistemaY}</strong>`,
+                    icon: 'info',
+                    confirmButtonText: 'Copiar'
+                }).then(() => {
+                    navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
+                });
+            }
+        });
+        
+        imgPlano.style.cursor = 'crosshair';
+        console.log('🎯 Modo ajuste activado: Haz clic en el centro de cada lote');
+    }
+});
