@@ -604,4 +604,86 @@ document.addEventListener('DOMContentLoaded', function() {
         imgPlano.style.cursor = 'crosshair';
         console.log('🎯 Modo ajuste activado: Haz clic en el centro de cada lote');
     }
+
+    // ============================================
+// HERRAMIENTA DE AJUSTE DE COORDENADAS (TEMPORAL)
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const imgPlano = document.getElementById('imgPlano');
+    if (imgPlano) {
+        imgPlano.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const rect = this.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            // Convertir a coordenadas del sistema
+            const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
+            const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
+            
+            // Crear marcador visual temporal
+            const marcadorTemp = document.createElement('div');
+            marcadorTemp.style.cssText = `
+                position: absolute;
+                width: 30px;
+                height: 30px;
+                background: #ff0000;
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 10px;
+                transform: translate(-50%, -50%);
+                border: 3px solid white;
+                box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+                z-index: 9999;
+                pointer-events: none;
+                left: ${clickX}px;
+                top: ${clickY}px;
+            `;
+            marcadorTemp.textContent = '📍';
+            
+            const container = document.getElementById('marcadoresContainer');
+            container.appendChild(marcadorTemp);
+            
+            // Eliminar después de 3 segundos
+            setTimeout(() => {
+                marcadorTemp.remove();
+            }, 3000);
+            
+            // Mostrar coordenadas
+            console.log(`📍 Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '📍 Coordenadas del clic',
+                    html: `
+                        <div class="text-start">
+                            <p><strong>Coordenadas del sistema:</strong></p>
+                            <code class="d-block p-2 bg-light rounded">{ x: ${sistemaX}, y: ${sistemaY} }</code>
+                            <p class="mt-3"><strong>Verifica:</strong> El marcador rojo debe estar justo en el centro del número</p>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonText: 'Copiar',
+                    showCancelButton: true,
+                    cancelButtonText: 'Cerrar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
+                        Swal.fire('Copiado', 'Coordenada copiada al portapapeles', 'success');
+                    }
+                });
+            }
+        });
+        
+        imgPlano.style.cursor = 'crosshair';
+        console.log('🎯 Modo ajuste activado: Haz clic en el centro de cada número');
+    }
+});
 });
