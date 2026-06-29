@@ -26,6 +26,20 @@
     animation: bounce 2s infinite;
 }
 
+#marcadoresContainer {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 10;
+}
+
+.marcador {
+    pointer-events: none !important;
+}
+
 .marker-pin i {
     transform: rotate(45deg);
     color: white;
