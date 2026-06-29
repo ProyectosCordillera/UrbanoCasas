@@ -16,7 +16,6 @@ const ZONA_VALIDA = {
 const coordenadasCasas = {};
 
 // Lado DERECHO (Calle 03 Este) - Casas 66-81
-// De ARRIBA hacia ABAJO (y aumenta 70 píxeles por casa)
 const X_DERECHA = 850;
 const Y_INICIAL_DERECHA = 180;
 const ESPACIADO = 70;
@@ -29,13 +28,11 @@ for (let i = 66; i <= 81; i++) {
 }
 
 // Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
-// De ABAJO hacia ARRIBA (y disminuye 70 píxeles por casa)
-// NOTA: Casa 85 no existe en el plano
 const X_IZQUIERDA = 425;
 const Y_INICIAL_IZQUIERDA = 1230;
 
 for (let i = 82; i <= 97; i++) {
-    if (i !== 85) {  // Saltar casa 85 que no existe
+    if (i !== 85) {
         coordenadasCasas[i] = {
             x: X_IZQUIERDA,
             y: Y_INICIAL_IZQUIERDA - (i - 82) * ESPACIADO
@@ -58,6 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     verificarCoordenadas();
     cargarDatosCompletos();
+    activarModoAjuste(); // ✅ Activar herramienta de clic
 });
 
 function verificarCoordenadas() {
@@ -79,17 +77,98 @@ function verificarCoordenadas() {
 }
 
 // ============================================
+// HERRAMIENTA DE AJUSTE DE COORDENADAS (TEMPORAL)
+// ============================================
+
+function activarModoAjuste() {
+    const imgPlano = document.getElementById('imgPlano');
+    const container = document.getElementById('marcadoresContainer');
+    
+    if (!imgPlano || !container) {
+        console.error('❌ No se encontró imgPlano o marcadoresContainer');
+        return;
+    }
+    
+    console.log('🎯 MODO AJUSTE ACTIVADO - Haz clic en el centro de cada número');
+    imgPlano.style.cursor = 'crosshair';
+    
+    imgPlano.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        
+        // Convertir a coordenadas del sistema
+        const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
+        const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
+        
+        // Crear marcador visual temporal
+        const marcadorTemp = document.createElement('div');
+        marcadorTemp.style.cssText = `
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff0000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+            transform: translate(-50%, -50%);
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            pointer-events: none;
+            left: ${clickX}px;
+            top: ${clickY}px;
+        `;
+        marcadorTemp.textContent = '📍';
+        
+        container.appendChild(marcadorTemp);
+        
+        // Eliminar después de 3 segundos
+        setTimeout(() => {
+            marcadorTemp.remove();
+        }, 3000);
+        
+        // Mostrar coordenadas
+        console.log(`📍 Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
+        
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: '📍 Coordenadas del clic',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Coordenadas del sistema:</strong></p>
+                        <code class="d-block p-2 bg-light rounded">{ x: ${sistemaX}, y: ${sistemaY} }</code>
+                        <p class="mt-3"><strong>Verifica:</strong> El marcador rojo debe estar justo en el centro del número</p>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Copiar',
+                showCancelButton: true,
+                cancelButtonText: 'Cerrar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
+                    Swal.fire('Copiado', 'Coordenada copiada al portapapeles', 'success');
+                }
+            });
+        } else {
+            alert(`Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
+        }
+    });
+}
+
+// ============================================
 // CARGA DE DATOS COMPLETOS
 // ============================================
 
 async function cargarDatosCompletos() {
     try {
-        // 1. Cargar datos actuales de la base de datos
         await cargarMarcasDesdeBD();
-
-        // 2. Migración histórica (Solo si aún no se ha hecho)
         await migrarDatosHistoricos();
-
         console.log('✅ Datos cargados completamente');
     } catch (error) {
         console.error('❌ Error cargando datos:', error);
@@ -100,17 +179,16 @@ async function cargarDatosCompletos() {
 }
 
 // ============================================
-// MIGRACIÓN DE DATOS HISTÓRICOS (DE LOCALSTORAGE A BD)
+// MIGRACIÓN DE DATOS HISTÓRICOS
 // ============================================
 
 async function migrarDatosHistoricos() {
     try {
         const datosMigrados = localStorage.getItem('datosHistoricosMigrados_terceraEtapa');
-        if (datosMigrados === 'true') return; // Ya migrado
+        if (datosMigrados === 'true') return;
 
         console.log('📥 Migrando datos históricos de localStorage a BD...');
         
-        // Intentar leer de localStorage (donde estaban antes)
         const marcasJSON = localStorage.getItem('marcasTerceraEtapa');
         if (!marcasJSON) {
             console.log('ℹ️ No hay datos locales para migrar.');
@@ -128,7 +206,6 @@ async function migrarDatosHistoricos() {
                 const numeroCasa = marca.numeroCasa.toString();
                 const nombreCliente = marca.cliente || 'Cliente no especificado';
                 
-                // Verificar si ya existe en BD
                 const casaExistente = await Database.getCasaByNumero(numeroCasa);
 
                 if (!casaExistente) {
@@ -163,7 +240,6 @@ async function migrarDatosHistoricos() {
                     showConfirmButton: false
                 });
             }
-            // Recargar dropdown con datos frescos de BD
             await cargarMarcasDesdeBD();
         }
     } catch (error) {
@@ -177,13 +253,10 @@ async function migrarDatosHistoricos() {
 
 async function cargarMarcasDesdeBD() {
     try {
-        // 1. Obtener TODAS las casas de la BD
         const todasLasCasas = await Database.getCasas();
         
-        // 2. FILTRO ESTRICTO: Solo Tercera Etapa (66 al 97)
         const casasTerceraEtapa = todasLasCasas.filter(c => {
             const num = parseInt(c.numero_casa);
-            // Verificamos explícitamente el rango
             return !isNaN(num) && num >= 66 && num <= 97;
         });
 
@@ -195,7 +268,6 @@ async function cargarMarcasDesdeBD() {
 
         ddlMarcas.innerHTML = '<option value="0">Seleccione una marca</option>';
 
-        // Ordenar numéricamente
         casasTerceraEtapa.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
 
         console.log(`🔍 Filtrado: Total en BD=${todasLasCasas.length}, Mostrando Tercera Etapa=${casasTerceraEtapa.length}`);
@@ -316,7 +388,6 @@ function agregarMarcador(numeroCasa, originalX, originalY) {
         return;
     }
 
-    // 🔥 CÁLCULO PROPORCIONAL (NO PIXELES)
     const xPercent = (originalX / PLANO_ANCHO_REAL) * 100;
     const yPercent = (originalY / PLANO_ALTO_REAL) * 100;
 
@@ -357,10 +428,7 @@ async function cargarMarcaSeleccionada() {
             const coords = coordenadasCasas[numeroCasa];
             agregarMarcador(numeroCasa, coords.x, coords.y);
 
-            // Obtener nombre del cliente desde la lista unificada o consulta directa
             try {
-                // Opción rápida: buscar en la lista que ya cargamos (si está en memoria)
-                // Opción segura: consultar por ID
                 const cliente = await Database.getClienteByCasa(numeroCasa);
                 const txtCliente = document.getElementById('txtCliente');
                 if (txtCliente) {
@@ -399,7 +467,6 @@ async function marcarEnPlano() {
         return;
     }
 
-    // Verificar duplicados en el dropdown actual
     const ddlMarcas = document.getElementById('ddlMarcas');
     for (let i = 0; i < ddlMarcas.options.length; i++) {
         if (ddlMarcas.options[i].value == numeroCasa) {
@@ -509,7 +576,7 @@ async function eliminarMarca() {
 }
 
 // ============================================
-// IMPRESIÓN (Misma lógica que primera etapa)
+// IMPRESIÓN
 // ============================================
 
 function imprimirPlano() {
@@ -529,8 +596,6 @@ function imprimirPlano() {
         return false;
     }
 
-    const coords = coordenadasCasas[casa];
-    
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             title: 'Imprimiendo...',
@@ -570,120 +635,3 @@ function recalcularPosiciones() {
         }
     }
 }
-
-// ============================================
-// HERRAMIENTA DE AJUSTE DE COORDENADAS (TEMPORAL)
-// ============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    const imgPlano = document.getElementById('imgPlano');
-    if (imgPlano) {
-        imgPlano.addEventListener('click', function(e) {
-            const rect = this.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-            
-            // Convertir a coordenadas del sistema
-            const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
-            const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
-            
-            console.log(`coordenadasCasas[XX] = { x: ${sistemaX}, y: ${sistemaY} };`);
-            
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Coordenadas del clic',
-                    html: `X: <strong>${sistemaX}</strong><br>Y: <strong>${sistemaY}</strong>`,
-                    icon: 'info',
-                    confirmButtonText: 'Copiar'
-                }).then(() => {
-                    navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
-                });
-            }
-        });
-        
-        imgPlano.style.cursor = 'crosshair';
-        console.log('🎯 Modo ajuste activado: Haz clic en el centro de cada lote');
-    }
-
-    // ============================================
-// HERRAMIENTA DE AJUSTE DE COORDENADAS (TEMPORAL)
-// ============================================
-
-document.addEventListener('DOMContentLoaded', function() {
-    const imgPlano = document.getElementById('imgPlano');
-    if (imgPlano) {
-        imgPlano.addEventListener('click', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            
-            const rect = this.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
-            
-            // Convertir a coordenadas del sistema
-            const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
-            const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
-            
-            // Crear marcador visual temporal
-            const marcadorTemp = document.createElement('div');
-            marcadorTemp.style.cssText = `
-                position: absolute;
-                width: 30px;
-                height: 30px;
-                background: #ff0000;
-                color: white;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                font-weight: bold;
-                font-size: 10px;
-                transform: translate(-50%, -50%);
-                border: 3px solid white;
-                box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-                z-index: 9999;
-                pointer-events: none;
-                left: ${clickX}px;
-                top: ${clickY}px;
-            `;
-            marcadorTemp.textContent = '📍';
-            
-            const container = document.getElementById('marcadoresContainer');
-            container.appendChild(marcadorTemp);
-            
-            // Eliminar después de 3 segundos
-            setTimeout(() => {
-                marcadorTemp.remove();
-            }, 3000);
-            
-            // Mostrar coordenadas
-            console.log(`📍 Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
-            
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: '📍 Coordenadas del clic',
-                    html: `
-                        <div class="text-start">
-                            <p><strong>Coordenadas del sistema:</strong></p>
-                            <code class="d-block p-2 bg-light rounded">{ x: ${sistemaX}, y: ${sistemaY} }</code>
-                            <p class="mt-3"><strong>Verifica:</strong> El marcador rojo debe estar justo en el centro del número</p>
-                        </div>
-                    `,
-                    icon: 'info',
-                    confirmButtonText: 'Copiar',
-                    showCancelButton: true,
-                    cancelButtonText: 'Cerrar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
-                        Swal.fire('Copiado', 'Coordenada copiada al portapapeles', 'success');
-                    }
-                });
-            }
-        });
-        
-        imgPlano.style.cursor = 'crosshair';
-        console.log('🎯 Modo ajuste activado: Haz clic en el centro de cada número');
-    }
-});
-});
