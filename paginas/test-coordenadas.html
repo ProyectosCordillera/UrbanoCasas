@@ -2,16 +2,15 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test Coordenadas - Tercera Etapa</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Test Coordenadas - Local</title>
     <style>
         body {
-            background: #f0f0f0;
+            margin: 0;
             padding: 20px;
+            background: #f0f0f0;
+            font-family: Arial, sans-serif;
         }
-        .plano-container {
-            position: relative;
+        .container {
             max-width: 800px;
             margin: 0 auto;
             background: white;
@@ -19,153 +18,109 @@
             border-radius: 10px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
+        #planoContainer {
+            position: relative;
+            display: inline-block;
+            margin: 20px 0;
+        }
         #imgPlano {
-            width: 100%;
+            max-width: 100%;
             height: auto;
             cursor: crosshair;
-            border: 2px solid #ddd;
+            display: block;
         }
-        #infoCoordenadas {
+        #marcador {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: red;
+            border: 3px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            display: none;
+            z-index: 9999;
+        }
+        #coordenadas {
             position: fixed;
             top: 20px;
             right: 20px;
             background: #28a745;
             color: white;
-            padding: 20px;
-            border-radius: 10px;
+            padding: 15px;
+            border-radius: 8px;
             font-family: monospace;
             font-size: 14px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.3);
             z-index: 1000;
         }
-        .marcador-prueba {
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #dc3545;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 12px;
-            transform: translate(-50%, -50%);
-            border: 3px solid white;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
-            pointer-events: none;
+        .instrucciones {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div id="infoCoordenadas">
-        <h5 class="mb-2">📍 Coordenadas</h5>
-        <div id="coordenadasTexto">Haz clic en el centro del número 66</div>
-    </div>
-
-    <div class="container mb-4">
-        <h2 class="text-center mb-4">🎯 Test de Coordenadas - Tercera Etapa</h2>
-        <div class="alert alert-info">
+    <div class="container">
+        <h2>🎯 Obtener Coordenadas del Plano</h2>
+        
+        <div class="instrucciones">
             <strong>Instrucciones:</strong>
-            <ol class="mb-0">
+            <ol>
                 <li>Haz clic EXACTAMENTE en el centro del número <strong>66</strong></li>
                 <li>Copia las coordenadas que aparecen</li>
-                <li>Repite con los números <strong>81, 82 y 97</strong></li>
-                <li>Envíame esas 4 coordenadas para ajustar el código</li>
+                <li>Repite con <strong>81, 82 y 97</strong></li>
+                <li>Envíame esas 4 coordenadas</li>
             </ol>
         </div>
 
-        <div class="plano-container">
-            <img id="imgPlano" src="../img/plano3.png" alt="Plano Tercera Etapa" />
-            <div id="marcadoresContainer"></div>
-        </div>
-
-        <div class="text-center mt-4">
-            <button class="btn btn-secondary me-2" onclick="limpiarMarcadores()">Limpiar Marcadores</button>
-            <button class="btn btn-primary" onclick="copiarUltimaCoordenada()">Copiar Última Coordenada</button>
+        <div id="planoContainer">
+            <img id="imgPlano" src="../img/plano3.png" alt="Plano" />
+            <div id="marcador"></div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <div id="coordenadas">
+        <strong>📍 Coordenadas:</strong><br>
+        <span id="coordTexto">Haz clic en el número 66</span>
+    </div>
+
     <script>
-        const PLANO_ANCHO_REAL = 1275;
-        const PLANO_ALTO_REAL = 1650;
-        let ultimaCoordenada = null;
-        let contadorClics = 0;
-
-        document.getElementById('imgPlano').addEventListener('click', function(e) {
+        const PLANO_ANCHO = 1275;
+        const PLANO_ALTO = 1650;
+        
+        const imgPlano = document.getElementById('imgPlano');
+        const marcador = document.getElementById('marcador');
+        const coordTexto = document.getElementById('coordTexto');
+        const planoContainer = document.getElementById('planoContainer');
+        
+        imgPlano.addEventListener('click', function(e) {
             const rect = this.getBoundingClientRect();
-            const clickX = e.clientX - rect.left;
-            const clickY = e.clientY - rect.top;
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
             
-            // Convertir a coordenadas del sistema
-            const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
-            const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
+            const sistemaX = Math.round((x / rect.width) * PLANO_ANCHO);
+            const sistemaY = Math.round((y / rect.height) * PLANO_ALTO);
             
-            ultimaCoordenada = { x: sistemaX, y: sistemaY };
-            contadorClics++;
-            
-            // Mostrar en el panel
-            document.getElementById('coordenadasTexto').innerHTML = `
-                <div class="mb-2"><strong>Clic #${contadorClics}</strong></div>
-                <div>X: ${sistemaX}</div>
-                <div>Y: ${sistemaY}</div>
-                <div class="mt-2 p-2 bg-white text-success rounded">
-                    { x: ${sistemaX}, y: ${sistemaY} }
-                </div>
-            `;
-            
-            // Agregar marcador visual
-            agregarMarcadorVisual(clickX, clickY, contadorClics);
-            
-            // Mostrar alerta
-            Swal.fire({
-                title: `📍 Coordenada #${contadorClics}`,
-                html: `
-                    <div class="text-start">
-                        <p><strong>Coordenadas del sistema:</strong></p>
-                        <code>{ x: ${sistemaX}, y: ${sistemaY} }</code>
-                    </div>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Copiar al portapapeles',
-                showCancelButton: true,
-                cancelButtonText: 'Cerrar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
-                    Swal.fire('Copiado', 'Coordenada copiada al portapapeles', 'success');
-                }
-            });
-            
-            console.log(`Clic #${contadorClics}: { x: ${sistemaX}, y: ${sistemaY} }`);
-        });
-
-        function agregarMarcadorVisual(x, y, numero) {
-            const container = document.getElementById('marcadoresContainer');
-            const marcador = document.createElement('div');
-            marcador.className = 'marcador-prueba';
+            // Mostrar marcador
             marcador.style.left = x + 'px';
             marcador.style.top = y + 'px';
-            marcador.textContent = numero;
-            container.appendChild(marcador);
-        }
-
-        function limpiarMarcadores() {
-            document.getElementById('marcadoresContainer').innerHTML = '';
-            contadorClics = 0;
-            document.getElementById('coordenadasTexto').textContent = 'Haz clic en el centro del número 66';
-        }
-
-        function copiarUltimaCoordenada() {
-            if (ultimaCoordenada) {
-                navigator.clipboard.writeText(`{ x: ${ultimaCoordenada.x}, y: ${ultimaCoordenada.y} }`);
-                Swal.fire('Copiado', 'Última coordenada copiada', 'success');
-            } else {
-                Swal.fire('Sin datos', 'Primero haz clic en el plano', 'warning');
-            }
-        }
+            marcador.style.display = 'block';
+            
+            // Mostrar coordenadas
+            const texto = `X: ${sistemaX}, Y: ${sistemaY}`;
+            coordTexto.innerHTML = `<strong>${texto}</strong><br><small>Copia esto</small>`;
+            
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
+            
+            console.log(`Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
+            
+            alert(`Coordenadas:\n${texto}\n\n(Copiadas al portapapeles)`);
+        });
     </script>
 </body>
 </html>
