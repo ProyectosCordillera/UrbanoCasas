@@ -388,11 +388,84 @@ function recalcularPosiciones() {
         }
     }
 }
-// Solución: hacer el container transparente a clics
-document.addEventListener('DOMContentLoaded', function() {
+function activarModoAjuste() {
+    const imgPlano = document.getElementById('imgPlano');
     const container = document.getElementById('marcadoresContainer');
-    if (container) {
-        container.style.pointerEvents = 'none';
-        console.log('✅ Container configurado para no bloquear clics');
+    
+    if (!imgPlano || !container) {
+        console.error('❌ No se encontró imgPlano o marcadoresContainer');
+        return;
     }
-});
+    
+    // ✅ IMPORTANTE: Hacer el container transparente a clics
+    container.style.pointerEvents = 'none';
+    container.style.position = 'absolute';
+    container.style.top = '0';
+    container.style.left = '0';
+    container.style.width = '100%';
+    container.style.height = '100%';
+    
+    console.log('🎯 MODO AJUSTE ACTIVADO - Haz clic en el centro de cada número');
+    imgPlano.style.cursor = 'crosshair';
+    
+    imgPlano.addEventListener('click', function(e) {
+        const rect = this.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+        
+        const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
+        const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
+        
+        // Crear marcador visual
+        const marcadorTemp = document.createElement('div');
+        marcadorTemp.style.cssText = `
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #ff0000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 10px;
+            transform: translate(-50%, -50%);
+            border: 3px solid white;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            z-index: 9999;
+            pointer-events: none;
+            left: ${clickX}px;
+            top: ${clickY}px;
+        `;
+        marcadorTemp.textContent = '📍';
+        
+        container.appendChild(marcadorTemp);
+        
+        setTimeout(() => marcadorTemp.remove(), 3000);
+        
+        console.log(` Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
+        
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                title: '📍 Coordenadas del clic',
+                html: `
+                    <div class="text-start">
+                        <p><strong>Coordenadas del sistema:</strong></p>
+                        <code class="d-block p-2 bg-light rounded">{ x: ${sistemaX}, y: ${sistemaY} }</code>
+                    </div>
+                `,
+                icon: 'info',
+                confirmButtonText: 'Copiar',
+                showCancelButton: true,
+                cancelButtonText: 'Cerrar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
+                }
+            });
+        } else {
+            alert(`Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
+        }
+    });
+}
