@@ -1,5 +1,5 @@
 // ============================================
-// CONFIGURACIÓN
+// CONFIGURACIÓN DE COORDENADAS
 // ============================================
 
 const PLANO_ANCHO_REAL = 1275;
@@ -12,34 +12,44 @@ const ZONA_VALIDA = {
     yMax: 1600
 };
 
-// Diccionario de coordenadas
+// Diccionario de coordenadas para tercera etapa (Casas 66-97)
 const coordenadasCasas = {};
 
-// Lado DERECHO (66-81)
-const X_DERECHA = 850;
-const Y_INICIAL_DERECHA = 180;
-const ESPACIADO = 70;
+// ============================================
+// Lado DERECHO (Calle 03 Este) - Casas 66-81
+// ============================================
+const X_DERECHA = 902;  // Valor predominante
+const Y_INICIAL_DERECHA = 312;  // Casa 66
+const Y_FINAL_DERECHA = 1371;   // Casa 81
+const TOTAL_DERECHA = 16;  // 16 casas (66 al 81)
 
 for (let i = 66; i <= 81; i++) {
+    const indice = i - 66;  // 0, 1, 2, ... 15
+    const y = Y_INICIAL_DERECHA + (indice * (Y_FINAL_DERECHA - Y_INICIAL_DERECHA) / (TOTAL_DERECHA - 1));
+    
     coordenadasCasas[i] = {
         x: X_DERECHA,
-        y: Y_INICIAL_DERECHA + (i - 66) * ESPACIADO
+        y: Math.round(y)
     };
 }
 
-// Lado IZQUIERDO (82-97, sin 85)
-const X_IZQUIERDA = 425;
-const Y_INICIAL_IZQUIERDA = 1230;
+// ============================================
+// Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
+// ============================================
+const X_IZQUIERDA = 368;  // Valor predominante
+const Y_INICIAL_IZQUIERDA = 1385;  // Casa 82 (abajo)
+const Y_FINAL_IZQUIERDA = 341;     // Casa 97 (arriba)
+const TOTAL_IZQUIERDA = 16;  // 16 casas (82 al 97)
 
 for (let i = 82; i <= 97; i++) {
-    if (i !== 85) {
-        coordenadasCasas[i] = {
-            x: X_IZQUIERDA,
-            y: Y_INICIAL_IZQUIERDA - (i - 82) * ESPACIADO
-        };
-    }
+    const indice = i - 82;  // 0, 1, 2, ... 15
+    const y = Y_INICIAL_IZQUIERDA + (indice * (Y_FINAL_IZQUIERDA - Y_INICIAL_IZQUIERDA) / (TOTAL_IZQUIERDA - 1));
+    
+    coordenadasCasas[i] = {
+        x: X_IZQUIERDA,
+        y: Math.round(y)
+    };
 }
-
 // ============================================
 // INICIALIZACIÓN
 // ============================================
