@@ -1,105 +1,13 @@
-/* Estilos específicos para la tercera etapa */
-.marcador-lote {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    z-index: 10;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.marcador-lote:hover {
-    transform: translate(-50%, -50%) scale(1.1);
-    z-index: 20;
-}
-
-.marker-pin {
-    width: 40px;
-    height: 40px;
-    border-radius: 50% 50% 50% 0;
-    background: #dc3545;
-    position: absolute;
-    transform: rotate(-45deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.3);
-    animation: bounce 2s infinite;
-}
-
-#marcadoresContainer {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    pointer-events: none !important;
-    z-index: 10;
-}
-
-.marcador {
-    pointer-events: none !important;
-}
-
-.marker-pin i {
-    transform: rotate(45deg);
-    color: white;
-    font-size: 18px;
-}
-
-.marker-label {
-    position: absolute;
-    top: 45px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.95);
-    padding: 8px 12px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    white-space: nowrap;
-    font-size: 12px;
-    text-align: center;
-}
-
-.marker-label strong {
-    color: #dc3545;
-    display: block;
-    margin-bottom: 2px;
-}
-
-@keyframes bounce {
-    0%, 20%, 50%, 80%, 100% {
-        transform: translateY(0) rotate(-45deg);
-    }
-    40% {
-        transform: translateY(-10px) rotate(-45deg);
-    }
-    60% {
-        transform: translateY(-5px) rotate(-45deg);
-    }
-}
-
-/* Ajustes para impresión */
-@media print {
-    .no-print {
-        display: none !important;
-    }
-    
-    .plano-container {
-        max-height: none !important;
-        overflow: visible !important;
-    }
-    
-    .marcador-lote {
-        page-break-inside: avoid;
-    }
-}
+/* ============================================
+   ESTILOS ESPECÍFICOS PARA TERCERA ETAPA
+   ============================================ */
 
 /* Contenedor del plano - Autoajustable */
 .plano-container {
     position: relative;
+    max-width: 900px !important;
     width: 100%;
-    max-width: 900px; /* Ancho máximo */
-    margin: 0 auto;
+    margin: 20px auto !important;
     padding: 20px;
     background: #f5f5f5;
     border-radius: 10px;
@@ -110,10 +18,21 @@
 .plano-container img {
     width: 100%;
     height: auto;
-    max-height: 85vh; /* Máximo 85% del alto de ventana */
+    max-height: 85vh;
     object-fit: contain;
     display: block;
     margin: 0 auto;
+}
+
+/* Contenedor de marcadores */
+#marcadoresContainer {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    pointer-events: none !important;
+    z-index: 10;
 }
 
 /* Marcadores */
@@ -130,10 +49,9 @@
     font-weight: bold;
     font-size: 12px;
     transform: translate(-50%, -50%);
-    cursor: pointer;
     box-shadow: 0 2px 8px rgba(0,0,0,0.3);
     z-index: 10;
-    transition: all 0.3s ease;
+    pointer-events: none !important;
     animation: pulse 2s infinite;
 }
 
@@ -175,10 +93,14 @@
     .plano-container {
         box-shadow: none;
         max-width: 100%;
+        max-height: none !important;
+        overflow: visible !important;
     }
     
     .marcador {
         animation: none;
         page-break-inside: avoid;
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
     }
 }
