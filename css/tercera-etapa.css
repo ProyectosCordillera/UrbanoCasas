@@ -15,7 +15,7 @@
     position: relative;
     max-width: 900px;
     width: 100%;
-   margin: 20px 140px 20px 100px;  /* ↑ Arriba, Derecha, Abajo, Izquierda */
+   margin: 20px 540px 20px 100px;  /* ↑ Arriba, Derecha, Abajo, Izquierda */
     /* O prueba: */
     /* margin: 20px 0 20px 150px;  ← Más a la derecha */
     /* margin: 20px 0 20px 50px;   ← Menos a la derecha */
