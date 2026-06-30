@@ -35,7 +35,7 @@ for (let i = 66; i <= 81; i++) {
 
 // ============================================
 // Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
-// ✅ UNA SOLA VEZ (sin duplicados)
+
 // ============================================
 const X_IZQUIERDA = 368;
 const Y_INICIAL_IZQUIERDA = 1385;
