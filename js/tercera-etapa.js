@@ -18,7 +18,7 @@ const coordenadasCasas = {};
 // ============================================
 // Lado DERECHO (Calle 03 Este) - Casas 66-81
 // ============================================
-const X_DERECHA = 1302;  // Valor predominante
+const X_DERECHA = 602;  // Valor predominante
 const Y_INICIAL_DERECHA = 312;  // Casa 66
 const Y_FINAL_DERECHA = 1371;   // Casa 81
 const TOTAL_DERECHA = 16;  // 16 casas (66 al 81)
