@@ -115,21 +115,21 @@
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 100% !important;
-        max-width: 100% !important;
+        max-width: none !important;
         margin: 0 !important;
         padding: 0 !important;
     }
     
-    /* 🎯 IMAGEN MÁS ANCHA AL IMPRIMIR */
+    /* Imagen al 100% del contenedor */
     .plano-container img {
-        width: 115% !important;  /* ← AUMENTADO de 100% a 115% */
-        max-width: 1200px !important;  /* ← Límite máximo */
+        width: 100% !important;
+        max-width: none !important;
         height: auto !important;
         display: block !important;
         page-break-inside: avoid !important;
     }
     
-    /* Asegurar que el container de marcadores tenga el MISMO tamaño que la imagen */
+    /* Container de marcadores del mismo tamaño que la imagen */
     #marcadoresContainer {
         position: absolute !important;
         top: 0 !important;
@@ -140,7 +140,7 @@
         z-index: 9999 !important;
     }
     
-    /* Forzar que los marcadores mantengan su posición */
+    /* Mantener marcadores en posición */
     .marcador {
         position: absolute !important;
         transform: translate(-50%, -50%) !important;
