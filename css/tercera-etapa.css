@@ -12,20 +12,14 @@
 
 /* Contenedor del plano - Centrado */
 .plano-container {
-    position: relative;
-    max-width: 900px;
-    width: 100%;
-   margin: 40px 840px 20px 100px;  /* ↑ Arriba, Derecha, Abajo, Izquierda */
-    /* O prueba: */
-    /* margin: 20px 0 20px 150px;  ← Más a la derecha */
-    /* margin: 20px 0 20px 50px;   ← Menos a la derecha */
-    padding: 0;
-    background: #f5f5f5;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative !important;
+    max-width: 900px !important;
+    width: 100% !important;
+    margin: 20px auto 20px 100px !important;  /* ← Aquí está el ajuste */
+    padding: 20px !important;
+    background: #f5f5f5 !important;
+    border-radius: 10px !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
 }
 
 /* Imagen del plano */
