@@ -1,5 +1,5 @@
 // ============================================
-// CONFIGURACIÓN DE COORDENADAS
+// CONFIGURACIÓN DE COORDENADAS Y VARIABLES
 // ============================================
 
 const PLANO_ANCHO_REAL = 1275;
@@ -12,65 +12,54 @@ const ZONA_VALIDA = {
     yMax: 1600
 };
 
-// Diccionario de coordenadas para tercera etapa (Casas 66-97)
+// ============================================
+// COORDENADAS - TERCERA ETAPA (REALES)
+// ============================================
 const coordenadasCasas = {};
 
-// ============================================
-// Lado DERECHO (Calle 03 Este) - Casas 66-81
-// ============================================
-const X_DERECHA = 902;
-const Y_INICIAL_DERECHA = 312;
-const Y_FINAL_DERECHA = 1371;
-const TOTAL_DERECHA = 16;
+// Lado DERECHO (Calle 03 Este)
+coordenadasCasas[66] = { x: 899, y: 312 };
+coordenadasCasas[67] = { x: 902, y: 385 };
+coordenadasCasas[68] = { x: 902, y: 456 };
+coordenadasCasas[69] = { x: 899, y: 523 };
+coordenadasCasas[70] = { x: 897, y: 593 };
+coordenadasCasas[71] = { x: 900, y: 665 };
+coordenadasCasas[72] = { x: 902, y: 738 };
+coordenadasCasas[73] = { x: 900, y: 805 };
+coordenadasCasas[74] = { x: 899, y: 876 };
+coordenadasCasas[75] = { x: 897, y: 946 };
+coordenadasCasas[76] = { x: 897, y: 1022 };
+coordenadasCasas[77] = { x: 896, y: 1093 };
+coordenadasCasas[78] = { x: 899, y: 1163 };
+coordenadasCasas[79] = { x: 902, y: 1232 };
+coordenadasCasas[80] = { x: 902, y: 1300 };
+coordenadasCasas[81] = { x: 897, y: 1371 };
 
-for (let i = 66; i <= 81; i++) {
-    const indice = i - 66;
-    const y = Y_INICIAL_DERECHA + (indice * (Y_FINAL_DERECHA - Y_INICIAL_DERECHA) / (TOTAL_DERECHA - 1));
-    
-    coordenadasCasas[i] = {
-        x: X_DERECHA,
-        y: Math.round(y)
-    };
-}
+// Lado IZQUIERDO (Calle 03 Oeste)
+coordenadasCasas[82] = { x: 368, y: 1385 };
+coordenadasCasas[83] = { x: 368, y: 1313 };
+coordenadasCasas[84] = { x: 369, y: 1243 };
+coordenadasCasas[85] = { x: 365, y: 1175 };
+coordenadasCasas[86] = { x: 369, y: 1105 };
+coordenadasCasas[87] = { x: 366, y: 1039 };
+coordenadasCasas[88] = { x: 363, y: 962 };
+coordenadasCasas[89] = { x: 366, y: 894 };
+coordenadasCasas[90] = { x: 369, y: 824 };
+coordenadasCasas[91] = { x: 370, y: 755 };
+coordenadasCasas[92] = { x: 366, y: 684 };
+coordenadasCasas[93] = { x: 368, y: 617 };
+coordenadasCasas[94] = { x: 369, y: 546 };
+coordenadasCasas[95] = { x: 369, y: 477 };
+coordenadasCasas[96] = { x: 366, y: 408 };
+coordenadasCasas[97] = { x: 369, y: 341 };
 
 // ============================================
-// Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
-
+// INICIALIZACIÓN Y CARGA DE DATOS
 // ============================================
-const X_IZQUIERDA = 368;
-const Y_INICIAL_IZQUIERDA = 1385;
-const Y_FINAL_IZQUIERDA = 341;
-const TOTAL_IZQUIERDA = 16;
-
-for (let i = 82; i <= 97; i++) {
-    const indice = i - 82;
-    const y = Y_INICIAL_IZQUIERDA + (indice * (Y_FINAL_IZQUIERDA - Y_INICIAL_IZQUIERDA) / (TOTAL_IZQUIERDA - 1));
-    
-    coordenadasCasas[i] = {
-        x: X_IZQUIERDA,
-        y: Math.round(y)
-    };
-}
-
-// ============================================
-// INICIALIZACIÓN
-// ============================================
-
-console.log('🔍 tercera-etapa.js se está cargando...');
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ DOMContentLoaded disparado');
-    
-    const imgPlano = document.getElementById('imgPlano');
-    const container = document.getElementById('marcadoresContainer');
-    
-    if (!imgPlano) console.error('❌ ERROR: No se encontró imgPlano');
-    if (!container) console.error('❌ ERROR: No se encontró marcadoresContainer');
-    
-    // Hacer container transparente a clics
-    if (container) {
-        container.style.pointerEvents = 'none';
-    }
+    console.log('✅ Sistema Urbano - Tercera Etapa v2.0 (API Conectada)');
+    console.log('📅 Fecha de carga:', new Date().toLocaleString('es-ES'));
     
     const yearElement = document.getElementById('currentYear');
     if (yearElement) {
@@ -80,10 +69,6 @@ document.addEventListener('DOMContentLoaded', function() {
     verificarCoordenadas();
     cargarDatosCompletos();
 });
-
-// ============================================
-// VERIFICACIÓN DE COORDENADAS
-// ============================================
 
 function verificarCoordenadas() {
     console.log("Verificación de coordenadas - Tercera Etapa:");
@@ -104,7 +89,7 @@ function verificarCoordenadas() {
 }
 
 // ============================================
-// CARGA DE DATOS
+// CARGA DE DATOS COMPLETOS
 // ============================================
 
 async function cargarDatosCompletos() {
@@ -114,105 +99,184 @@ async function cargarDatosCompletos() {
         console.log('✅ Datos cargados completamente');
     } catch (error) {
         console.error('❌ Error cargando datos:', error);
+        if (typeof Swal !== 'undefined') {
+            Swal.fire('Error', 'No se pudieron cargar los datos iniciales', 'error');
+        }
     }
 }
+
+// ============================================
+// MIGRACIÓN DE DATOS HISTÓRICOS
+// ============================================
 
 async function migrarDatosHistoricos() {
     try {
         const datosMigrados = localStorage.getItem('datosHistoricosMigrados_terceraEtapa');
         if (datosMigrados === 'true') return;
 
+        console.log('📥 Migrando datos históricos de localStorage a BD...');
+        
         const marcasJSON = localStorage.getItem('marcasTerceraEtapa');
-        if (!marcasJSON) return;
+        if (!marcasJSON) {
+            console.log('ℹ️ No hay datos locales para migrar.');
+            return;
+        }
 
         const marcasLocales = JSON.parse(marcasJSON);
         if (!Array.isArray(marcasLocales) || marcasLocales.length === 0) return;
 
         let migradas = 0;
+        let errores = 0;
+
         for (const marca of marcasLocales) {
             try {
                 const numeroCasa = marca.numeroCasa.toString();
-                const nombreCliente = marca.cliente || 'Cliente';
+                const nombreCliente = marca.cliente || 'Cliente no especificado';
+                
                 const casaExistente = await Database.getCasaByNumero(numeroCasa);
 
                 if (!casaExistente) {
                     const coords = coordenadasCasas[parseInt(numeroCasa)];
                     if (coords) {
-                        await Database.insertarCasaConCliente(numeroCasa, coords.x, coords.y, nombreCliente);
+                        await Database.insertarCasaConCliente(
+                            numeroCasa, coords.x, coords.y, nombreCliente
+                        );
                         migradas++;
+                    } else {
+                        errores++;
                     }
                 }
             } catch (error) {
-                console.error('Error migrando:', error);
+                console.error(`❌ Error migrando casa ${marca.numeroCasa}:`, error);
+                errores++;
             }
         }
 
         if (migradas > 0) {
             localStorage.setItem('datosHistoricosMigrados_terceraEtapa', 'true');
+            console.log(`✅ Migración completada: ${migradas} éxitos, ${errores} errores.`);
+            
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Migración completada',
+                    html: `Se migraron <strong>${migradas}</strong> casas a la base de datos central.`,
+                    timer: 3000,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false
+                });
+            }
             await cargarMarcasDesdeBD();
         }
     } catch (error) {
-        console.warn('No se pudieron migrar datos:', error);
+        console.warn('⚠️ No se pudieron migrar datos históricos:', error.message);
     }
 }
+
+// ============================================
+// CARGA DE DATOS DESDE BASE DE DATOS
+// ============================================
 
 async function cargarMarcasDesdeBD() {
     try {
         const todasLasCasas = await Database.getCasas();
+        
         const casasTerceraEtapa = todasLasCasas.filter(c => {
             const num = parseInt(c.numero_casa);
             return !isNaN(num) && num >= 66 && num <= 97;
         });
 
         const ddlMarcas = document.getElementById('ddlMarcas');
-        if (!ddlMarcas) return;
+        if (!ddlMarcas) {
+            console.error('❌ Elemento ddlMarcas no encontrado');
+            return;
+        }
 
         ddlMarcas.innerHTML = '<option value="0">Seleccione una marca</option>';
+
         casasTerceraEtapa.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
+
+        console.log(`🔍 Filtrado: Total en BD=${todasLasCasas.length}, Mostrando Tercera Etapa=${casasTerceraEtapa.length}`);
+
+        if (casasTerceraEtapa.length === 0) {
+            console.log('ℹ️ No hay casas registradas en la Tercera Etapa aún.');
+        }
 
         for (const casa of casasTerceraEtapa) {
             const option = document.createElement('option');
             option.value = casa.numero_casa;
+            
             const nombreCliente = (casa.nombre_cliente && casa.nombre_cliente !== 'Sin propietario') 
-                                  ? casa.nombre_cliente : 'Sin cliente';
+                                  ? casa.nombre_cliente 
+                                  : 'Sin cliente';
+            
             option.textContent = `Casa ${casa.numero_casa} - ${nombreCliente}`;
+            
             ddlMarcas.appendChild(option);
         }
+
+        console.log(`✅ Dropdown Tercera Etapa cargado con ${casasTerceraEtapa.length} marcas.`);
     } catch (error) {
-        console.error('Error cargando marcas:', error);
+        console.error('❌ Error cargando marcas desde BD:', error);
+        if (typeof Swal !== 'undefined') {
+            Swal.fire('Error', 'No se pudieron cargar las marcas existentes', 'error');
+        }
     }
 }
 
 // ============================================
-// VALIDACIÓN
+// VALIDACIÓN DE ENTRADA (RANGO 66-97)
 // ============================================
 
 function validarNumeroCasa(numero) {
     const num = numero.trim();
+    
     if (!/^\d+$/.test(num)) {
-        alert('El número debe ser numérico');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire('Advertencia', 'El número de casa debe ser numérico', 'warning');
+        } else {
+            alert('Advertencia: El número de casa debe ser numérico');
+        }
         return null;
     }
+    
     const numeroInt = parseInt(num, 10);
+    
     if (numeroInt < 66 || numeroInt > 97) {
-        alert('Solo casas del 66 al 97');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Número fuera de rango',
+                text: `La tercera etapa solo incluye casas del 66 al 97.`
+            });
+        } else {
+            alert(`Número fuera de rango: Solo casas del 66 al 97.`);
+        }
         return null;
     }
+    
     if (!coordenadasCasas.hasOwnProperty(numeroInt)) {
-        alert(`No hay coordenadas para la casa ${numeroInt}`);
+        if (typeof Swal !== 'undefined') {
+            Swal.fire('Error', `No hay coordenadas para la casa ${numeroInt}`, 'error');
+        } else {
+            alert(`Error: No hay coordenadas para la casa ${numeroInt}`);
+        }
         return null;
     }
+
     return numeroInt;
 }
 
 // ============================================
-// MANEJO DE FORMULARIO
+// FUNCIONES DE MANEJO DE FORMULARIO
 // ============================================
 
 function habilitarNumeroCasa() {
     const txtNumeroCasa = document.getElementById('txtNumeroCasa');
     const txtCliente = document.getElementById('txtCliente');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
+
     if (txtNumeroCasa) {
         txtNumeroCasa.value = '';
         txtNumeroCasa.disabled = false;
@@ -227,6 +291,7 @@ function limpiarFormulario() {
     const ddlMarcas = document.getElementById('ddlMarcas');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
     const txtCliente = document.getElementById('txtCliente');
+
     if (txtNumeroCasa) txtNumeroCasa.value = '';
     if (ddlMarcas) ddlMarcas.value = '0';
     if (marcadoresContainer) marcadoresContainer.innerHTML = '';
@@ -234,85 +299,138 @@ function limpiarFormulario() {
 }
 
 // ============================================
-// MARCADORES
+// FUNCIONES DE MARCADORES
 // ============================================
 
 function agregarMarcador(numeroCasa, originalX, originalY) {
     const imgPlano = document.getElementById('imgPlano');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
+
     if (!marcadoresContainer || !imgPlano) return;
+
     marcadoresContainer.innerHTML = '';
+
     if (!imgPlano.complete) {
         imgPlano.onload = () => agregarMarcador(numeroCasa, originalX, originalY);
         return;
     }
+
     const xPercent = (originalX / PLANO_ANCHO_REAL) * 100;
     const yPercent = (originalY / PLANO_ALTO_REAL) * 100;
+
     const marcador = document.createElement('div');
     marcador.className = 'marcador';
+
     marcador.style.left = xPercent + '%';
     marcador.style.top = yPercent + '%';
+
     marcador.textContent = numeroCasa;
+
     marcadoresContainer.appendChild(marcador);
+
+    console.log(`✅ Marcador ${numeroCasa} en ${xPercent.toFixed(2)}%, ${yPercent.toFixed(2)}%`);
 }
+
+// ============================================
+// CARGAR MARCA SELECCIONADA
+// ============================================
 
 async function cargarMarcaSeleccionada() {
     const ddlMarcas = document.getElementById('ddlMarcas');
     if (!ddlMarcas) return;
+
     const numeroCasa = ddlMarcas.value;
+
     if (numeroCasa > 0) {
         const txtNumeroCasa = document.getElementById('txtNumeroCasa');
         if (txtNumeroCasa) {
             txtNumeroCasa.value = numeroCasa;
             txtNumeroCasa.disabled = true;
         }
+
         if (coordenadasCasas.hasOwnProperty(numeroCasa)) {
             const marcadoresContainer = document.getElementById('marcadoresContainer');
             if (marcadoresContainer) marcadoresContainer.innerHTML = '';
+
             const coords = coordenadasCasas[numeroCasa];
             agregarMarcador(numeroCasa, coords.x, coords.y);
+
             try {
                 const cliente = await Database.getClienteByCasa(numeroCasa);
                 const txtCliente = document.getElementById('txtCliente');
-                if (txtCliente) txtCliente.value = cliente ? cliente.nombre : '';
+                if (txtCliente) {
+                    txtCliente.value = cliente ? cliente.nombre : '';
+                }
             } catch (e) {
                 console.warn('No se pudo cargar el cliente:', e);
+            }
+        } else {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire('Error', `No hay coordenadas para la casa ${numeroCasa}`, 'error');
             }
         }
     }
 }
+
+// ============================================
+// FUNCIÓN PRINCIPAL DE GUARDADO
+// ============================================
 
 async function marcarEnPlano() {
     const txtNumeroCasa = document.getElementById('txtNumeroCasa');
     const txtClienteInput = document.getElementById('txtCliente');
     const numeroCasaRaw = txtNumeroCasa.value.trim();
     const txtCliente = txtClienteInput ? txtClienteInput.value.trim() : '';
+    
     const numeroCasa = validarNumeroCasa(numeroCasaRaw);
     if (numeroCasa === null) return;
+
     if (!txtCliente) {
-        alert('Cliente requerido');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'warning', title: 'Cliente requerido', text: 'Ingrese el nombre del cliente' });
+        } else {
+            alert('Cliente requerido');
+        }
         return;
     }
+
     const ddlMarcas = document.getElementById('ddlMarcas');
     for (let i = 0; i < ddlMarcas.options.length; i++) {
         if (ddlMarcas.options[i].value == numeroCasa) {
-            alert(`La casa ${numeroCasa} ya está registrada.`);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({ icon: 'warning', title: 'Casa registrada', text: `La casa ${numeroCasa} ya existe.` });
+            } else {
+                alert(`La casa ${numeroCasa} ya está registrada.`);
+            }
             return;
         }
     }
+
     const coords = coordenadasCasas[numeroCasa];
     if (!coords) {
-        alert('Coordenadas no encontradas');
+        Swal.fire('Error', 'Coordenadas no encontradas', 'error');
         return;
     }
+
     agregarMarcador(numeroCasa, coords.x, coords.y);
+
     try {
-        const exito = await Database.insertarCasaConCliente(numeroCasa.toString(), coords.x, coords.y, txtCliente);
+        const exito = await Database.insertarCasaConCliente(
+            numeroCasa.toString(), coords.x, coords.y, txtCliente
+        );
+
         if (exito) {
             txtNumeroCasa.value = '';
             txtNumeroCasa.disabled = true;
             txtClienteInput.value = '';
-            alert(`Casa ${numeroCasa} guardada`);
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'success', title: '¡Guardado!', text: `Casa ${numeroCasa} asignada a ${txtCliente}`,
+                    timer: 2000, showConfirmButton: false
+                });
+            }
+
             setTimeout(async () => {
                 await cargarMarcasDesdeBD();
                 ddlMarcas.value = numeroCasa.toString();
@@ -320,41 +438,103 @@ async function marcarEnPlano() {
         }
     } catch (error) {
         document.getElementById('marcadoresContainer').innerHTML = '';
-        alert(`Error: ${error.message}`);
-    }
-}
-
-async function eliminarMarca() {
-    const ddlMarcas = document.getElementById('ddlMarcas');
-    if (!ddlMarcas) return;
-    const numeroCasa = ddlMarcas.value;
-    if (numeroCasa == '0') {
-        alert('Seleccione una casa para eliminar');
-        return;
-    }
-    if (confirm(`¿Eliminar casa ${numeroCasa}?`)) {
-        try {
-            const exito = await Database.eliminarCasaConCliente(numeroCasa);
-            if (exito) {
-                limpiarFormulario();
-                await cargarMarcasDesdeBD();
-                alert('Eliminada correctamente');
-            }
-        } catch (error) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'error', title: 'Error al guardar', text: error.message });
+        } else {
             alert(`Error: ${error.message}`);
         }
     }
 }
 
+// ============================================
+// ELIMINACIÓN DE MARCAS
+// ============================================
+
+async function eliminarMarca() {
+    const ddlMarcas = document.getElementById('ddlMarcas');
+    if (!ddlMarcas) return;
+
+    const numeroCasa = ddlMarcas.value;
+    if (numeroCasa == '0') {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'warning', title: 'Seleccione', text: 'Seleccione una casa para eliminar' });
+        }
+        return;
+    }
+
+    if (typeof Swal !== 'undefined') {
+        const result = await Swal.fire({
+            title: '¿Eliminar marca?',
+            html: `Casa <strong>${numeroCasa}</strong> será eliminada permanentemente.`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, eliminar',
+            cancelButtonText: 'Cancelar'
+        });
+
+        if (result.isConfirmed) {
+            try {
+                const exito = await Database.eliminarCasaConCliente(numeroCasa);
+                if (exito) {
+                    limpiarFormulario();
+                    await cargarMarcasDesdeBD();
+                    Swal.fire({ icon: 'success', title: '¡Eliminada!', timer: 1500, showConfirmButton: false });
+                }
+            } catch (error) {
+                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+            }
+        }
+    } else {
+        if (confirm(`¿Eliminar casa ${numeroCasa}?`)) {
+            try {
+                const exito = await Database.eliminarCasaConCliente(numeroCasa);
+                if (exito) {
+                    limpiarFormulario();
+                    await cargarMarcasDesdeBD();
+                    alert('Eliminada correctamente');
+                }
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            }
+        }
+    }
+}
+
+// ============================================
+// IMPRESIÓN
+// ============================================
+
 function imprimirPlano() {
     const marcadores = document.getElementById('marcadoresContainer').children;
     if (marcadores.length === 0) {
-        alert('Aplique una casa primero');
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({ icon: 'warning', title: 'Sin marcadores', text: 'Aplique una casa primero' });
+        }
         return false;
     }
-    window.print();
+
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: 'Imprimiendo...',
+            didOpen: () => {
+                Swal.showLoading();
+                setTimeout(() => {
+                    window.print();
+                    Swal.close();
+                }, 1000);
+            }
+        });
+    } else {
+        window.print();
+    }
     return false;
 }
+
+// ============================================
+// REDIMENSIONAMIENTO
+// ============================================
 
 let resizeTimeout;
 window.addEventListener('resize', function () {
