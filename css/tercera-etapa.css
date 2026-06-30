@@ -59,12 +59,12 @@
 /* Estilos normales para pantalla (mínimos) */
 .plano-container {
     position: relative;
-    width: 150%;
+    width: 200%;
 }
 
 .plano-container img {
     display: block;
-    width: 150%;
+    width: 200%;
     height: auto;
 }
 
