@@ -18,7 +18,7 @@ const coordenadasCasas = {};
 // ============================================
 // Lado DERECHO (Calle 03 Este) - Casas 66-81
 // ============================================
-const X_DERECHA = 602;  // Valor predominante
+const X_DERECHA = 902;  // Valor predominante
 const Y_INICIAL_DERECHA = 312;  // Casa 66
 const Y_FINAL_DERECHA = 1371;   // Casa 81
 const TOTAL_DERECHA = 16;  // 16 casas (66 al 81)
@@ -29,6 +29,24 @@ for (let i = 66; i <= 81; i++) {
     
     coordenadasCasas[i] = {
         x: X_DERECHA,
+        y: Math.round(y)
+    };
+}
+
+// ============================================
+// Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
+// ============================================
+const X_IZQUIERDA = 368;  // Valor predominante
+const Y_INICIAL_IZQUIERDA = 1385;  // Casa 82 (abajo)
+const Y_FINAL_IZQUIERDA = 341;     // Casa 97 (arriba)
+const TOTAL_IZQUIERDA = 16;  // 16 casas (82 al 97)
+
+for (let i = 82; i <= 97; i++) {
+    const indice = i - 82;  // 0, 1, 2, ... 15
+    const y = Y_INICIAL_IZQUIERDA + (indice * (Y_FINAL_IZQUIERDA - Y_INICIAL_IZQUIERDA) / (TOTAL_IZQUIERDA - 1));
+    
+    coordenadasCasas[i] = {
+        x: X_IZQUIERDA,
         y: Math.round(y)
     };
 }
