@@ -18,13 +18,13 @@ const coordenadasCasas = {};
 // ============================================
 // Lado DERECHO (Calle 03 Este) - Casas 66-81
 // ============================================
-const X_DERECHA = 902;  // Valor predominante
-const Y_INICIAL_DERECHA = 312;  // Casa 66
-const Y_FINAL_DERECHA = 1371;   // Casa 81
-const TOTAL_DERECHA = 16;  // 16 casas (66 al 81)
+const X_DERECHA = 902;
+const Y_INICIAL_DERECHA = 312;
+const Y_FINAL_DERECHA = 1371;
+const TOTAL_DERECHA = 16;
 
 for (let i = 66; i <= 81; i++) {
-    const indice = i - 66;  // 0, 1, 2, ... 15
+    const indice = i - 66;
     const y = Y_INICIAL_DERECHA + (indice * (Y_FINAL_DERECHA - Y_INICIAL_DERECHA) / (TOTAL_DERECHA - 1));
     
     coordenadasCasas[i] = {
@@ -35,14 +35,15 @@ for (let i = 66; i <= 81; i++) {
 
 // ============================================
 // Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
+// ✅ UNA SOLA VEZ (sin duplicados)
 // ============================================
-const X_IZQUIERDA = 368;  // Valor predominante
-const Y_INICIAL_IZQUIERDA = 1385;  // Casa 82 (abajo)
-const Y_FINAL_IZQUIERDA = 341;     // Casa 97 (arriba)
-const TOTAL_IZQUIERDA = 16;  // 16 casas (82 al 97)
+const X_IZQUIERDA = 368;
+const Y_INICIAL_IZQUIERDA = 1385;
+const Y_FINAL_IZQUIERDA = 341;
+const TOTAL_IZQUIERDA = 16;
 
 for (let i = 82; i <= 97; i++) {
-    const indice = i - 82;  // 0, 1, 2, ... 15
+    const indice = i - 82;
     const y = Y_INICIAL_IZQUIERDA + (indice * (Y_FINAL_IZQUIERDA - Y_INICIAL_IZQUIERDA) / (TOTAL_IZQUIERDA - 1));
     
     coordenadasCasas[i] = {
@@ -51,28 +52,11 @@ for (let i = 82; i <= 97; i++) {
     };
 }
 
-// ============================================
-// Lado IZQUIERDO (Calle 03 Oeste) - Casas 82-97
-// ============================================
-const X_IZQUIERDA = 668;  // Valor predominante
-const Y_INICIAL_IZQUIERDA = 1385;  // Casa 82 (abajo)
-const Y_FINAL_IZQUIERDA = 341;     // Casa 97 (arriba)
-const TOTAL_IZQUIERDA = 16;  // 16 casas (82 al 97)
-
-for (let i = 82; i <= 97; i++) {
-    const indice = i - 82;  // 0, 1, 2, ... 15
-    const y = Y_INICIAL_IZQUIERDA + (indice * (Y_FINAL_IZQUIERDA - Y_INICIAL_IZQUIERDA) / (TOTAL_IZQUIERDA - 1));
-    
-    coordenadasCasas[i] = {
-        x: X_IZQUIERDA,
-        y: Math.round(y)
-    };
-}
 // ============================================
 // INICIALIZACIÓN
 // ============================================
 
-console.log('🔍 terc-era-etapa.js se está cargando...');
+console.log('🔍 tercera-etapa.js se está cargando...');
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('✅ DOMContentLoaded disparado');
@@ -80,56 +64,14 @@ document.addEventListener('DOMContentLoaded', function() {
     const imgPlano = document.getElementById('imgPlano');
     const container = document.getElementById('marcadoresContainer');
     
-    console.log('📷 imgPlano:', imgPlano);
-    console.log('📦 container:', container);
+    if (!imgPlano) console.error('❌ ERROR: No se encontró imgPlano');
+    if (!container) console.error('❌ ERROR: No se encontró marcadoresContainer');
     
-    if (!imgPlano) {
-        console.error('❌ ERROR: No se encontró el elemento con id="imgPlano"');
+    // Hacer container transparente a clics
+    if (container) {
+        container.style.pointerEvents = 'none';
     }
     
-    if (!container) {
-        console.error('❌ ERROR: No se encontró el elemento con id="marcadoresContainer"');
-    }
-    
-    if (imgPlano && container) {
-        console.log('🎯 ACTIVANDO MODO AJUSTE - Haz clic en el plano');
-        imgPlano.style.cursor = 'crosshair';
-        
-        imgPlano.addEventListener('click', function(e) {
-            console.log('👆 CLICK detectado en el plano');
-            
-            const rect = this.getBoundingClientRect();
-            const x = e.clientX - rect.left;
-            const y = e.clientY - rect.top;
-            
-            const sistemaX = Math.round((x / rect.width) * PLANO_ANCHO_REAL);
-            const sistemaY = Math.round((y / rect.height) * PLANO_ALTO_REAL);
-            
-            console.log(`📍 Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
-            
-            // Crear marcador
-            const marker = document.createElement('div');
-            marker.style.position = 'absolute';
-            marker.style.left = x + 'px';
-            marker.style.top = y + 'px';
-            marker.style.width = '40px';
-            marker.style.height = '40px';
-            marker.style.background = 'red';
-            marker.style.border = '3px solid white';
-            marker.style.borderRadius = '50%';
-            marker.style.transform = 'translate(-50%, -50%)';
-            marker.style.zIndex = '9999';
-            marker.style.pointerEvents = 'none';
-            
-            container.appendChild(marker);
-            
-            setTimeout(() => marker.remove(), 3000);
-            
-            alert(`Coordenadas:\nX: ${sistemaX}\nY: ${sistemaY}`);
-        });
-    }
-    
-    // Continuar con el resto de la inicialización
     const yearElement = document.getElementById('currentYear');
     if (yearElement) {
         yearElement.textContent = new Date().getFullYear();
@@ -140,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// RESTO DE FUNCIONES (sin cambios)
+// VERIFICACIÓN DE COORDENADAS
 // ============================================
 
 function verificarCoordenadas() {
@@ -160,6 +102,10 @@ function verificarCoordenadas() {
         }
     }
 }
+
+// ============================================
+// CARGA DE DATOS
+// ============================================
 
 async function cargarDatosCompletos() {
     try {
@@ -237,6 +183,10 @@ async function cargarMarcasDesdeBD() {
     }
 }
 
+// ============================================
+// VALIDACIÓN
+// ============================================
+
 function validarNumeroCasa(numero) {
     const num = numero.trim();
     if (!/^\d+$/.test(num)) {
@@ -254,6 +204,10 @@ function validarNumeroCasa(numero) {
     }
     return numeroInt;
 }
+
+// ============================================
+// MANEJO DE FORMULARIO
+// ============================================
 
 function habilitarNumeroCasa() {
     const txtNumeroCasa = document.getElementById('txtNumeroCasa');
@@ -278,6 +232,10 @@ function limpiarFormulario() {
     if (marcadoresContainer) marcadoresContainer.innerHTML = '';
     if (txtCliente) txtCliente.value = '';
 }
+
+// ============================================
+// MARCADORES
+// ============================================
 
 function agregarMarcador(numeroCasa, originalX, originalY) {
     const imgPlano = document.getElementById('imgPlano');
@@ -415,85 +373,4 @@ function recalcularPosiciones() {
             agregarMarcador(numValido, coords.x, coords.y);
         }
     }
-}
-function activarModoAjuste() {
-    const imgPlano = document.getElementById('imgPlano');
-    const container = document.getElementById('marcadoresContainer');
-    
-    if (!imgPlano || !container) {
-        console.error('❌ No se encontró imgPlano o marcadoresContainer');
-        return;
-    }
-    
-    // ✅ IMPORTANTE: Hacer el container transparente a clics
-    container.style.pointerEvents = 'none';
-    container.style.position = 'absolute';
-    container.style.top = '0';
-    container.style.left = '0';
-    container.style.width = '100%';
-    container.style.height = '100%';
-    
-    console.log('🎯 MODO AJUSTE ACTIVADO - Haz clic en el centro de cada número');
-    imgPlano.style.cursor = 'crosshair';
-    
-    imgPlano.addEventListener('click', function(e) {
-        const rect = this.getBoundingClientRect();
-        const clickX = e.clientX - rect.left;
-        const clickY = e.clientY - rect.top;
-        
-        const sistemaX = Math.round((clickX / rect.width) * PLANO_ANCHO_REAL);
-        const sistemaY = Math.round((clickY / rect.height) * PLANO_ALTO_REAL);
-        
-        // Crear marcador visual
-        const marcadorTemp = document.createElement('div');
-        marcadorTemp.style.cssText = `
-            position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #ff0000;
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 10px;
-            transform: translate(-50%, -50%);
-            border: 3px solid white;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.5);
-            z-index: 9999;
-            pointer-events: none;
-            left: ${clickX}px;
-            top: ${clickY}px;
-        `;
-        marcadorTemp.textContent = '📍';
-        
-        container.appendChild(marcadorTemp);
-        
-        setTimeout(() => marcadorTemp.remove(), 3000);
-        
-        console.log(` Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
-        
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                title: '📍 Coordenadas del clic',
-                html: `
-                    <div class="text-start">
-                        <p><strong>Coordenadas del sistema:</strong></p>
-                        <code class="d-block p-2 bg-light rounded">{ x: ${sistemaX}, y: ${sistemaY} }</code>
-                    </div>
-                `,
-                icon: 'info',
-                confirmButtonText: 'Copiar',
-                showCancelButton: true,
-                cancelButtonText: 'Cerrar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigator.clipboard.writeText(`{ x: ${sistemaX}, y: ${sistemaY} }`);
-                }
-            });
-        } else {
-            alert(`Coordenadas: { x: ${sistemaX}, y: ${sistemaY} }`);
-        }
-    });
 }
