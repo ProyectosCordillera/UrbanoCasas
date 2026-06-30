@@ -59,12 +59,12 @@
 /* Estilos normales para pantalla (mínimos) */
 .plano-container {
     position: relative;
-    width: 100%;
+    width: 150%;
 }
 
 .plano-container img {
     display: block;
-    width: 100%;
+    width: 150%;
     height: auto;
 }
 
@@ -80,8 +80,8 @@
 
 .marcador {
     position: absolute;
-    width: 30px;
-    height: 30px;
+    width: 45px;
+    height: 45px;
     background: #dc3545;
     color: white;
     border-radius: 50%;
