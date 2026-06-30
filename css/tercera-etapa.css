@@ -42,7 +42,7 @@
 }
 
 /* ============================================
-   ESTILOS DE IMPRESIÓN (LO IMPORTANTE)
+   ESTILOS DE IMPRESIÓN
    ============================================ */
 
 @media print {
@@ -58,19 +58,19 @@
     
     .plano-container {
         position: absolute !important;
-        left: 0 !important;
-        top: 0 !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
         width: 100% !important;
         max-width: 100% !important;
         margin: 0 !important;
         padding: 0 !important;
     }
     
-    /* FORZAR dimensiones exactas de la imagen */
+    /* 🎯 IMAGEN MÁS ANCHA AL IMPRIMIR */
     .plano-container img {
-        width: 100% !important;
+        width: 115% !important;  /* ← AUMENTADO de 100% a 115% */
+        max-width: 1200px !important;  /* ← Límite máximo */
         height: auto !important;
-        max-height: none !important;
         display: block !important;
         page-break-inside: avoid !important;
     }
@@ -100,4 +100,5 @@
         size: A4 portrait;
         margin: 1cm;
     }
+
 }
