@@ -10,26 +10,16 @@
     width: 100%;
 }
 
-/* Contenedor del plano - Centrado */
+/* CONTENEDOR NORMAL */
 .plano-container {
-    position: relative !important;
-    max-width: 1000px !important;
-    width: 100% !important;
-    margin: 20px auto 20px 400px !important;  /* ← Cambia esto */
-    padding: 20px !important;
-    background: #f5f5f5 !important;
-    border-radius: 10px !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1) !important;
+    position: relative;
+    width: 100%;
 }
 
-/* Imagen del plano */
 .plano-container img {
+    display: block;
     width: 100%;
     height: auto;
-    max-height: 85vh;
-    object-fit: contain;
-    display: block;
-    border-radius: 10px;
 }
 
 /* Contenedor de marcadores */
