@@ -13,7 +13,7 @@
 /* Contenedor del plano - Centrado */
 .plano-container {
     position: relative !important;
-    max-width: 900px !important;
+    max-width: 1000px !important;
     width: 100% !important;
     margin: 20px auto 20px 100px !important;  /* ← Aquí está el ajuste */
     padding: 20px !important;
