@@ -45,11 +45,11 @@ coordenadasCasas[87] = { x: 366, y: 1039 };
 coordenadasCasas[88] = { x: 363, y: 962 };
 coordenadasCasas[89] = { x: 366, y: 894 };
 coordenadasCasas[90] = { x: 369, y: 824 };
-coordenadasCasas[91] = { x: 370, y: 755 };
-coordenadasCasas[92] = { x: 366, y: 684 };
-coordenadasCasas[93] = { x: 368, y: 617 };
-coordenadasCasas[94] = { x: 369, y: 546 };
-coordenadasCasas[95] = { x: 369, y: 477 };
+coordenadasCasas[91] = { x: 370, y: 1080 };
+coordenadasCasas[92] = { x: 366, y: 980 };
+coordenadasCasas[93] = { x: 368, y: 880 };
+coordenadasCasas[94] = { x: 369, y: 780 };
+coordenadasCasas[95] = { x: 369, y: 680 };
 coordenadasCasas[96] = { x: 366, y: 580 };
 coordenadasCasas[97] = { x: 369, y: 480 };
 
