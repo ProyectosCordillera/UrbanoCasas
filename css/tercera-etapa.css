@@ -1,7 +1,8 @@
-/* Estilos específicos para la página de primer etapa */
-
+/* ============================================
+   ESTILOS GENERALES Y BOTONES
+   ============================================ */
 .btn-custom {
-    background-color: #6a1b9a; /* Morado */
+    background-color: #6a1b9a;
     color: white;
     border-color: #5e148c;
 }
@@ -11,73 +12,40 @@
     border-color: #6a1b9a;
 }
 
-/* CONTENEDOR NORMAL */
+/* ============================================
+   CONTENEDOR DEL PLANO (AJUSTE RESPONSIVO)
+   ============================================ */
 .plano-container {
     position: relative;
     width: 100%;
+    max-width: 100%;
+    margin: 0 auto;
+    overflow: hidden; /* Evita desbordes */
 }
 
-.plano-container img {
+/* La imagen siempre ocupará el 100% del ancho de su contenedor, sin importar su tamaño original */
+.plano-container img, 
+#imgPlano {
     display: block;
-    width: 100%;
-    height: auto;
-}
-
-/* CAPA DE MARCADORES */
-#marcadoresContainer {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-}
-
-
-
-.marcador {
-    position: absolute;
-    width: 52px;  /* Tamaño aumentado */
-    height: 52px; /* Tamaño aumentado */
-    background-color: red;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    border: 2px solid white;
-    box-shadow: 0 0 5px rgba(0,0,0,0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    font-weight: bold;
-    font-size: 20px; /* Tamaño de letra aumentado */
-    z-index: 100;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important; /* Mantiene la proporción */
 }
 
 /* ============================================
-   ESTILOS ESPECÍFICOS PARA TERCERA ETAPA
+   CAPA DE MARCADORES
    ============================================ */
-
-/* Estilos normales para pantalla (mínimos) */
-.plano-container {
-    position: relative;
-    width: 200%;
-}
-
-.plano-container img {
-    display: block;
-    width: 200%;
-    height: auto;
-}
-
 #marcadoresContainer {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    pointer-events: none; /* Permite hacer clic a través del área vacía */
     z-index: 10;
 }
 
+/* Estilo de cada marcador individual */
 .marcador {
     position: absolute;
     width: 45px;
@@ -85,22 +53,29 @@
     background: #dc3545;
     color: white;
     border-radius: 50%;
+    border: 2px solid white;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: bold;
-    font-size: 12px;
-    transform: translate(-50%, -50%);
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    z-index: 10;
+    font-size: 14px;
+    transform: translate(-50%, -50%); /* Centra el marcador en la coordenada exacta */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    z-index: 100;
+    pointer-events: auto; /* ¡IMPORTANTE! Reactiva los clics en el marcador */
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.marcador:hover {
+    transform: translate(-50%, -50%) scale(1.1); /* Efecto visual al pasar el mouse */
 }
 
 /* ============================================
    ESTILOS DE IMPRESIÓN
    ============================================ */
-
 @media print {
-    /* Ocultar todo excepto el plano */
+    /* Ocultar todo el cuerpo excepto el plano */
     body * {
         visibility: hidden;
     }
@@ -112,15 +87,15 @@
     
     .plano-container {
         position: absolute !important;
-        left: 50% !important;
-        transform: translateX(-50%) !important;
+        left: 0 !important;
+        top: 0 !important;
         width: 100% !important;
         max-width: none !important;
         margin: 0 !important;
         padding: 0 !important;
+        overflow: visible !important;
     }
     
-    /* Imagen al 100% del contenedor */
     .plano-container img {
         width: 100% !important;
         max-width: none !important;
@@ -129,7 +104,6 @@
         page-break-inside: avoid !important;
     }
     
-    /* Container de marcadores del mismo tamaño que la imagen */
     #marcadoresContainer {
         position: absolute !important;
         top: 0 !important;
@@ -140,7 +114,6 @@
         z-index: 9999 !important;
     }
     
-    /* Mantener marcadores en posición */
     .marcador {
         position: absolute !important;
         transform: translate(-50%, -50%) !important;
@@ -149,10 +122,8 @@
         -webkit-print-color-adjust: exact !important;
     }
     
-    /* Configuración de página */
     @page {
         size: A4 portrait;
         margin: 1cm;
     }
-
 }
