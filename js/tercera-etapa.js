@@ -50,7 +50,7 @@ coordenadasCasas[92] = { x: 366, y: 684 };
 coordenadasCasas[93] = { x: 368, y: 617 };
 coordenadasCasas[94] = { x: 369, y: 546 };
 coordenadasCasas[95] = { x: 369, y: 477 };
-coordenadasCasas[96] = { x: 366, y: 500 };
+coordenadasCasas[96] = { x: 366, y: 580 };
 coordenadasCasas[97] = { x: 369, y: 480 };
 
 // ============================================
