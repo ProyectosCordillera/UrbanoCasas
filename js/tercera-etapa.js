@@ -17,41 +17,41 @@ const ZONA_VALIDA = {
 // ============================================
 const coordenadasCasas = {};
 
-// Lado DERECHO (Calle 03 Este) - X=620
-coordenadasCasas[66] = { x: 620, y: 312 };
-coordenadasCasas[67] = { x: 620, y: 385 };
-coordenadasCasas[68] = { x: 620, y: 456 };
-coordenadasCasas[69] = { x: 620, y: 523 };
-coordenadasCasas[70] = { x: 620, y: 593 };
-coordenadasCasas[71] = { x: 620, y: 665 };
-coordenadasCasas[72] = { x: 620, y: 738 };
-coordenadasCasas[73] = { x: 620, y: 805 };
-coordenadasCasas[74] = { x: 620, y: 876 };
-coordenadasCasas[75] = { x: 620, y: 946 };
-coordenadasCasas[76] = { x: 620, y: 1022 };
-coordenadasCasas[77] = { x: 620, y: 1093 };
-coordenadasCasas[78] = { x: 620, y: 1163 };
-coordenadasCasas[79] = { x: 620, y: 1232 };
-coordenadasCasas[80] = { x: 620, y: 1300 };
-coordenadasCasas[81] = { x: 620, y: 1371 };
+// Lado DERECHO (Calle 03 Este)
+coordenadasCasas[66] = { x: 470, y: 234 };
+coordenadasCasas[67] = { x: 470, y: 287 };
+coordenadasCasas[68] = { x: 470, y: 340 };
+coordenadasCasas[69] = { x: 470, y: 393 };
+coordenadasCasas[70] = { x: 470, y: 446 };
+coordenadasCasas[71] = { x: 470, y: 499 };
+coordenadasCasas[72] = { x: 470, y: 552 };
+coordenadasCasas[73] = { x: 470, y: 605 };
+coordenadasCasas[74] = { x: 470, y: 658 };
+coordenadasCasas[75] = { x: 470, y: 711 };
+coordenadasCasas[76] = { x: 470, y: 764 };
+coordenadasCasas[77] = { x: 470, y: 817 };
+coordenadasCasas[78] = { x: 470, y: 870 };
+coordenadasCasas[79] = { x: 470, y: 923 };
+coordenadasCasas[80] = { x: 468, y: 968 };
+coordenadasCasas[81] = { x: 469, y: 1021 };
 
-// Lado IZQUIERDO (Calle 03 Oeste) - X=250
-coordenadasCasas[82] = { x: 250, y: 1385 };
-coordenadasCasas[83] = { x: 250, y: 1313 };
-coordenadasCasas[84] = { x: 250, y: 1243 };
-coordenadasCasas[85] = { x: 250, y: 1175 };
-coordenadasCasas[86] = { x: 250, y: 1105 };
-coordenadasCasas[87] = { x: 250, y: 1039 };
-coordenadasCasas[88] = { x: 250, y: 962 };
-coordenadasCasas[89] = { x: 250, y: 894 };
-coordenadasCasas[90] = { x: 250, y: 824 };
-coordenadasCasas[91] = { x: 250, y: 1080 };
-coordenadasCasas[92] = { x: 250, y: 980 };  // ✅ Corregida (era 46)
-coordenadasCasas[93] = { x: 250, y: 880 };
-coordenadasCasas[94] = { x: 250, y: 780 };
-coordenadasCasas[95] = { x: 250, y: 680 };
-coordenadasCasas[96] = { x: 250, y: 580 };
-coordenadasCasas[97] = { x: 250, y: 480 };
+// Lado IZQUIERDO (Calle 03 Oeste)
+coordenadasCasas[82] = { x: 195, y: 1030 };
+coordenadasCasas[83] = { x: 192, y: 978 };
+coordenadasCasas[84] = { x: 192, y: 926 };
+coordenadasCasas[85] = { x: 192, y: 874 };
+coordenadasCasas[86] = { x: 192, y: 822 };
+coordenadasCasas[87] = { x: 192, y: 770 };
+coordenadasCasas[88] = { x: 192, y: 718 };
+coordenadasCasas[89] = { x: 192, y: 666 };
+coordenadasCasas[90] = { x: 192, y: 614 };
+coordenadasCasas[91] = { x: 192, y: 562 };
+coordenadasCasas[92] = { x: 192, y: 510 };
+coordenadasCasas[93] = { x: 192, y: 458 };
+coordenadasCasas[94] = { x: 192, y: 406 };
+coordenadasCasas[95] = { x: 192, y: 354 };
+coordenadasCasas[96] = { x: 192, y: 307 };
+coordenadasCasas[97] = { x: 193, y: 258 };
 
 // ============================================
 // INICIALIZACIÓN Y CARGA DE DATOS
