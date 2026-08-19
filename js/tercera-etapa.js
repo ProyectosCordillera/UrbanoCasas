@@ -51,7 +51,7 @@ coordenadasCasas[93] = { x: 192, y: 458 };
 coordenadasCasas[94] = { x: 192, y: 406 };
 coordenadasCasas[95] = { x: 192, y: 354 };
 coordenadasCasas[96] = { x: 192, y: 307 };
-coordenadasCasas[97] = { x: 193, y: 258 };
+coordenadasCasas[97] = { x: 220, y: 500 };
 
 // ============================================
 // INICIALIZACIÓN Y CARGA DE DATOS
