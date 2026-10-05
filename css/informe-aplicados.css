@@ -1,31 +1,25 @@
-/* informe-aplicados.css */
+/* informe-aplicados.css CORREGIDO */
 
-/* Contenedor con Scroll Horizontal (CRÍTICO para planos anchos) */
+/* Contenedor del plano: Permite scroll horizontal si la pantalla es pequeña */
 .plano-container {
     position: relative;
     width: 100%;
-    overflow-x: auto; /* Permite deslizar hacia los lados */
+    overflow-x: auto; /* CRÍTICO: Permite deslizar el plano panorámico */
     overflow-y: hidden;
-    background-color: #f8f9fa;
+    background-color: #fff;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     white-space: nowrap;
 }
 
-/* Imagen: Mantiene tamaño real para nitidez */
+/* Imagen: Mantiene su tamaño real para evitar deformaciones */
 .plano-image {
     display: inline-block;
     margin: 0 auto;
-    min-width: 1400px; /* Ajusta al ancho real de tu PNG */
+    min-width: 1400px; /* Ajusta este valor al ancho real de tu PNG */
     height: auto;
     user-select: none;
     vertical-align: top;
-}
-
-/* Ocultar columnas X e Y visualmente */
-#tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
-#tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
-    display: none !important;
 }
 
 /* Marcadores */
@@ -48,9 +42,15 @@
     z-index: 10;
 }
 
-/* Impresión en Horizontal */
+/* Ocultar columnas X e Y visualmente */
+#tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
+#tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
+    display: none !important;
+}
+
+/* IMPRESIÓN: Formato Horizontal Correcto */
 @media print {
-    @page { size: A4 landscape; margin: 5mm; }
+    @page { size: A4 landscape; margin: 5mm; } /* Cambiado a landscape */
     body { background-color: white !important; }
     .no-print { display: none !important; }
     
@@ -58,6 +58,7 @@
         overflow: visible !important; 
         border: none !important; 
         background: transparent !important; 
+        aspect-ratio: unset !important; /* Elimina la proporción vertical forzada */
     }
     .plano-image { 
         min-width: unset !important; 
