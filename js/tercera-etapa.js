@@ -12,53 +12,31 @@ const ZONA_VALIDA = {
     yMax: 1600
 };
 
-// ============================================
-// COORDENADAS - TERCERA ETAPA
-// ============================================
+// Diccionario de coordenadas ajustado para segunda etapa (Casas 1-32)
 const coordenadasCasas = {};
 
-// Lado DERECHO (Calle 03 Este)
-coordenadasCasas[66] = { x: 470, y: 234 };
-coordenadasCasas[67] = { x: 470, y: 287 };
-coordenadasCasas[68] = { x: 470, y: 340 };
-coordenadasCasas[69] = { x: 470, y: 393 };
-coordenadasCasas[70] = { x: 470, y: 446 };
-coordenadasCasas[71] = { x: 470, y: 499 };
-coordenadasCasas[72] = { x: 470, y: 552 };
-coordenadasCasas[73] = { x: 470, y: 605 };
-coordenadasCasas[74] = { x: 470, y: 658 };
-coordenadasCasas[75] = { x: 470, y: 711 };
-coordenadasCasas[76] = { x: 470, y: 764 };
-coordenadasCasas[77] = { x: 470, y: 817 };
-coordenadasCasas[78] = { x: 470, y: 870 };
-coordenadasCasas[79] = { x: 470, y: 923 };
-coordenadasCasas[80] = { x: 468, y: 968 };
-coordenadasCasas[81] = { x: 469, y: 1021 };
+// Coordenadas para las casas 1-16 (zona derecha)
+for (let i = 1; i <= 16; i++) {
+    coordenadasCasas[i] = {
+        x: 925,
+        y: Math.max(ZONA_VALIDA.yMin, Math.min(ZONA_VALIDA.yMax, 1265 + (i - 1) * -60))
+    };
+}
 
-// Lado IZQUIERDO (Calle 03 Oeste)
-coordenadasCasas[82] = { x: 195, y: 1030 };
-coordenadasCasas[83] = { x: 192, y: 978 };
-coordenadasCasas[84] = { x: 192, y: 926 };
-coordenadasCasas[85] = { x: 192, y: 874 };
-coordenadasCasas[86] = { x: 192, y: 822 };
-coordenadasCasas[87] = { x: 192, y: 770 };
-coordenadasCasas[88] = { x: 192, y: 718 };
-coordenadasCasas[89] = { x: 192, y: 666 };
-coordenadasCasas[90] = { x: 192, y: 614 };
-coordenadasCasas[91] = { x: 192, y: 562 };
-coordenadasCasas[92] = { x: 192, y: 510 };
-coordenadasCasas[93] = { x: 192, y: 458 };
-coordenadasCasas[94] = { x: 192, y: 406 };
-coordenadasCasas[95] = { x: 192, y: 354 };
-coordenadasCasas[96] = { x: 192, y: 307 };
-coordenadasCasas[97] = { x: 220, y: 500 };
+// Coordenadas para las casas 17-32 (zona izquierda)
+for (let i = 17; i <= 32; i++) {
+    coordenadasCasas[i] = {
+        x: 630,
+        y: Math.max(ZONA_VALIDA.yMin, Math.min(ZONA_VALIDA.yMax, 365 + (i - 17) * 60))
+    };
+}
 
 // ============================================
 // INICIALIZACIÓN Y CARGA DE DATOS
 // ============================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('✅ Sistema Urbano - Tercera Etapa v2.0 (API Conectada)');
+    console.log('✅ Sistema Urbano - Segunda Etapa v2.0 (API Conectada)');
     console.log('📅 Fecha de carga:', new Date().toLocaleString('es-ES'));
     
     const yearElement = document.getElementById('currentYear');
@@ -71,8 +49,8 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function verificarCoordenadas() {
-    console.log("Verificación de coordenadas - Tercera Etapa:");
-    console.log(`Dimensiones base del plano: ${PLANO_ANCHO_REAL}x${PLANO_ALTO_REAL}`);
+    console.log("Verificación de coordenadas - Segunda Etapa:");
+    console.log(`Dimensiones del plano: ${PLANO_ANCHO_REAL}x${PLANO_ALTO_REAL}`);
     
     for (const [casa, coord] of Object.entries(coordenadasCasas)) {
         const valida = (
@@ -94,8 +72,12 @@ function verificarCoordenadas() {
 
 async function cargarDatosCompletos() {
     try {
+        // 1. Cargar datos actuales de la base de datos
         await cargarMarcasDesdeBD();
+
+        // 2. Migración histórica (Solo si aún no se ha hecho)
         await migrarDatosHistoricos();
+
         console.log('✅ Datos cargados completamente');
     } catch (error) {
         console.error('❌ Error cargando datos:', error);
@@ -106,17 +88,18 @@ async function cargarDatosCompletos() {
 }
 
 // ============================================
-// MIGRACIÓN DE DATOS HISTÓRICOS
+// MIGRACIÓN DE DATOS HISTÓRICOS (DE LOCALSTORAGE A BD)
 // ============================================
 
 async function migrarDatosHistoricos() {
     try {
-        const datosMigrados = localStorage.getItem('datosHistoricosMigrados_terceraEtapa');
-        if (datosMigrados === 'true') return;
+        const datosMigrados = localStorage.getItem('datosHistoricosMigrados_segundaEtapa');
+        if (datosMigrados === 'true') return; // Ya migrado
 
         console.log('📥 Migrando datos históricos de localStorage a BD...');
         
-        const marcasJSON = localStorage.getItem('marcasTerceraEtapa');
+        // Intentar leer de localStorage (donde estaban antes)
+        const marcasJSON = localStorage.getItem('marcasSegundaEtapa');
         if (!marcasJSON) {
             console.log('ℹ️ No hay datos locales para migrar.');
             return;
@@ -133,6 +116,7 @@ async function migrarDatosHistoricos() {
                 const numeroCasa = marca.numeroCasa.toString();
                 const nombreCliente = marca.cliente || 'Cliente no especificado';
                 
+                // Verificar si ya existe en BD
                 const casaExistente = await Database.getCasaByNumero(numeroCasa);
 
                 if (!casaExistente) {
@@ -153,7 +137,7 @@ async function migrarDatosHistoricos() {
         }
 
         if (migradas > 0) {
-            localStorage.setItem('datosHistoricosMigrados_terceraEtapa', 'true');
+            localStorage.setItem('datosHistoricosMigrados_segundaEtapa', 'true');
             console.log(`✅ Migración completada: ${migradas} éxitos, ${errores} errores.`);
             
             if (typeof Swal !== 'undefined') {
@@ -167,6 +151,7 @@ async function migrarDatosHistoricos() {
                     showConfirmButton: false
                 });
             }
+            // Recargar dropdown con datos frescos de BD
             await cargarMarcasDesdeBD();
         }
     } catch (error) {
@@ -180,11 +165,14 @@ async function migrarDatosHistoricos() {
 
 async function cargarMarcasDesdeBD() {
     try {
+        // 1. Obtener TODAS las casas de la BD
         const todasLasCasas = await Database.getCasas();
         
-        const casasTerceraEtapa = todasLasCasas.filter(c => {
+        // 2. FILTRO ESTRICTO: Solo Segunda Etapa (1 al 32)
+        const casasSegundaEtapa = todasLasCasas.filter(c => {
             const num = parseInt(c.numero_casa);
-            return !isNaN(num) && num >= 66 && num <= 97;
+            // Verificamos explícitamente el rango
+            return !isNaN(num) && num >= 1 && num <= 32;
         });
 
         const ddlMarcas = document.getElementById('ddlMarcas');
@@ -195,11 +183,16 @@ async function cargarMarcasDesdeBD() {
 
         ddlMarcas.innerHTML = '<option value="0">Seleccione una marca</option>';
 
-        casasTerceraEtapa.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
+        // Ordenar numéricamente
+        casasSegundaEtapa.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
 
-        console.log(`🔍 Filtrado: Total en BD=${todasLasCasas.length}, Mostrando Tercera Etapa=${casasTerceraEtapa.length}`);
+        console.log(`🔍 Filtrado: Total en BD=${todasLasCasas.length}, Mostrando Segunda Etapa=${casasSegundaEtapa.length}`);
 
-        for (const casa of casasTerceraEtapa) {
+        if (casasSegundaEtapa.length === 0) {
+            console.log('ℹ️ No hay casas registradas en la Segunda Etapa aún.');
+        }
+
+        for (const casa of casasSegundaEtapa) {
             const option = document.createElement('option');
             option.value = casa.numero_casa;
             
@@ -208,10 +201,11 @@ async function cargarMarcasDesdeBD() {
                                   : 'Sin cliente';
             
             option.textContent = `Casa ${casa.numero_casa} - ${nombreCliente}`;
+            
             ddlMarcas.appendChild(option);
         }
 
-        console.log(`✅ Dropdown Tercera Etapa cargado con ${casasTerceraEtapa.length} marcas.`);
+        console.log(`✅ Dropdown Segunda Etapa cargado con ${casasSegundaEtapa.length} marcas.`);
     } catch (error) {
         console.error('❌ Error cargando marcas desde BD:', error);
         if (typeof Swal !== 'undefined') {
@@ -219,9 +213,8 @@ async function cargarMarcasDesdeBD() {
         }
     }
 }
-
 // ============================================
-// VALIDACIÓN DE ENTRADA (RANGO 66-97)
+// VALIDACIÓN DE ENTRADA (RANGO 1-32)
 // ============================================
 
 function validarNumeroCasa(numero) {
@@ -230,19 +223,23 @@ function validarNumeroCasa(numero) {
     if (!/^\d+$/.test(num)) {
         if (typeof Swal !== 'undefined') {
             Swal.fire('Advertencia', 'El número de casa debe ser numérico', 'warning');
+        } else {
+            alert('Advertencia: El número de casa debe ser numérico');
         }
         return null;
     }
     
     const numeroInt = parseInt(num, 10);
     
-    if (numeroInt < 66 || numeroInt > 97) {
+    if (numeroInt < 1 || numeroInt > 32) {
         if (typeof Swal !== 'undefined') {
             Swal.fire({
                 icon: 'warning',
                 title: 'Número fuera de rango',
-                text: `La tercera etapa solo incluye casas del 66 al 97.`
+                text: `La segunda etapa solo incluye casas del 1 al 32.`
             });
+        } else {
+            alert(`Número fuera de rango: Solo casas del 1 al 32.`);
         }
         return null;
     }
@@ -250,6 +247,8 @@ function validarNumeroCasa(numero) {
     if (!coordenadasCasas.hasOwnProperty(numeroInt)) {
         if (typeof Swal !== 'undefined') {
             Swal.fire('Error', `No hay coordenadas para la casa ${numeroInt}`, 'error');
+        } else {
+            alert(`Error: No hay coordenadas para la casa ${numeroInt}`);
         }
         return null;
     }
@@ -288,49 +287,37 @@ function limpiarFormulario() {
 }
 
 // ============================================
-// FUNCIONES DE MARCADORES (VERSIÓN SEGURA Y CORREGIDA)
+// FUNCIONES DE MARCADORES
 // ============================================
 
 function agregarMarcador(numeroCasa, originalX, originalY) {
     const imgPlano = document.getElementById('imgPlano');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
 
-    if (!marcadoresContainer || !imgPlano) {
-        console.error("No se encontró el contenedor o la imagen del plano.");
+    if (!marcadoresContainer || !imgPlano) return;
+
+    marcadoresContainer.innerHTML = '';
+
+    if (!imgPlano.complete) {
+        imgPlano.onload = () => agregarMarcador(numeroCasa, originalX, originalY);
         return;
     }
 
-    // Limpiar marcadores anteriores
-    marcadoresContainer.innerHTML = '';
+    // 🔥 CÁLCULO PROPORCIONAL (NO PIXELES)
+    const xPercent = (originalX / PLANO_ANCHO_REAL) * 100;
+    const yPercent = (originalY / PLANO_ALTO_REAL) * 100;
 
-    // Función interna para calcular y dibujar de forma segura
-    const dibujar = () => {
-        // ✅ CLAVE: Usamos las dimensiones REALES de la imagen cargada. 
-        // Si por alguna razón son 0, usamos las constantes como respaldo de seguridad.
-        const anchoBase = imgPlano.naturalWidth || PLANO_ANCHO_REAL;
-        const altoBase = imgPlano.naturalHeight || PLANO_ALTO_REAL;
+    const marcador = document.createElement('div');
+    marcador.className = 'marcador';
 
-        const xPercent = (originalX / anchoBase) * 100;
-        const yPercent = (originalY / altoBase) * 100;
+    marcador.style.left = xPercent + '%';
+    marcador.style.top = yPercent + '%';
 
-        const marcador = document.createElement('div');
-        marcador.className = 'marcador';
-        marcador.style.left = xPercent + '%';
-        marcador.style.top = yPercent + '%';
-        marcador.textContent = numeroCasa;
-        marcador.title = `Casa ${numeroCasa} (Coord: ${originalX}, ${originalY})`;
+    marcador.textContent = numeroCasa;
 
-        marcadoresContainer.appendChild(marcador);
-        console.log(`✅ Marcador ${numeroCasa} dibujado en: ${xPercent.toFixed(2)}%, ${yPercent.toFixed(2)}% (Base real: ${anchoBase}x${altoBase})`);
-    };
+    marcadoresContainer.appendChild(marcador);
 
-    // Verificar si la imagen ya está cargada
-    if (imgPlano.complete && imgPlano.naturalWidth > 0) {
-        dibujar();
-    } else {
-        // Si no, esperar a que termine de cargar
-        imgPlano.onload = () => dibujar();
-    }
+    console.log(`✅ Marcador ${numeroCasa} en ${xPercent.toFixed(2)}%, ${yPercent.toFixed(2)}%`);
 }
 
 // ============================================
@@ -357,7 +344,10 @@ async function cargarMarcaSeleccionada() {
             const coords = coordenadasCasas[numeroCasa];
             agregarMarcador(numeroCasa, coords.x, coords.y);
 
+            // Obtener nombre del cliente desde la lista unificada o consulta directa
             try {
+                // Opción rápida: buscar en la lista que ya cargamos (si está en memoria)
+                // Opción segura: consultar por ID
                 const cliente = await Database.getClienteByCasa(numeroCasa);
                 const txtCliente = document.getElementById('txtCliente');
                 if (txtCliente) {
@@ -390,15 +380,20 @@ async function marcarEnPlano() {
     if (!txtCliente) {
         if (typeof Swal !== 'undefined') {
             Swal.fire({ icon: 'warning', title: 'Cliente requerido', text: 'Ingrese el nombre del cliente' });
+        } else {
+            alert('Cliente requerido');
         }
         return;
     }
 
+    // Verificar duplicados en el dropdown actual
     const ddlMarcas = document.getElementById('ddlMarcas');
     for (let i = 0; i < ddlMarcas.options.length; i++) {
         if (ddlMarcas.options[i].value == numeroCasa) {
             if (typeof Swal !== 'undefined') {
                 Swal.fire({ icon: 'warning', title: 'Casa registrada', text: `La casa ${numeroCasa} ya existe.` });
+            } else {
+                alert(`La casa ${numeroCasa} ya está registrada.`);
             }
             return;
         }
@@ -406,9 +401,7 @@ async function marcarEnPlano() {
 
     const coords = coordenadasCasas[numeroCasa];
     if (!coords) {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire('Error', 'Coordenadas no encontradas', 'error');
-        }
+        Swal.fire('Error', 'Coordenadas no encontradas', 'error');
         return;
     }
 
@@ -440,6 +433,8 @@ async function marcarEnPlano() {
         document.getElementById('marcadoresContainer').innerHTML = '';
         if (typeof Swal !== 'undefined') {
             Swal.fire({ icon: 'error', title: 'Error al guardar', text: error.message });
+        } else {
+            alert(`Error: ${error.message}`);
         }
     }
 }
@@ -501,18 +496,28 @@ async function eliminarMarca() {
 }
 
 // ============================================
-// IMPRESIÓN
+// IMPRESIÓN (Misma lógica que primera etapa)
 // ============================================
 
 function imprimirPlano() {
-    const marcadoresContainer = document.getElementById('marcadoresContainer');
-    if (!marcadoresContainer || marcadoresContainer.children.length === 0) {
+    const marcadores = document.getElementById('marcadoresContainer').children;
+    if (marcadores.length === 0) {
         if (typeof Swal !== 'undefined') {
             Swal.fire({ icon: 'warning', title: 'Sin marcadores', text: 'Aplique una casa primero' });
         }
         return false;
     }
 
+    const numeroCasa = marcadores[0].textContent;
+    const casa = parseInt(numeroCasa, 10);
+    
+    if (!coordenadasCasas.hasOwnProperty(casa)) {
+        Swal.fire('Error', 'Coordenadas no encontradas', 'error');
+        return false;
+    }
+
+    const coords = coordenadasCasas[casa];
+    
     if (typeof Swal !== 'undefined') {
         Swal.fire({
             title: 'Imprimiendo...',
@@ -541,17 +546,12 @@ window.addEventListener('resize', function () {
 });
 
 function recalcularPosiciones() {
-    const txtNumeroCasa = document.getElementById('txtNumeroCasa');
     const marcadoresContainer = document.getElementById('marcadoresContainer');
-    
-    if (marcadoresContainer && txtNumeroCasa) {
-        const numeroCasa = txtNumeroCasa.value.trim();
+    if (marcadoresContainer && marcadoresContainer.children.length > 0) {
+        const numeroCasa = document.getElementById('txtNumeroCasa').value.trim();
         const numValido = parseInt(numeroCasa, 10);
-        
         if (numeroCasa && !isNaN(numValido) && coordenadasCasas.hasOwnProperty(numValido)) {
             const coords = coordenadasCasas[numValido];
-            // No limpiamos todo, solo actualizamos para evitar parpadeos, 
-            // pero si hay múltiples, mejor limpiar y redraw.
             marcadoresContainer.innerHTML = '';
             agregarMarcador(numValido, coords.x, coords.y);
         }
