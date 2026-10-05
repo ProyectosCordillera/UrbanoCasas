@@ -1,114 +1,54 @@
-/* Estilos específicos para la página de informe aplicados */
-.plano-container {
-    position: relative;
-    display: block; /* Cambiado de inline-block a block para ocupar ancho completo */
-    margin-top: 20px;
-    width: 100%;
-    overflow-x: auto; /* Permite scroll horizontal si la pantalla es pequeña */
-    background-color: #f8f9fa; /* Fondo suave para delimitar el área de scroll */
+/* informe-aplicados.css */
+
+/* Ocultar columnas técnicas (X, Y) en la tabla */
+#tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
+#tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
+    display: none !important;
 }
 
-.plano-image {
-    /* Eliminamos max-width: 100% para permitir que el plano mantenga su tamaño real */
-    min-width: 1400px; /* Ajusta este valor según el ancho real de tu imagen (ej. 1600px) */
-    height: auto;
-    display: block;
-    border: 1px solid #ddd;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-
+/* Estilos base de marcadores (sobrescribibles por inline styles si es necesario) */
 .marcador {
     position: absolute;
-    width: 34px;
-    height: 34px;
+    width: 28px;
+    height: 28px;
     background-color: rgba(13, 110, 253, 0.9);
     border-radius: 50%;
     transform: translate(-50%, -50%);
     border: 2px solid white;
-    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     display: flex;
     align-items: center;
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 16px;
+    font-size: 13px;
     cursor: pointer;
     transition: all 0.2s ease;
     z-index: 10;
 }
 
 .marcador:hover {
-    background-color: rgba(13, 110, 253, 1);
-    transform: translate(-50%, -50%) scale(1.1);
-    box-shadow: 0 0 8px rgba(0,0,0,0.5);
+    transform: translate(-50%, -50%) scale(1.3);
     z-index: 20;
+    background-color: #0d6efd;
 }
 
-.marcador.active {
-    background-color: #28a745;
-    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.5);
-}
-
-/* Ocultar COORDENADA X (columna 2) */
-#tblCasas th:nth-child(2),
-#tblCasas td:nth-child(2) {
-    display: none !important;
-}
-
-/* Ocultar COORDENADA Y (columna 3) */
-#tblCasas th:nth-child(3),
-#tblCasas td:nth-child(3) {
-    display: none !important;
-}
-
-/* Estilos para impresión - CORREGIDO PARA FORMATO HORIZONTAL */
+/* Impresión básica */
 @media print {
-    body, html {
-        margin: 0 !important;
-        padding: 0 !important;
-        width: 100%;
-    }
+    .no-print { display: none !important; }
     
-    .no-print, nav, footer, .card-header, #btnImp, #btnActualizar {
-        display: none !important;
-    }
+    /* Resetear contenedores para impresión */
+    .card { border: none !important; box-shadow: none !important; margin-bottom: 10px !important; }
+    .card-header { background-color: #eee !important; color: black !important; border-bottom: 1px solid #ccc; }
     
-    .printable {
-        width: 100% !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    
-    .plano-container {
-        position: relative !important;
-        width: 100% !important;
-        /*  CAMBIO CLAVE: Proporción horizontal acorde a tu plano panorámico */
-        aspect-ratio: 1650 / 1275 !important; 
-        margin: 0 auto !important;
-        overflow: visible !important;
-    }
-    
-    .plano-image {
-        position: absolute !important;
-        inset: 0 !important;
-        width: 100% !important;
-        height: 100% !important;
-        object-fit: contain !important;
-        border: none !important;
-        box-shadow: none !important;
-        min-width: unset !important; /* Reseteamos el min-width de pantalla para impresión */
-    }
+    table { font-size: 9pt !important; width: 100% !important; }
     
     .marcador {
-        width: 24px !important;
-        height: 24px !important;
-        font-size: 10px !important;
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 8px !important;
+        border-width: 1px !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
-    }
-    
-    @page {
-        size: A4 landscape; /* 🔥 Forzamos orientación horizontal para que quepa el plano */
-        margin: 5mm;
     }
 }
