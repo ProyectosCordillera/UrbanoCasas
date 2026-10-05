@@ -1,33 +1,31 @@
 /* informe-aplicados.css */
 
-/* --- ESTILOS GENERALES Y TABLA --- */
-body { background-color: #f8f9fa; }
-
-/* Ocultar columnas técnicas (X, Y) visualmente pero mantenerlas en DOM para que el JS las lea */
-#tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
-#tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
-    display: none !important;
-}
-
-/* --- ESTILOS DEL PLANO (CRÍTICOS) --- */
+/* Contenedor con Scroll Horizontal (CRÍTICO para planos anchos) */
 .plano-container {
     position: relative;
     width: 100%;
-    overflow-x: auto; /* Permite scroll horizontal en pantallas pequeñas */
+    overflow-x: auto; /* Permite deslizar hacia los lados */
     overflow-y: hidden;
-    background-color: #fff;
+    background-color: #f8f9fa;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     white-space: nowrap;
 }
 
+/* Imagen: Mantiene tamaño real para nitidez */
 .plano-image {
     display: inline-block;
     margin: 0 auto;
-    min-width: 1400px; /* Fuerza el ancho real para evitar que se vea pequeño */
+    min-width: 1400px; /* Ajusta al ancho real de tu PNG */
     height: auto;
     user-select: none;
     vertical-align: top;
+}
+
+/* Ocultar columnas X e Y visualmente */
+#tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
+#tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
+    display: none !important;
 }
 
 /* Marcadores */
@@ -47,30 +45,29 @@ body { background-color: #f8f9fa; }
     font-weight: bold;
     font-size: 13px;
     cursor: pointer;
-    transition: all 0.2s ease;
     z-index: 10;
 }
 
-.marcador:hover {
-    transform: translate(-50%, -50%) scale(1.3);
-    z-index: 20;
-    background-color: #0d6efd;
-}
-
-/* --- IMPRESIÓN OPTIMIZADA (A4 HORIZONTAL) --- */
+/* Impresión en Horizontal */
 @media print {
     @page { size: A4 landscape; margin: 5mm; }
-    
-    body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background-color: white !important; }
     .no-print { display: none !important; }
     
-    .printable { width: 100% !important; padding: 0 !important; margin: 0 !important; }
-    .card { border: none !important; box-shadow: none !important; margin-bottom: 10px !important; }
-    .card-header { background-color: #eee !important; color: black !important; border-bottom: 1px solid #ccc; font-weight: bold; }
-    table { font-size: 9pt !important; width: 100% !important; }
-    
-    /* Ajuste del plano para impresión */
-    .plano-container { overflow: visible !important; border: none !important; background: transparent !important; }
-    .plano-image { min-width: unset !important; width: 100% !important; height: auto !important; object-fit: contain; display: block !important; }
-    .marcador { width: 18px !important; height: 18px !important; font-size: 8px !important; border-width: 1px !important; }
+    .plano-container { 
+        overflow: visible !important; 
+        border: none !important; 
+        background: transparent !important; 
+    }
+    .plano-image { 
+        min-width: unset !important; 
+        width: 100% !important; 
+        height: auto !important; 
+        object-fit: contain; 
+        display: block !important; 
+    }
+    .marcador {
+        width: 18px !important; height: 18px !important; font-size: 8px !important;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    }
 }
