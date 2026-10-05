@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Capturador de Coordenadas - Tercera Etapa</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { display: flex; height: 100vh; background-color: #f4f6f9; }
+        
+        /* Panel Izquierdo: El Plano */
+        .map-section {
+            flex: 1;
+            padding: 20px;
+            overflow: auto;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            background-color: #e9ecef;
+        }
+        .map-container {
+            position: relative;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            background: white;
+        }
+        #mapImage {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            cursor: crosshair;
+            user-select: none;
+        }
+        
+        /* Marcadores visuales */
+        .marker {
+            position: absolute;
+            width: 28px;
+            height: 28px;
+            background-color: #dc3545;
+            color: white;
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* Panel Derecho: Controles */
+        .controls-section {
+            width: 350px;
+            background: white;
+            padding: 25px;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+        h2 { color: #333; margin-bottom: 10px; font-size: 1.2rem; }
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 10px;
+            font-size: 0.9rem;
+            color: #004085;
+            border-radius: 4px;
+        }
+        .form-group { margin-bottom: 10px; }
+        label { display: block; margin-bottom: 5px; font-weight: 600; color: #555; }
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-export { background-color: #28a745; color: white; margin-top: 10px; }
+        .btn-export:hover { background-color: #218838; }
+        .btn-clear { background-color: #dc3545; color: white; margin-top: 5px; }
+        .btn-clear:hover { background-color: #c82333; }
+        
+        .captured-list {
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
+        .captured-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            padding: 8px 12px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+        .captured-item button {
+            width: auto;
+            padding: 4px 8px;
+            font-size: 0.8rem;
+            background: #dc3545;
+            color: white;
+            margin: 0;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            margin-top: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- SECCIÓN DEL PLANO -->
+    <div class="map-section">
+        <div class="map-container" id="mapContainer">
+            <!-- ⚠️ IMPORTANTE: Cambia 'plano.jpg' por el nombre real de tu imagen -->
+            <img id="mapImage" src="plano.jpg" alt="Plano Tercera Etapa">
+        </div>
+    </div>
+
+    <!-- SECCIÓN DE CONTROLES -->
+    <div class="controls-section">
+        <h2>📍 Capturador de Coordenadas</h2>
+        
+        <div class="info-box">
+            1. Escribe el número de casa.<br>
+            2. Haz clic en el plano donde debe ir el marcador.<br>
+            3. Repite hasta terminar y exporta el código.
+        </div>
+
+        <div class="form-group">
+            <label for="houseNumber">Número de Casa:</label>
+            <input type="number" id="houseNumber" placeholder="Ej: 81" min="1">
+        </div>
+
+        <div class="info-box" id="lastClickInfo" style="background: #fff3cd; border-color: #ffc107; color: #856404; display: none;">
+            Último clic: <strong>X: <span id="lastX">0</span>, Y: <span id="lastY">0</span></strong>
+        </div>
+
+        <div class="captured-list">
+            <h3>Casas Capturadas (<span id="count">0</span>)</h3>
+            <div id="listContainer"></div>
+        </div>
+
+        <button class="btn-export" onclick="exportarCodigo()">📋 Generar y Copiar Código JS</button>
+        <textarea id="outputCode" readonly></textarea>
+        <button class="btn-clear" onclick="limpiarTodo()">🗑️ Limpiar Todo</button>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURACIÓN (Ajusta según tu imagen real)
+        // ==========================================
+        const ORIGINAL_WIDTH = 1275;   // Ancho real de tu imagen en píxeles
+        const ORIGINAL_HEIGHT = 1650;  // Alto real de tu imagen en píxeles
+
+        let coordenadas = {};
+
+        // Cargar datos guardados previamente (si los hay)
+        if (localStorage.getItem('coords_tercera_etapa')) {
+            coordenadas = JSON.parse(localStorage.getItem('coords_tercera_etapa'));
+            renderizarLista();
+        }
+
+        const mapImage = document.getElementById('mapImage');
+        const mapContainer = document.getElementById('mapContainer');
+
+        // Evento de clic en el plano
+        mapImage.addEventListener('click', function(e) {
+            const houseNum = document.getElementById('houseNumber').value.trim();
+            
+            if (!houseNum) {
+                alert('⚠️ Por favor, escribe primero el número de casa.');
+                document.getElementById('houseNumber').focus();
+                return;
+            }
+
+            // Obtener dimensiones y posición de la imagen en pantalla
+            const rect = mapImage.getBoundingClientRect();
+            
+            // Calcular coordenadas proporcionales al tamaño ORIGINAL de la imagen
+            const x = Math.round(((e.clientX - rect.left) / rect.width) * ORIGINAL_WIDTH);
+            const y = Math.round(((e.clientY - rect.top) / rect.height) * ORIGINAL_HEIGHT);
+
+            // Guardar en el objeto
+            coordenadas[houseNum] = { x: x, y: y };
+            localStorage.setItem('coords_tercera_etapa', JSON.stringify(coordenadas));
+
+            // Mostrar info del último clic
+            document.getElementById('lastX').textContent = x;
+            document.getElementById('lastY').textContent = y;
+            document.getElementById('lastClickInfo').style.display = 'block';
+
+            // Dibujar marcador visual
+            dibujarMarcador(houseNum, x, y);
+            
+            // Actualizar lista y limpiar input
+            renderizarLista();
+            document.getElementById('houseNumber').value = '';
+            document.getElementById('houseNumber').focus();
+        });
+
+        function dibujarMarcador(num, x, y) {
+            // Eliminar marcador anterior si ya existía para esta casa
+            const existing = document.getElementById(`marker-${num}`);
+            if (existing) existing.remove();
+
+            const marker = document.createElement('div');
+            marker.className = 'marker';
+            marker.id = `marker-${num}`;
+            marker.textContent = num;
+            
+            // Posicionar en porcentaje para que sea responsivo
+            const leftPercent = (x / ORIGINAL_WIDTH) * 100;
+            const topPercent = (y / ORIGINAL_HEIGHT) * 100;
+            
+            marker.style.left = `${leftPercent}%`;
+            marker.style.top = `${topPercent}%`;
+            
+            mapContainer.appendChild(marker);
+        }
+
+        function renderizarLista() {
+            const container = document.getElementById('listContainer');
+            container.innerHTML = '';
+            document.getElementById('count').textContent = Object.keys(coordenadas).length;
+
+            // Ordenar por número de casa
+            const casasOrdenadas = Object.keys(coordenadas).sort((a, b) => parseInt(a) - parseInt(b));
+
+            casasOrdenadas.forEach(num => {
+                const coords = coordenadas[num];
+                const div = document.createElement('div');
+                div.className = 'captured-item';
+                div.innerHTML = `
+                    <span><strong>Casa ${num}</strong> (X: ${coords.x}, Y: ${coords.y})</span>
+                    <button onclick="eliminarCasa('${num}')">✕</button>
+                `;
+                container.appendChild(div);
+                
+                // Asegurar que el marcador visual esté dibujado
+                dibujarMarcador(num, coords.x, coords.y);
+            });
+        }
+
+        function eliminarCasa(num) {
+            delete coordenadas[num];
+            localStorage.setItem('coords_tercera_etapa', JSON.stringify(coordenadas));
+            
+            const marker = document.getElementById(`marker-${num}`);
+            if (marker) marker.remove();
+            
+            renderizarLista();
+        }
+
+        function limpiarTodo() {
+            if (confirm('¿Estás seguro de borrar TODAS las coordenadas capturadas?')) {
+                coordenadas = {};
+                localStorage.removeItem('coords_tercera_etapa');
+                document.querySelectorAll('.marker').forEach(m => m.remove());
+                renderizarLista();
+                document.getElementById('lastClickInfo').style.display = 'none';
+                document.getElementById('outputCode').style.display = 'none';
+            }
+        }
+
+        function exportarCodigo() {
+            if (Object.keys(coordenadas).length === 0) {
+                alert('No hay coordenadas para exportar.');
+                return;
+            }
+
+            let jsCode = '// ============================================\n';
+            jsCode += '// COORDENADAS TERCERA ETAPA (Generado automáticamente)\n';
+            jsCode += '// ============================================\n';
+            jsCode += 'const coordenadasCasas = {\n';
+            
+            const casasOrdenadas = Object.keys(coordenadas).sort((a, b) => parseInt(a) - parseInt(b));
+            casasOrdenadas.forEach((num, index) => {
+                const coords = coordenadas[num];
+                const comma = index < casasOrdenadas.length - 1 ? ',' : '';
+                jsCode += `    ${num}: { x: ${coords.x}, y: ${coords.y} }${comma}\n`;
+            });
+            
+            jsCode += '};';
+
+            const textarea = document.getElementById('outputCode');
+            textarea.value = jsCode;
+            textarea.style.display = 'block';
+            
+            // Copiar al portapapeles
+            textarea.select();
+            document.execCommand('copy');
+            alert('✅ ¡Código JavaScript generado y copiado al portapapeles!\n\nAhora puedes pegarlo en tu archivo JS principal reemplazando el objeto `coordenadasCasas`.');
+        }
+    </script>
+</body>
+</html>
