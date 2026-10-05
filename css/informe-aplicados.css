@@ -1,16 +1,16 @@
 /* Estilos específicos para la página de informe aplicados */
-
 .plano-container {
     position: relative;
-    display: inline-block;
+    display: block; /* Cambiado de inline-block a block para ocupar ancho completo */
     margin-top: 20px;
     width: 100%;
-    max-width: 100%;
-    overflow: hidden;
+    overflow-x: auto; /* Permite scroll horizontal si la pantalla es pequeña */
+    background-color: #f8f9fa; /* Fondo suave para delimitar el área de scroll */
 }
 
 .plano-image {
-    max-width: 100%;
+    /* Eliminamos max-width: 100% para permitir que el plano mantenga su tamaño real */
+    min-width: 1400px; /* Ajusta este valor según el ancho real de tu imagen (ej. 1600px) */
     height: auto;
     display: block;
     border: 1px solid #ddd;
@@ -61,36 +61,33 @@
     display: none !important;
 }
 
-/* Estilos para impresión - VERSIÓN FINAL */
+/* Estilos para impresión - CORREGIDO PARA FORMATO HORIZONTAL */
 @media print {
-
     body, html {
         margin: 0 !important;
         padding: 0 !important;
+        width: 100%;
     }
-
-    /* Ocultar solo lo que no se imprime */
-    .no-print,
-    nav,
-    footer,
-    .card-header,
-    #btnImp,
-    #btnActualizar {
+    
+    .no-print, nav, footer, .card-header, #btnImp, #btnActualizar {
         display: none !important;
     }
-
-    /* Expandir plano a toda la hoja */
+    
     .printable {
         width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
-
+    
     .plano-container {
         position: relative !important;
         width: 100% !important;
-        aspect-ratio: 1275 / 1650 !important; /* 🔥 ajusta si tu plano general tiene otra proporción */
+        /*  CAMBIO CLAVE: Proporción horizontal acorde a tu plano panorámico */
+        aspect-ratio: 1650 / 1275 !important; 
         margin: 0 auto !important;
+        overflow: visible !important;
     }
-
+    
     .plano-image {
         position: absolute !important;
         inset: 0 !important;
@@ -99,18 +96,19 @@
         object-fit: contain !important;
         border: none !important;
         box-shadow: none !important;
+        min-width: unset !important; /* Reseteamos el min-width de pantalla para impresión */
     }
-
+    
     .marcador {
-        width: 30px !important;
-        height: 30px !important;
-        font-size: 12px !important;
+        width: 24px !important;
+        height: 24px !important;
+        font-size: 10px !important;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
     }
-
+    
     @page {
-        size: A4 portrait;
+        size: A4 landscape; /* 🔥 Forzamos orientación horizontal para que quepa el plano */
         margin: 5mm;
     }
 }
