@@ -12,22 +12,28 @@ const ZONA_VALIDA = {
     yMax: 1600
 };
 
-// Diccionario de coordenadas ajustado para segunda etapa (Casas 1-32)
+// Diccionario de coordenadas generado dinámicamente
 const coordenadasCasas = {};
 
-// Coordenadas para las casas 1-16 (zona derecha)
-for (let i = 1; i <= 16; i++) {
+// ============================================
+// GENERACIÓN DE COORDENADAS CON CICLOS FOR
+// ============================================
+
+// Grupo 1: Casas 66 a 83 (Columna derecha)
+// Empiezan en Y: 1525 y suben (restan) 75px por cada casa
+for (let i = 66; i <= 83; i++) {
     coordenadasCasas[i] = {
-        x: 925,
-        y: Math.max(ZONA_VALIDA.yMin, Math.min(ZONA_VALIDA.yMax, 1265 + (i - 1) * -60))
+        x: 1110, 
+        y: Math.round(1525 - (i - 66) * 75)
     };
 }
 
-// Coordenadas para las casas 17-32 (zona izquierda)
-for (let i = 17; i <= 32; i++) {
+// Grupo 2: Casas 84 a 99 (Columna izquierda/centro)
+// Empiezan en Y: 344 y bajan (suman) 75px por cada casa
+for (let i = 84; i <= 99; i++) {
     coordenadasCasas[i] = {
-        x: 630,
-        y: Math.max(ZONA_VALIDA.yMin, Math.min(ZONA_VALIDA.yMax, 365 + (i - 17) * 60))
+        x: 744, 
+        y: Math.round(344 + (i - 84) * 75)
     };
 }
 
