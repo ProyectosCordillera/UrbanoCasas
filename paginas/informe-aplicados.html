@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Informe Aplicados - Sistema Urbano</title>
+    
+    <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/informe-aplicados.css">
+    <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- TU CSS EXTERNO CORREGIDO -->
+    <link rel="stylesheet" href="../css/informe-aplicados.css">
 </head>
 <body class="bg-light">
 
-    <!-- CARGA DEL MENÚ UNIFICADO -->
+    <!-- CONTENEDOR DEL MENÚ (Se carga desde includes/menu.html) -->
     <div id="menu-container"></div>
 
     <div class="container-fluid printable px-4 mt-4">
@@ -28,7 +33,7 @@
             </div>
         </div>
 
-        <!-- TABLA DE DATOS -->
+        <!-- SECCIÓN 1: TABLA DE DATOS -->
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fs-6"><i class="bi bi-list-ul me-2"></i>Listado de Casas Registradas</h5>
@@ -39,51 +44,57 @@
                         <thead class="table-dark">
                             <tr>
                                 <th style="width: 10%">CASA</th>
-                                <th>X</th> <th>Y</th> 
+                                <th>X</th> 
+                                <th>Y</th> 
                                 <th>CLIENTE</th>
                                 <th style="width: 15%">FECHA</th>
                             </tr>
                         </thead>
                         <tbody id="tbodyDatos">
-                            <tr><td colspan="5" class="text-center py-4 text-muted"> Cargando datos...</td></tr>
+                            <tr><td colspan="5" class="text-center py-4 text-muted"> Cargando datos del sistema...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- PLANO GENERAL -->
+        <!-- SECCIÓN 2: PLANO GENERAL -->
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0 fs-6"><i class="bi bi-map me-2"></i>Plano General con Marcadores</h5>
                 <small class="d-none d-md-block opacity-75">Desliza horizontalmente si es necesario</small>
             </div>
             <div class="card-body p-0 bg-light">
+                
                 <div class="plano-container">
                     <!-- RUTA RELATIVA CORRECTA DESDE PAGINAS/ -->
                     <img src="../img/plano_General.png" alt="Plano Sundara Flores" class="plano-image" id="imgPlano">
                     <div id="marcadoresContainer"></div>
                 </div>
+
             </div>
         </div>
 
         <footer class="mt-4 pb-4 text-center text-muted small no-print">
             © Sistema Urbano - Cordillera | Generado automáticamente
         </footer>
+
     </div>
 
-    <!-- Scripts -->
+    <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Cargar Menú Dinámicamente -->
+    <!-- Script para cargar el menú dinámicamente -->
     <script>
         fetch('../includes/menu.html')
             .then(response => response.text())
-            .then(data => document.getElementById('menu-container').innerHTML = data)
-            .catch(err => console.error('Error cargando menú:', err));
+            .then(data => {
+                document.getElementById('menu-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error cargando menú:', error));
     </script>
 
-    <!-- Tu JS Principal -->
+    <!-- TU JAVASCRIPT EXTERNO -->
     <script src="../js/informe-aplicados.js"></script>
 </body>
 </html>
