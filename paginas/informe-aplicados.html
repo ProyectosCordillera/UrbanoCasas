@@ -8,44 +8,36 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- TU CSS EXTERNO -->
-    <link rel="stylesheet" href="informe-aplicados.css">
+    <!-- TU CSS EXTERNO (Asegúrate de haber aplicado la corrección de overflow-x) -->
+    <link rel="stylesheet" href="../css/informe-aplicados.css">
+    
+    <!-- Iconos de Bootstrap -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
 </head>
 <body class="bg-light">
 
-    <!-- Barra de Navegación -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4 no-print">
-        <div class="container-fluid">
-            <a class="navbar-brand fw-bold" href="#">SUNDARA FLORES</a>
-            <div class="collapse navbar-collapse">
-                <ul class="navbar-nav me-auto">
-                    <li class="nav-item"><a class="nav-link" href="#">Etapas</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Informes</a></li>
-                </ul>
-                <span class="navbar-text text-white font-monospace" id="clock">--:--:--</span>
-            </div>
-        </div>
-    </nav>
+    <!-- CONTENEDOR DEL MENÚ (Se carga desde includes/menu.html) -->
+    <div id="menu-container"></div>
 
-    <div class="container-fluid printable px-4">
+    <div class="container-fluid printable px-4 mt-4">
         
         <!-- Botones de Acción -->
         <div class="row mb-4 no-print g-2">
             <div class="col-md-4">
-                <button id="btnImp" onclick="imprimirPlano()" class="btn btn-success w-100 fw-bold">🖨️ Imprimir Plano</button>
+                <button id="btnImp" onclick="imprimirPlano()" class="btn btn-success w-100 fw-bold"><i class="bi bi-printer me-2"></i>Imprimir Plano</button>
             </div>
             <div class="col-md-4">
-                <button id="btnActualizar" class="btn btn-primary w-100 fw-bold">🔄 Actualizar Datos</button>
+                <button id="btnActualizar" class="btn btn-primary w-100 fw-bold"><i class="bi bi-arrow-clockwise me-2"></i>Actualizar Datos</button>
             </div>
             <div class="col-md-4">
-                <button onclick="verResumen()" class="btn btn-info w-100 text-white fw-bold">📊 Ver Resumen</button>
+                <button onclick="verResumen()" class="btn btn-info w-100 text-white fw-bold"><i class="bi bi-bar-chart me-2"></i>Ver Resumen</button>
             </div>
         </div>
 
         <!-- SECCIÓN 1: TABLA DE DATOS -->
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6">📋 Listado de Casas Registradas</h5>
+                <h5 class="mb-0 fs-6"><i class="bi bi-list-ul me-2"></i>Listado de Casas Registradas</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -59,7 +51,7 @@
                                 <th style="width: 15%">FECHA</th>
                             </tr>
                         </thead>
-                        <!-- ID CORREGIDO: tbodyDatos (requerido por tu JS) -->
+                        <!-- ID CORREGIDO: tbodyDatos -->
                         <tbody id="tbodyDatos">
                             <tr><td colspan="5" class="text-center py-4 text-muted"> Cargando datos del sistema...</td></tr>
                         </tbody>
@@ -71,16 +63,17 @@
         <!-- SECCIÓN 2: PLANO GENERAL -->
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6">️ Plano General con Marcadores</h5>
+                <h5 class="mb-0 fs-6"><i class="bi bi-map me-2"></i>Plano General con Marcadores</h5>
                 <small class="d-none d-md-block opacity-75">Desliza horizontalmente si es necesario</small>
             </div>
             <div class="card-body p-0 bg-light">
                 
-                <!-- CLASE CORREGIDA: plano-container (para coincidir con CSS) -->
+                <!-- CLASE CORREGIDA: plano-container -->
                 <div class="plano-container">
-                   <!-- RUTA CORREGIDA: Sube un nivel (..) y busca en img con extensión .png -->
-<img src="../img/plano_General.png" alt="Plano Sundara Flores" class="plano-image" id="imgPlano">
-                    <!-- ID CORREGIDO: marcadoresContainer (requerido por tu JS) -->
+                    <!-- RUTA RELATIVA CORREGIDA PARA CARPETA PAGINAS -->
+                    <img src="../img/plano_General.png" alt="Plano Sundara Flores" class="plano-image" id="imgPlano">
+                    
+                    <!-- ID CORREGIDO: marcadoresContainer -->
                     <div id="marcadoresContainer"></div>
                 </div>
 
@@ -96,7 +89,18 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
+    <!-- Script para cargar el menú dinámicamente -->
+    <script>
+        // Cargar el menú desde la carpeta includes
+        fetch('../includes/menu.html')
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('menu-container').innerHTML = data;
+            })
+            .catch(error => console.error('Error cargando menú:', error));
+    </script>
+
     <!-- TU JAVASCRIPT EXTERNO -->
-    <script src="informe-aplicados.js"></script>
+    <script src="../js/informe-aplicados.js"></script>
 </body>
 </html>
