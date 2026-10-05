@@ -8,13 +8,16 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Estilos Personalizados (INTEGRADOS PARA EVITAR CONFLICTOS) -->
+    <!-- Tu CSS Externo (Solo para tabla y marcadores base) -->
+    <link rel="stylesheet" href="informe-aplicados.css">
+    
+    <!-- Estilos Críticos del Plano (Integrados para garantizar funcionamiento) -->
     <style>
-        /* Contenedor del Plano: Scroll horizontal obligatorio */
+        /* Contenedor con Scroll Horizontal Inteligente */
         .plano-wrapper {
             position: relative;
             width: 100%;
-            overflow-x: auto; /* CLAVE: Permite deslizar el plano */
+            overflow-x: auto; 
             overflow-y: hidden;
             background-color: #f8f9fa;
             border: 1px solid #dee2e6;
@@ -22,66 +25,34 @@
             white-space: nowrap;
         }
 
-        /* Imagen del Plano: Tamaño real forzado */
+        /* Imagen Panorámica: Tamaño real forzado */
         .plano-image {
-            display: inline-block; /* Cambiado a inline-block para respetar min-width */
+            display: inline-block;
             margin: 0 auto;
-            min-width: 1400px; /* Ancho mínimo para que no se aplaste */
+            min-width: 1400px; /* Ajusta al ancho real de tu imagen */
             height: auto;
             user-select: none;
             vertical-align: top;
         }
 
-        /* Marcadores Interactivos */
-        .marcador {
-            position: absolute;
-            width: 28px;
-            height: 28px;
-            background-color: rgba(13, 110, 253, 0.9);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            border: 2px solid white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            z-index: 10;
-        }
-
-        .marcador:hover {
-            transform: translate(-50%, -50%) scale(1.3);
-            z-index: 20;
-            background-color: #0d6efd;
-        }
-
-        /* Ocultar columnas técnicas (X, Y) visualmente */
-        #tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
-        #tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
-            display: none !important;
-        }
-
-        /* =========================================
-           CONFIGURACIÓN DE IMPRESIÓN
-           ========================================= */
+        /* Configuración de Impresión Específica para Plano */
         @media print {
             @page { size: A4 landscape; margin: 5mm; }
-            body { background-color: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            .no-print { display: none !important; }
-            .printable { width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            body { background-color: white !important; }
             
-            .card { border: none !important; box-shadow: none !important; margin-bottom: 10px !important; }
-            .card-header { background-color: #eee !important; color: black !important; border-bottom: 1px solid #ccc; font-weight: bold; }
-            table { font-size: 9pt !important; width: 100% !important; }
+            .plano-wrapper { 
+                overflow: visible !important; 
+                border: none !important; 
+                background: transparent !important; 
+            }
             
-            /* Ajuste crítico del plano para impresión */
-            .plano-wrapper { overflow: visible !important; border: none !important; background: transparent !important; }
-            .plano-image { min-width: unset !important; width: 100% !important; height: auto !important; object-fit: contain; display: block !important; }
-            .marcador { width: 18px !important; height: 18px !important; font-size: 8px !important; border-width: 1px !important; }
+            .plano-image { 
+                min-width: unset !important; 
+                width: 100% !important; 
+                height: auto !important; 
+                object-fit: contain; 
+                display: block !important; 
+            }
         }
     </style>
 </head>
@@ -119,7 +90,7 @@
         <!-- SECCIÓN 1: TABLA DE DATOS -->
         <div class="card shadow-sm mb-4">
             <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6"> Listado de Casas Registradas</h5>
+                <h5 class="mb-0 fs-6">📋 Listado de Casas Registradas</h5>
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
@@ -134,7 +105,7 @@
                             </tr>
                         </thead>
                         <tbody id="tablaBody">
-                            <tr><td colspan="5" class="text-center py-4 text-muted"> Cargando datos del sistema...</td></tr>
+                            <tr><td colspan="5" class="text-center py-4 text-muted">⏳ Cargando datos del sistema...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -144,14 +115,14 @@
         <!-- SECCIÓN 2: PLANO GENERAL -->
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6">️ Plano General con Marcadores</h5>
+                <h5 class="mb-0 fs-6">🗺️ Plano General con Marcadores</h5>
                 <small class="d-none d-md-block opacity-75">Desliza horizontalmente si es necesario</small>
             </div>
             <div class="card-body p-0 bg-light">
                 
                 <div class="plano-wrapper">
-                    <!-- RUTA CORREGIDA: Usa ruta absoluta desde la raíz del repo -->
-                    <img src="/img/plano_General.jpg" alt="Plano Sundara Flores" class="plano-image" id="imgPlano" onerror="this.src='https://via.placeholder.com/1400x800?text=Error+Cargando+Imagen';">
+                    <!-- RUTA ABSOLUTA RECOMENDADA PARA GITHUB PAGES -->
+                    <img src="/img/plano_General.jpg" alt="Plano Sundara Flores" class="plano-image" id="imgPlano" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'p-5 text-center text-danger\'>⚠️ No se pudo cargar la imagen. Verifica la ruta /img/plano_General.jpg</div>';">
                     
                     <!-- Contenedor de marcadores -->
                     <div id="contenedor-marcadores"></div>
@@ -178,13 +149,11 @@
         }, 1000);
 
         // ==========================================
-        // LÓGICA DE CARGA DE DATOS (FETCH)
+        // LÓGICA DE CARGA DE DATOS
         // ==========================================
-        
         async function cargarDatos() {
             try {
-                // AJUSTA ESTA RUTA A TU ARCHIVO JSON REAL O API
-                // Si no tienes API, crea un archivo 'data.json' en la raíz
+                // AJUSTA ESTA RUTA A TU ARCHIVO JSON REAL
                 const response = await fetch('/data.json'); 
                 
                 if (!response.ok) throw new Error('No se pudo cargar data.json');
@@ -232,7 +201,7 @@
                 marker.textContent = casa.numero;
                 marker.title = casa.cliente;
                 
-                // Posicionamiento basado en porcentajes (asegúrate que tu JSON tenga x,y en %)
+                // Posicionamiento basado en porcentajes
                 marker.style.left = `${casa.x}%`; 
                 marker.style.top = `${casa.y}%`;
                 
@@ -242,7 +211,6 @@
 
         // Iniciar carga al abrir la página
         document.addEventListener('DOMContentLoaded', cargarDatos);
-
     </script>
 </body>
 </html>
