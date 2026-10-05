@@ -8,53 +8,8 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <!-- Tu CSS Externo (Solo para tabla y marcadores base) -->
+    <!-- TU CSS EXTERNO -->
     <link rel="stylesheet" href="informe-aplicados.css">
-    
-    <!-- Estilos Críticos del Plano (Integrados para garantizar funcionamiento) -->
-    <style>
-        /* Contenedor con Scroll Horizontal Inteligente */
-        .plano-wrapper {
-            position: relative;
-            width: 100%;
-            overflow-x: auto; 
-            overflow-y: hidden;
-            background-color: #f8f9fa;
-            border: 1px solid #dee2e6;
-            border-radius: 4px;
-            white-space: nowrap;
-        }
-
-        /* Imagen Panorámica: Tamaño real forzado */
-        .plano-image {
-            display: inline-block;
-            margin: 0 auto;
-            min-width: 1400px; /* Ajusta al ancho real de tu imagen */
-            height: auto;
-            user-select: none;
-            vertical-align: top;
-        }
-
-        /* Configuración de Impresión Específica para Plano */
-        @media print {
-            @page { size: A4 landscape; margin: 5mm; }
-            body { background-color: white !important; }
-            
-            .plano-wrapper { 
-                overflow: visible !important; 
-                border: none !important; 
-                background: transparent !important; 
-            }
-            
-            .plano-image { 
-                min-width: unset !important; 
-                width: 100% !important; 
-                height: auto !important; 
-                object-fit: contain; 
-                display: block !important; 
-            }
-        }
-    </style>
 </head>
 <body class="bg-light">
 
@@ -77,13 +32,13 @@
         <!-- Botones de Acción -->
         <div class="row mb-4 no-print g-2">
             <div class="col-md-4">
-                <button id="btnImp" onclick="window.print()" class="btn btn-success w-100 fw-bold">🖨️ Imprimir Plano</button>
+                <button id="btnImp" onclick="imprimirPlano()" class="btn btn-success w-100 fw-bold">🖨️ Imprimir Plano</button>
             </div>
             <div class="col-md-4">
-                <button id="btnActualizar" onclick="location.reload()" class="btn btn-primary w-100 fw-bold">🔄 Actualizar Datos</button>
+                <button id="btnActualizar" class="btn btn-primary w-100 fw-bold">🔄 Actualizar Datos</button>
             </div>
             <div class="col-md-4">
-                <button class="btn btn-info w-100 text-white fw-bold">📊 Ver Resumen</button>
+                <button onclick="verResumen()" class="btn btn-info w-100 text-white fw-bold">📊 Ver Resumen</button>
             </div>
         </div>
 
@@ -104,8 +59,9 @@
                                 <th style="width: 15%">FECHA</th>
                             </tr>
                         </thead>
-                        <tbody id="tablaBody">
-                            <tr><td colspan="5" class="text-center py-4 text-muted">⏳ Cargando datos del sistema...</td></tr>
+                        <!-- ID CORREGIDO: tbodyDatos (requerido por tu JS) -->
+                        <tbody id="tbodyDatos">
+                            <tr><td colspan="5" class="text-center py-4 text-muted"> Cargando datos del sistema...</td></tr>
                         </tbody>
                     </table>
                 </div>
@@ -115,17 +71,18 @@
         <!-- SECCIÓN 2: PLANO GENERAL -->
         <div class="card shadow-sm">
             <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0 fs-6">🗺️ Plano General con Marcadores</h5>
+                <h5 class="mb-0 fs-6">️ Plano General con Marcadores</h5>
                 <small class="d-none d-md-block opacity-75">Desliza horizontalmente si es necesario</small>
             </div>
             <div class="card-body p-0 bg-light">
                 
-                <div class="plano-wrapper">
-                    <!-- RUTA ABSOLUTA RECOMENDADA PARA GITHUB PAGES -->
-                    <img src="../img/plano_General.jpg" alt="Plano Sundara Flores" class="plano-image" id="imgPlano" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'p-5 text-center text-danger\'>⚠️ No se pudo cargar la imagen. Verifica la ruta /img/plano_General.jpg</div>';">
+                <!-- CLASE CORREGIDA: plano-container (para coincidir con CSS) -->
+                <div class="plano-container">
+                    <!-- ID CORREGIDO: imgPlano (requerido por tu JS) -->
+                    <img src="/img/plano_General.jpg" alt="Plano Sundara Flores" class="plano-image" id="imgPlano" onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\'p-5 text-center text-danger\'>⚠️ No se pudo cargar la imagen. Verifica la ruta /img/plano_General.jpg</div>';">
                     
-                    <!-- Contenedor de marcadores -->
-                    <div id="contenedor-marcadores"></div>
+                    <!-- ID CORREGIDO: marcadoresContainer (requerido por tu JS) -->
+                    <div id="marcadoresContainer"></div>
                 </div>
 
             </div>
@@ -140,77 +97,7 @@
     <!-- Bootstrap JS Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Script Principal -->
-    <script>
-        // Reloj en tiempo real
-        setInterval(() => {
-            const now = new Date();
-            document.getElementById('clock').textContent = now.toLocaleTimeString('es-CR');
-        }, 1000);
-
-        // ==========================================
-        // LÓGICA DE CARGA DE DATOS
-        // ==========================================
-        async function cargarDatos() {
-            try {
-                // AJUSTA ESTA RUTA A TU ARCHIVO JSON REAL
-                const response = await fetch('/data.json'); 
-                
-                if (!response.ok) throw new Error('No se pudo cargar data.json');
-                
-                const data = await response.json();
-                
-                renderTabla(data);
-                renderMarcadores(data);
-                
-            } catch (error) {
-                console.error("Error cargando datos:", error);
-                document.getElementById('tablaBody').innerHTML = `
-                    <tr><td colspan="5" class="text-center py-4 text-danger">
-                        ⚠️ Error al cargar datos. Verifica que 'data.json' exista.<br>
-                        <small>${error.message}</small>
-                    </td></tr>`;
-            }
-        }
-
-        function renderTabla(data) {
-            const tbody = document.getElementById('tablaBody');
-            if (!data || data.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-4">No hay registros encontrados.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = data.map(casa => `
-                <tr>
-                    <td class="fw-bold">${casa.numero}</td>
-                    <td>${casa.x}</td>
-                    <td>${casa.y}</td>
-                    <td>${casa.cliente}</td>
-                    <td><small class="text-muted">${casa.fecha}</small></td>
-                </tr>
-            `).join('');
-        }
-
-        function renderMarcadores(data) {
-            const container = document.getElementById('contenedor-marcadores');
-            container.innerHTML = '';
-            
-            data.forEach(casa => {
-                const marker = document.createElement('div');
-                marker.className = 'marcador';
-                marker.textContent = casa.numero;
-                marker.title = casa.cliente;
-                
-                // Posicionamiento basado en porcentajes
-                marker.style.left = `${casa.x}%`; 
-                marker.style.top = `${casa.y}%`;
-                
-                container.appendChild(marker);
-            });
-        }
-
-        // Iniciar carga al abrir la página
-        document.addEventListener('DOMContentLoaded', cargarDatos);
-    </script>
+    <!-- TU JAVASCRIPT EXTERNO -->
+    <script src="informe-aplicados.js"></script>
 </body>
 </html>
