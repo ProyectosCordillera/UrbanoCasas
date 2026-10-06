@@ -200,25 +200,25 @@ function mostrarDatosEnTabla(casas) {
 // ============================================
 // Combinamos las coordenadas de ambas etapas para poder pintar en el plano general
 
-function obtenerCoordenadasGenerales(numeroCasa) {
+//function obtenerCoordenadasGenerales(numeroCasa) {
     // Coordenadas Etapa 1 (33-65) - Copiadas de primer-etapa.js
-    if (numeroCasa >= 33 && numeroCasa <= 47) {
-        return { x: 455, y: Math.max(50, Math.min(1600, 1268 - (numeroCasa - 33) * 60)) };
-    }
-    if (numeroCasa >= 48 && numeroCasa <= 65) {
-        return { x: 145, y: Math.max(50, Math.min(1600, 437 + (numeroCasa - 48) * 60)) };
-    }
+ //   if (numeroCasa >= 33 && numeroCasa <= 47) {
+ //       return { x: 455, y: Math.max(50, Math.min(1600, 1268 - (numeroCasa - 33) * 60)) };
+//    }
+ //   if (numeroCasa >= 48 && numeroCasa <= 65) {
+  //      return { x: 145, y: Math.max(50, Math.min(1600, 437 + (numeroCasa - 48) * 60)) };
+  //  }
     
     // Coordenadas Etapa 2 (1-32) - Copiadas de segunda-etapa.js
-    if (numeroCasa >= 1 && numeroCasa <= 16) {
-        return { x: 925, y: Math.max(50, Math.min(1600, 1265 + (numeroCasa - 1) * -60)) };
-    }
-    if (numeroCasa >= 17 && numeroCasa <= 32) {
-        return { x: 630, y: Math.max(50, Math.min(1600, 365 + (numeroCasa - 17) * 60)) };
-    }
+ //   if (numeroCasa >= 1 && numeroCasa <= 16) {
+  //      return { x: 925, y: Math.max(50, Math.min(1600, 1265 + (numeroCasa - 1) * -60)) };
+//    }
+ //   if (numeroCasa >= 17 && numeroCasa <= 32) {
+  //      return { x: 630, y: Math.max(50, Math.min(1600, 365 + (numeroCasa - 17) * 60)) };
+ //   }
 
-    return null;
-}
+//    return null;
+//}
 
 // ============================================
 // CONFIGURACIÓN DE IMAGEN
@@ -277,35 +277,38 @@ function colocarMarcadores() {
     
     marcadoresContainer.innerHTML = '';
     
+    // Obtener dimensiones del plano visible
     const planoAncho = imgPlano.clientWidth || PLANO_ANCHO_REAL;
     const planoAlto = imgPlano.clientHeight || PLANO_ALTO_REAL;
-    // Usamos naturalWidth/Height para la escala correcta
-    const escalaX = planoAncho / (imgPlano.naturalWidth || PLANO_ANCHO_REAL);
-    const escalaY = planoAlto / (imgPlano.naturalHeight || PLANO_ALTO_REAL);
     
     let colocados = 0;
+    let sinMapeo = [];
     
     filas.forEach(fila => {
         const celdas = fila.querySelectorAll('td');
         if (celdas.length < 4) return;
         
+        // Extraer número de casa
         const numeroMatch = celdas[0].innerHTML.match(/<strong>(\d+)<\/strong>/);
-        const numeroCasa = numeroMatch ? parseInt(numeroMatch[1]) : null;
+        const numeroCasa = numeroMatch ? numeroMatch[1] : null;
         
-        // Leer coordenadas de las celdas 2 y 3 (índices 1 y 2)
-        const textX = celdas[1].textContent.trim();
-        const textY = celdas[2].textContent.trim();
+        if (!numeroCasa) return;
         
-        if (textX === 'N/A' || textY === 'N/A') return;
+        // BUSCAR EN EL MAPEO
+        const posicion = MAPEO_CASAS[numeroCasa];
         
-        const coordX = parseInt(textX);
-        const coordY = parseInt(textY);
+        if (!posicion) {
+            sinMapeo.push(numeroCasa);
+            return;
+        }
         
-        if (!numeroCasa || isNaN(coordX) || isNaN(coordY)) return;
+        // Convertir porcentaje a píxeles
+        const posX = (posicion.x / 100) * planoAncho;
+        const posY = (posicion.y / 100) * planoAlto;
         
-        const posX = coordX * escalaX;
-        const posY = coordY * escalaY;
+        const cliente = celdas[3].textContent.trim();
         
+        // Crear marcador
         const marcador = document.createElement('div');
         marcador.className = 'marcador';
         marcador.textContent = numeroCasa;
@@ -313,21 +316,40 @@ function colocarMarcadores() {
         marcador.style.top = `${posY}px`;
         
         // Color por etapa
-        if (numeroCasa >= 33 && numeroCasa <= 65) {
+        const numCasaInt = parseInt(numeroCasa);
+        if (numCasaInt >= 33 && numCasaInt <= 65) {
             marcador.style.backgroundColor = 'rgba(13, 110, 253, 0.95)'; // Azul Primera
-        } else if (numeroCasa >= 1 && numeroCasa <= 32) {
+        } else if (numCasaInt >= 1 && numCasaInt <= 32) {
             marcador.style.backgroundColor = 'rgba(25, 135, 84, 0.95)'; // Verde Segunda
         } else {
-            marcador.style.backgroundColor = 'rgba(220, 53, 69, 0.95)'; // Rojo Otros
+            marcador.style.backgroundColor = 'rgba(220, 53, 69, 0.95)'; // Rojo
         }
         
-        const cliente = celdas[3].textContent.trim();
         marcador.title = `Casa ${numeroCasa}\nCliente: ${cliente}`;
+        
+        // Click en marcador
+        marcador.style.cursor = 'pointer';
+        marcador.addEventListener('click', () => {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: `Casa #${numeroCasa}`,
+                    text: `Cliente: ${cliente}`,
+                    icon: 'info',
+                    confirmButtonText: 'Cerrar'
+                });
+            }
+        });
+        
         marcadoresContainer.appendChild(marcador);
         colocados++;
     });
     
-    console.log(`📍 ${colocados} marcadores colocados en el plano general`);
+    console.log(`📍 ${colocados} marcadores colocados en el plano`);
+    
+    if (sinMapeo.length > 0) {
+        console.warn(`⚠️ Casas sin mapeo (${sinMapeo.length}): ${sinMapeo.join(', ')}`);
+        console.warn('👉 Ejecuta el script de captura de coordenadas para agregarlas al mapeo-casas.js');
+    }
 }
 
 function ajustarContenedorMarcadores() {
