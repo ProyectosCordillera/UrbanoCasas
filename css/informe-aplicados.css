@@ -1,15 +1,113 @@
-/* informe-aplicados.css CORREGIDO */
+/* ============================================
+   informe-aplicados.css - VERSIÓN COMPLETA
+   ============================================ */
+
+/* ============================================
+   1. LAYOUT PRINCIPAL
+   ============================================ */
+
+.main-content {
+    padding-bottom: 80px; /* Espacio para el footer fijo */
+}
+
+/* ============================================
+   2. SECCIÓN DE LA TABLA (ARRIBA)
+   ============================================ */
+
+/* Contenedor con scroll vertical para la tabla */
+.table-container {
+    max-height: 450px;
+    overflow-y: auto;
+    overflow-x: auto;
+    border-radius: 0 0 4px 4px;
+}
+
+/* Scrollbar personalizado para la tabla */
+.table-container::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 5px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #0d6efd;
+    border-radius: 5px;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: #0a58ca;
+}
+
+/* Header sticky de la tabla */
+#tblCasas thead.sticky-top th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: #212529 !important;
+}
+
+/* Filas de la tabla */
+#tblCasas tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+#tblCasas tbody tr:hover {
+    background-color: #e7f1ff !important;
+    cursor: pointer;
+}
+
+/* Ocultar columnas X e Y visualmente (pero mantenerlas en el DOM) */
+#tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
+#tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
+    display: none !important;
+}
+
+/* Badge de etapa */
+.badge {
+    font-size: 0.7rem;
+    padding: 4px 8px;
+}
+
+/* ============================================
+   3. SECCIÓN DEL PLANO (ABAJO)
+   ============================================ */
 
 /* Contenedor del plano: Permite scroll horizontal si la pantalla es pequeña */
 .plano-container {
     position: relative;
     width: 100%;
-    overflow-x: auto; /* CRÍTICO: Permite deslizar el plano panorámico */
+    overflow-x: auto;
     overflow-y: hidden;
     background-color: #fff;
     border: 1px solid #dee2e6;
     border-radius: 4px;
     white-space: nowrap;
+    /* Scrollbar personalizado */
+    scrollbar-width: thin;
+    scrollbar-color: #0d6efd #f1f1f1;
+}
+
+.plano-container::-webkit-scrollbar {
+    height: 12px;
+}
+
+.plano-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 6px;
+}
+
+.plano-container::-webkit-scrollbar-thumb {
+    background: #0d6efd;
+    border-radius: 6px;
+    border: 2px solid #f1f1f1;
+}
+
+.plano-container::-webkit-scrollbar-thumb:hover {
+    background: #0a58ca;
 }
 
 /* Imagen: Mantiene su tamaño real para evitar deformaciones */
@@ -20,9 +118,13 @@
     height: auto;
     user-select: none;
     vertical-align: top;
+    pointer-events: none; /* Evita que la imagen interfiera con los clics en marcadores */
 }
 
-/* Marcadores */
+/* ============================================
+   4. MARCADORES
+   ============================================ */
+
 .marcador {
     position: absolute;
     width: 28px;
@@ -37,38 +139,211 @@
     justify-content: center;
     color: white;
     font-weight: bold;
-    font-size: 13px;
+    font-size: 11px;
     cursor: pointer;
     z-index: 10;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, z-index 0s;
+    pointer-events: auto;
+    user-select: none;
 }
 
-/* Ocultar columnas X e Y visualmente */
-#tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
-#tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
-    display: none !important;
+/* Efecto hover en marcadores */
+.marcador:hover {
+    transform: translate(-50%, -50%) scale(1.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.6);
+    z-index: 100 !important;
 }
 
-/* IMPRESIÓN: Formato Horizontal Correcto */
+/* Colores por etapa */
+.marcador.etapa-primera {
+    background-color: rgba(13, 110, 253, 0.95); /* Azul */
+}
+
+.marcador.etapa-segunda {
+    background-color: rgba(25, 135, 84, 0.95); /* Verde */
+}
+
+.marcador.etapa-otro {
+    background-color: rgba(220, 53, 69, 0.95); /* Rojo */
+}
+
+/* Animación de entrada */
+@keyframes marcadorAparece {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+.marcador {
+    animation: marcadorAparece 0.3s ease-out;
+}
+
+/* ============================================
+   5. FOOTER
+   ============================================ */
+
+.page-footer {
+    background-color: #212529;
+    color: white;
+    padding: 10px 0;
+    z-index: 1000;
+}
+
+.footer-text {
+    font-size: 0.85rem;
+    color: #adb5bd;
+}
+
+/* ============================================
+   6. BOTONES DE ACCIÓN
+   ============================================ */
+
+#btnImp, #btnActualizar, .btn-info {
+    min-height: 42px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+#btnImp:hover {
+    background-color: #1e7e2a !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+#btnActualizar:hover {
+    background-color: #0b5ed7 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-info:hover {
+    background-color: #0aa2c0 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+/* ============================================
+   7. IMPRESIÓN
+   ============================================ */
+
 @media print {
-    @page { size: A4 landscape; margin: 5mm; } /* Cambiado a landscape */
-    body { background-color: white !important; }
-    .no-print { display: none !important; }
+    @page {
+        size: A4 landscape;
+        margin: 5mm;
+    }
     
-    .plano-container { 
-        overflow: visible !important; 
-        border: none !important; 
-        background: transparent !important; 
-        aspect-ratio: unset !important; /* Elimina la proporción vertical forzada */
+    body {
+        background-color: white !important;
+        padding: 0 !important;
     }
-    .plano-image { 
-        min-width: unset !important; 
-        width: 100% !important; 
-        height: auto !important; 
-        object-fit: contain; 
-        display: block !important; 
+    
+    .no-print {
+        display: none !important;
     }
+    
+    .main-content {
+        padding-bottom: 0 !important;
+    }
+    
+    /* Ocultar footer en impresión */
+    .page-footer {
+        display: none !important;
+    }
+    
+    /* Plano en impresión */
+    .plano-container {
+        overflow: visible !important;
+        border: none !important;
+        background: transparent !important;
+        aspect-ratio: unset !important;
+    }
+    
+    .plano-image {
+        min-width: unset !important;
+        width: 100% !important;
+        height: auto !important;
+        object-fit: contain;
+        display: block !important;
+    }
+    
+    /* Marcadores en impresión */
     .marcador {
-        width: 18px !important; height: 18px !important; font-size: 8px !important;
-        -webkit-print-color-adjust: exact; print-color-adjust: exact;
+        width: 18px !important;
+        height: 18px !important;
+        font-size: 8px !important;
+        border-width: 1px !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+        animation: none !important;
+    }
+    
+    /* Tabla en impresión - mostrar todas las filas */
+    .table-container {
+        max-height: none !important;
+        overflow: visible !important;
+    }
+    
+    #tblCasas {
+        font-size: 10px !important;
+    }
+    
+    #tblCasas th, #tblCasas td {
+        padding: 4px 6px !important;
+    }
+    
+    /* Mostrar columnas X e Y en impresión si se desea */
+    /* Descomenta las siguientes líneas si quieres ver las coordenadas al imprimir */
+    /*
+    #tblCasas th:nth-child(2), #tblCasas td:nth-child(2),
+    #tblCasas th:nth-child(3), #tblCasas td:nth-child(3) {
+        display: table-cell !important;
+    }
+    */
+}
+
+/* ============================================
+   8. RESPONSIVE
+   ============================================ */
+
+@media (max-width: 768px) {
+    .table-container {
+        max-height: 300px;
+    }
+    
+    .plano-image {
+        min-width: 1000px;
+    }
+    
+    .marcador {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+    
+    .btn {
+        font-size: 0.85rem;
+        padding: 8px 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .table-container {
+        max-height: 250px;
+    }
+    
+    .plano-image {
+        min-width: 800px;
+    }
+    
+    .marcador {
+        width: 20px;
+        height: 20px;
+        font-size: 9px;
+        border-width: 1px;
     }
 }
