@@ -5,6 +5,9 @@
 const PLANO_ANCHO_REAL = 1275;
 const PLANO_ALTO_REAL = 1650;
 
+// Bandera para verificar si el mapeo está cargado
+let mapeoDisponible = false;
+
 // ============================================
 // INICIALIZACIÓN PRINCIPAL
 // ============================================
