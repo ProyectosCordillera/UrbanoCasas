@@ -58,10 +58,23 @@ async function cargarDatos() {
     
     try {
         // Intentar cargar de la API si existe
-        if (typeof window.Database !== 'undefined' && window.Database.getCasas) {
-            const casas = await window.Database.getCasas();
-            console.log(`✅ API: ${casas.length} casas`);
-            mostrarDatosEnTabla(casas);
+     
+if (typeof window.Database !== 'undefined' && window.Database.getCasas) {
+    const casas = await window.Database.getCasas();
+
+    console.log("=================================");
+    console.log("DATOS RECIBIDOS DE LA BASE DE DATOS");
+    console.log("=================================");
+    console.log(casas);
+
+    if (casas.length > 0) {
+        console.log("ESTRUCTURA DE UNA CASA:");
+        console.log(JSON.stringify(casas[0], null, 2));
+    }
+
+    mostrarDatosEnTabla(casas);
+
+
         } else {
             // DATOS DE PRUEBA si no hay API
             console.log('⚠️ Usando datos de prueba (API no disponible)');
