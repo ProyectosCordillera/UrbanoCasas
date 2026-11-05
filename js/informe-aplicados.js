@@ -307,3 +307,55 @@ function verResumen() {
         alert(`Total: ${total}\nPrimera: ${primera}\nSegunda: ${segunda}\nOtras: ${otras}`);
     }
 }
+
+// ============================================
+// HERRAMIENTA: CAPTURAR COORDENADAS AL HACER CLIC
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const imgPlano = document.getElementById('imgPlano');
+    if (imgPlano) {
+        // Cambiar cursor para indicar que se puede hacer clic
+        imgPlano.style.cursor = 'crosshair';
+        
+        imgPlano.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            const coordText = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
+            
+            // Mostrar en consola
+            console.log('%c📍 CLIC DETECTADO:', 'color: #0f0; font-size: 14px; font-weight: bold');
+            console.log(`Coordenada: ${coordText}`);
+            console.log(`%cPara copiar: "${numeroCasa}": ${coordText},`, 'background: #222; color: #ff0; font-size: 12px; padding: 2px');
+            
+            // Mostrar punto rojo visual
+            const marker = document.createElement('div');
+            marker.style.cssText = `
+                position: absolute;
+                left: ${e.clientX - rect.left}px;
+                top: ${e.clientY - rect.top}px;
+                width: 20px;
+                height: 20px;
+                background: red;
+                border: 3px solid white;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                z-index: 9999;
+                box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            `;
+            this.parentElement.appendChild(marker);
+            
+            // Copiar al portapapeles
+            navigator.clipboard.writeText(coordText).then(() => {
+                console.log('%c✅ COPIADO AL PORTAPAPELES', 'color: #0f0; font-weight: bold');
+            }).catch(err => {
+                console.log('⚠️ No se pudo copiar automáticamente');
+            });
+            
+            // Remover marcador después de 3 segundos
+            setTimeout(() => marker.remove(), 3000);
+        });
+    }
+});
