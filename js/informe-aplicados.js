@@ -29,40 +29,6 @@ document.addEventListener('DOMContentLoaded', function() {
             ajustarContenedorMarcadores();
             colocarMarcadores();
         }
-
-        // ============================================
-        // HERRAMIENTA: OBTENER COORDENADAS AL HACER CLIC
-        // ============================================
-        imgPlano.style.cursor = 'crosshair';
-        imgPlano.addEventListener('click', function(e) {
-            const rect = this.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            
-            const coordText = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
-            console.log(`📍 Casa #___: ${coordText}`);
-            
-            // Mostrar punto rojo visualmente
-            const marker = document.createElement('div');
-            marker.style.cssText = `
-                position: absolute;
-                left: ${e.clientX - rect.left}px;
-                top: ${e.clientY - rect.top}px;
-                width: 15px;
-                height: 15px;
-                background: red;
-                border: 2px solid white;
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 9999;
-            `;
-            this.parentElement.appendChild(marker);
-            
-            navigator.clipboard.writeText(coordText).then(() => {
-                console.log('✅ Copiado al portapapeles: ' + coordText);
-            });
-        });
     }
     
     const btnActualizar = document.getElementById('btnActualizar');
@@ -90,7 +56,7 @@ async function cargarDatos() {
     try {
         if (typeof window.Database !== 'undefined' && window.Database.getCasas) {
             const casas = await window.Database.getCasas();
-            console.log("DATOS RECIBIDOS DE LA BASE DE DATOS:", casas);
+            console.log("✅ Datos recibidos de la Base de Datos:", casas);
             mostrarDatosEnTabla(casas);
         } else {
             console.log('⚠️ Usando datos de prueba (API no disponible)');
@@ -143,6 +109,10 @@ function mostrarDatosEnTabla(casas) {
             badgeClass = 'bg-success';
             rowClass = 'table-success';
             countSegunda++;
+        } else if (numeroCasa >= 66) {
+            etapa = 'Etapa 3/4';
+            badgeClass = 'bg-warning text-dark';
+            rowClass = 'table-warning';
         }
         
         fila.className = rowClass;
@@ -158,7 +128,7 @@ function mostrarDatosEnTabla(casas) {
         tbody.appendChild(fila);
     });
     
-    console.log(` Total: ${casas.length} casas (${countPrimera} primera, ${countSegunda} segunda)`);
+    console.log(`📊 Total: ${casas.length} casas`);
 }
 
 // ============================================
@@ -190,12 +160,12 @@ function colocarMarcadores() {
         if (celdas.length < 4) return;
         
         const numeroMatch = celdas[0].innerHTML.match(/<strong>(\d+)<\/strong>/);
-        const numeroCasa = numeroMatch ? numeroMatch[1] : null;
+        // .trim() asegura que no haya espacios accidentales
+        const numeroCasa = numeroMatch ? numeroMatch[1].trim() : null;
         
         if (!numeroCasa) return;
         
-        // CORRECCIÓN: .trim() elimina espacios accidentales en las claves
-        const posicion = MAPEO_CASAS[numeroCasa.trim()];
+        const posicion = MAPEO_CASAS[numeroCasa];
         
         if (!posicion) {
             sinMapeo.push(numeroCasa);
@@ -225,12 +195,13 @@ function colocarMarcadores() {
         marcador.style.cursor = 'pointer';
         
         marcador.addEventListener('click', function(e) {
-            e.stopPropagation(); // Evita que el clic active la herramienta de coordenadas
+            e.stopPropagation(); // Evita conflictos con otros clics en la página
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: `Casa #${numeroCasa}`,
                     text: `Cliente: ${cliente}`,
-                    icon: 'info'
+                    icon: 'info',
+                    confirmButtonColor: '#3085d6'
                 });
             } else {
                 alert(`Casa ${numeroCasa}\nCliente: ${cliente}`);
@@ -241,9 +212,9 @@ function colocarMarcadores() {
         colocados++;
     });
     
-    console.log(`📍 ${colocados} marcadores colocados`);
+    console.log(`📍 ${colocados} marcadores colocados exitosamente`);
     if (sinMapeo.length > 0) {
-        console.warn(`⚠️ Casas sin mapeo: ${sinMapeo.join(', ')}`);
+        console.warn(`⚠️ Casas sin mapeo en MAPEO_CASAS: ${sinMapeo.join(', ')}`);
     }
 }
 
@@ -268,26 +239,30 @@ function verResumen() {
     let total = filas.length;
     let primera = 0;
     let segunda = 0;
+    let otras = 0;
     
     filas.forEach(fila => {
         const texto = fila.innerHTML;
         if (texto.includes('Primera Etapa')) primera++;
-        if (texto.includes('Segunda Etapa')) segunda++;
+        else if (texto.includes('Segunda Etapa')) segunda++;
+        else otras++;
     });
     
     if (typeof Swal !== 'undefined') {
         Swal.fire({
-            title: '📊 Resumen',
+            title: '📊 Resumen de Ocupación',
             html: `
                 <div class="text-start">
-                    <p><strong>Total casas:</strong> ${total}</p>
-                    <p><strong>Primera Etapa:</strong> ${primera}</p>
-                    <p><strong>Segunda Etapa:</strong> ${segunda}</p>
+                    <p><strong>Total casas registradas:</strong> ${total}</p>
+                    <hr>
+                    <p><span class="badge bg-primary">Primera Etapa:</span> ${primera}</p>
+                    <p><span class="badge bg-success">Segunda Etapa:</span> ${segunda}</p>
+                    <p><span class="badge bg-warning text-dark">Etapas 3 y 4:</span> ${otras}</p>
                 </div>
             `,
             confirmButtonText: 'Cerrar'
         });
     } else {
-        alert(`Total: ${total}\nPrimera: ${primera}\nSegunda: ${segunda}`);
+        alert(`Total: ${total}\nPrimera: ${primera}\nSegunda: ${segunda}\nOtras: ${otras}`);
     }
 }
