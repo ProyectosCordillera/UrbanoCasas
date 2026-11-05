@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Grilla - Sundara Flores</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+        #contenedorPlano {
+            position: relative;
+            display: inline-block;
+        }
+        .punto-anclaje {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            transition: all 0.3s;
+        }
+        .punto-anclaje:hover {
+            transform: translate(-50%, -50%) scale(1.2);
+        }
+        .punto-inicio {
+            background: #10b981;
+            border: 3px solid white;
+            color: white;
+        }
+        .punto-fin {
+            background: #ef4444;
+            border: 3px solid white;
+            color: white;
+        }
+        .casa-marcada {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background: rgba(59, 130, 246, 0.8);
+            border: 2px solid white;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: white;
+            font-weight: bold;
+            z-index: 100;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-6">
+        <h1 class="text-3xl font-bold mb-6 text-center text-blue-600">
+             Configurar Grilla de Casas - Sundara Flores
+        </h1>
+
+        <!-- Panel de Control -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">📋 Instrucciones</h2>
+            <ol class="list-decimal list-inside space-y-2 text-gray-700 mb-4">
+                <li>Haz clic en el <strong>primer punto</strong> de una columna (casa de inicio)</li>
+                <li>Ingresa el número de casa cuando se solicite</li>
+                <li>Haz clic en el <strong>último punto</strong> de esa misma columna</li>
+                <li>Ingresa el número de casa final</li>
+                <li>Repite para cada columna del plano</li>
+                <li>Al finalizar, haz clic en "Generar Mapeo"</li>
+            </ol>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-green-100 p-3 rounded">
+                    <strong class="text-green-800">🟢 Punto Verde</strong>
+                    <p class="text-sm text-green-700">Inicio de columna</p>
+                </div>
+                <div class="bg-red-100 p-3 rounded">
+                    <strong class="text-red-800">🔴 Punto Rojo</strong>
+                    <p class="text-sm text-red-700">Fin de columna</p>
+                </div>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="generarMapeo()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 font-bold flex-1">
+                    🎯 Generar Mapeo Automático
+                </button>
+                <button onclick="limpiarTodo()" class="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 font-bold">
+                    ️ Limpiar Todo
+                </button>
+                <button onclick="descargarArchivo()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 font-bold">
+                    💾 Descargar mapeo-casas.js
+                </button>
+            </div>
+        </div>
+
+        <!-- Lista de Columnas Configuradas -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4"> Columnas Configuradas</h2>
+            <div id="listaColumnas" class="space-y-2">
+                <p class="text-gray-500 italic">No hay columnas configuradas aún...</p>
+            </div>
+        </div>
+
+        <!-- Plano -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">🗺️ Plano General</h2>
+            <div id="contenedorPlano" class="border-2 border-gray-300 rounded overflow-auto">
+                <img id="imgPlano" src="img/plano-general.jpg" alt="Plano General" class="max-w-full h-auto">
+            </div>
+            <p class="text-sm text-gray-600 mt-2">
+                💡 Tip: Haz clic en cualquier parte del plano para capturar coordenadas
+            </p>
+        </div>
+
+        <!-- Código Generado -->
+        <div id="divCodigo" class="bg-white rounded-lg shadow-lg p-6 mt-6 hidden">
+            <h2 class="text-xl font-bold mb-4">📄 Código Generado</h2>
+            <textarea id="txtCodigo" class="w-full h-96 font-mono text-sm bg-gray-900 text-green-400 p-4 rounded" readonly></textarea>
+        </div>
+    </div>
+
+    <script>
+        let columnas = [];
+        let puntoActual = null;
+        let contadorPuntos = 0;
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            const imgPlano = document.getElementById('imgPlano');
+            const contenedor = document.getElementById('contenedorPlano');
+            
+            imgPlano.addEventListener('click', function(e) {
+                const rect = this.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width) * 100;
+                const y = ((e.clientY - rect.top) / rect.height) * 100;
+                
+                // Preguntar número de casa
+                Swal.fire({
+                    title: '📍 Punto de Referencia',
+                    input: 'number',
+                    inputLabel: 'Ingresa el número de casa en esta posición:',
+                    inputPlaceholder: 'Ej: 1, 17, 33...',
+                    showCancelButton: true,
+                    confirmButtonText: '✅ Confirmar',
+                    cancelButtonText: ' Cancelar',
+                    inputValidator: (value) => {
+                        if (!value || value < 1 || value > 99) {
+                            return 'Ingresa un número válido (1-99)';
+                        }
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const numeroCasa = parseInt(result.value);
+                        agregarPunto(x, y, numeroCasa);
+                    }
+                });
+            });
+        });
+
+        function agregarPunto(x, y, numeroCasa) {
+            contadorPuntos++;
+            
+            if (!puntoActual) {
+                // Primer punto (inicio)
+                puntoActual = {
+                    id: contadorPuntos,
+                    inicio: { casa: numeroCasa, x: x, y: y },
+                    fin: null
+                };
+                crearMarcadorVisual(x, y, numeroCasa, 'inicio');
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: '✅ Punto de INICIO registrado',
+                    text: `Casa ${numeroCasa} - Ahora selecciona el punto FINAL de esta columna`,
+                    timer: 2000
+                });
+            } else {
+                // Segundo punto (fin)
+                puntoActual.fin = { casa: numeroCasa, x: x, y: y };
+                crearMarcadorVisual(x, y, numeroCasa, 'fin');
+                
+                columnas.push({...puntoActual});
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: '✅ Columna completada',
+                    text: `Casas ${puntoActual.inicio.casa} a ${numeroCasa}`,
+                    timer: 2000
+                });
+                
+                actualizarListaColumnas();
+                puntoActual = null;
+            }
+        }
+
+        function crearMarcadorVisual(x, y, numero, tipo) {
+            const contenedor = document.getElementById('contenedorPlano');
+            const img = document.getElementById('imgPlano');
+            
+            const marcador = document.createElement('div');
+            marcador.className = `punto-anclaje punto-${tipo}`;
+            marcador.style.left = `${x}%`;
+            marcador.style.top = `${y}%`;
+            marcador.textContent = numero;
+            marcador.title = `Casa ${numero} (${tipo === 'inicio' ? 'Inicio' : 'Fin'})`;
+            
+            contenedor.appendChild(marcador);
+        }
+
+        function actualizarListaColumnas() {
+            const lista = document.getElementById('listaColumnas');
+            
+            if (columnas.length === 0) {
+                lista.innerHTML = '<p class="text-gray-500 italic">No hay columnas configuradas aún...</p>';
+                return;
+            }
+            
+            lista.innerHTML = columnas.map((col, idx) => `
+                <div class="bg-gray-100 p-3 rounded flex justify-between items-center">
+                    <div>
+                        <strong>Columna ${idx + 1}:</strong> 
+                        Casas ${col.inicio.casa} a ${col.fin.casa}
+                    </div>
+                    <button onclick="eliminarColumna(${idx})" class="text-red-600 hover:text-red-800">
+                        🗑️ Eliminar
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function eliminarColumna(index) {
+            columnas.splice(index, 1);
+            actualizarListaColumnas();
+            // Recargar página para limpiar marcadores visuales
+            location.reload();
+        }
+
+        function generarMapeo() {
+            if (columnas.length === 0) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '️ Sin columnas',
+                    text: 'Primero debes configurar al menos una columna'
+                });
+                return;
+            }
+
+            const mapeo = {};
+            
+            columnas.forEach(col => {
+                const { inicio, fin } = col;
+                const totalCasas = Math.abs(fin.casa - inicio.casa) + 1;
+                
+                const pasoX = (fin.x - inicio.x) / (totalCasas - 1);
+                const pasoY = (fin.y - inicio.y) / (totalCasas - 1);
+                
+                for (let i = 0; i < totalCasas; i++) {
+                    const numeroCasa = inicio.casa + i;
+                    const x = inicio.x + (pasoX * i);
+                    const y = inicio.y + (pasoY * i);
+                    
+                    mapeo[numeroCasa.toString()] = {
+                        x: parseFloat(x.toFixed(1)),
+                        y: parseFloat(y.toFixed(1))
+                    };
+                    
+                    // Mostrar casa calculada en el plano
+                    mostrarCasaCalculada(x, y, numeroCasa);
+                }
+            });
+            
+            // Generar código JavaScript
+            let codigo = '// ============================================\n';
+            codigo += '// MAPEO DE CASAS - Generado automáticamente\n';
+            codigo += '// ============================================\n\n';
+            codigo += 'const MAPEO_CASAS = {\n';
+            
+            Object.keys(mapeo).sort((a, b) => parseInt(a) - parseInt(b)).forEach(casa => {
+                codigo += `    "${casa}": { x: ${mapeo[casa].x}, y: ${mapeo[casa].y} },\n`;
+            });
+            
+            codigo += '};\n';
+            
+            // Mostrar código
+            document.getElementById('divCodigo').classList.remove('hidden');
+            document.getElementById('txtCodigo').value = codigo;
+            
+            Swal.fire({
+                icon: 'success',
+                title: '✅ Mapeo generado',
+                text: `Se generaron ${Object.keys(mapeo).length} casas. Revisa el código abajo.`,
+                confirmButtonText: 'Cerrar'
+            });
+            
+            console.log('MAPEO_CASAS generado:', mapeo);
+        }
+
+        function mostrarCasaCalculada(x, y, numero) {
+            const contenedor = document.getElementById('contenedorPlano');
+            
+            const casa = document.createElement('div');
+            casa.className = 'casa-marcada';
+            casa.style.left = `${x}%`;
+            casa.style.top = `${y}%`;
+            casa.textContent = numero;
+            casa.title = `Casa ${numero}`;
+            
+            contenedor.appendChild(casa);
+        }
+
+        function limpiarTodo() {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "Se eliminarán todos los puntos configurados",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, limpiar todo',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    location.reload();
+                }
+            });
+        }
+
+        function descargarArchivo() {
+            const codigo = document.getElementById('txtCodigo').value;
+            if (!codigo) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: '⚠️ Sin código',
+                    text: 'Primero genera el mapeo haciendo clic en "Generar Mapeo"'
+                });
+                return;
+            }
+            
+            const blob = new Blob([codigo], { type: 'text/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'mapeo-casas.js';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            Swal.fire({
+                icon: 'success',
+                title: '✅ Archivo descargado',
+                text: 'mapeo-casas.js se ha descargado. Súbelo a tu repositorio.'
+            });
+        }
+    </script>
+</body>
+</html>
