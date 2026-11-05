@@ -1,108 +1,75 @@
-const MAPEO_CASAS = {
-    // ETAPA 1 (moradas - lado derecho)
-    "1":  { x: 91.5, y: 88.0 },  // ← recalcar estas
-    "2":  { x: 91.5, y: 84.5 },
-    "3":  { x: 91.5, y: 81.0 },
-    "4":  { x: 91.5, y: 77.5 },
-    "5":  { x: 91.5, y: 74.0 },
-    "6":  { x: 91.5, y: 70.5 },
-    "7":  { x: 91.5, y: 67.0 },
-    "8":  { x: 91.5, y: 63.5 },
-    "9":  { x: 91.5, y: 60.0 },
-    "10": { x: 91.5, y: 56.5 },
-    "11": { x: 91.5, y: 53.0 },
-    "12": { x: 91.5, y: 49.5 },
-    "13": { x: 91.5, y: 46.0 },
-    "14": { x: 91.5, y: 42.5 },
-    "15": { x: 91.5, y: 39.0 },
-    "16": { x: 91.5, y: 35.5 },
-    "17": { x: 91.5, y: 32.0 },
-    "18": { x: 83.0, y: 32.0 },
-    "19": { x: 83.0, y: 35.5 },
-    "20": { x: 83.0, y: 39.0 },
-    "21": { x: 83.0, y: 42.5 },
-    "22": { x: 83.0, y: 46.0 },
-    "23": { x: 83.0, y: 49.5 },
-    "24": { x: 83.0, y: 53.0 },
-    "25": { x: 83.0, y: 56.5 },
-    "26": { x: 83.0, y: 60.0 },
-    "27": { x: 83.0, y: 63.5 },
-    "28": { x: 83.0, y: 67.0 },
-    "29": { x: 83.0, y: 70.5 },
-    "30": { x: 83.0, y: 74.0 },
-    "31": { x: 83.0, y: 77.5 },
-    "32": { x: 83.0, y: 81.0 },
+// ============================================
+// PUNTOS DE REFERENCIA (TÚ LOS DEFINES)
+// Solo necesitas 2 puntos por columna
+// ============================================
+
+const PUNTOS_ANCLAJE = {
+    // ETAPA 2 - Columna derecha (casas 1-16)
+    "col_etapa2_der": {
+        inicio: { casa: 1,  x: 91.5, y: 88.0 },  // Casa 1 (abajo)
+        fin:      { casa: 16, x: 91.5, y: 32.0 }   // Casa 16 (arriba)
+    },
     
-    // ETAPA 2 (amarillas)
-    "33": { x: 76.5, y: 81.0 },
-    "34": { x: 76.5, y: 77.5 },
-    "35": { x: 76.5, y: 74.0 },
-    "36": { x: 76.5, y: 70.5 },
-    "37": { x: 76.5, y: 67.0 },
-    "38": { x: 76.5, y: 63.5 },
-    "39": { x: 76.5, y: 60.0 },
-    "40": { x: 76.5, y: 56.5 },
-    "41": { x: 76.5, y: 53.0 },
-    "42": { x: 76.5, y: 49.5 },
-    "43": { x: 76.5, y: 46.0 },
-    "44": { x: 76.5, y: 42.5 },
-    "45": { x: 76.5, y: 39.0 },
-    "46": { x: 76.5, y: 35.5 },
-    "47": { x: 76.5, y: 32.0 },
-    "48": { x: 61.0, y: 32.0 },
-    "49": { x: 61.0, y: 35.5 },
-    "50": { x: 61.0, y: 39.0 },
-    "51": { x: 61.0, y: 42.5 },
-    "52": { x: 61.0, y: 46.0 },
-    "53": { x: 61.0, y: 49.5 },
-    "54": { x: 61.0, y: 53.0 },
-    "55": { x: 61.0, y: 56.5 },
-    "56": { x: 61.0, y: 60.0 },
-    "57": { x: 61.0, y: 63.5 },
-    "58": { x: 61.0, y: 67.0 },
-    "59": { x: 61.0, y: 70.5 },
-    "60": { x: 61.0, y: 74.0 },
-    "61": { x: 61.0, y: 77.5 },
-    "62": { x: 61.0, y: 81.0 },
-    "63": { x: 61.0, y: 84.5 },
-    "64": { x: 61.0, y: 88.0 },
-    "65": { x: 61.0, y: 91.5 },
+    // ETAPA 2 - Columna izquierda (casas 17-32)
+    "col_etapa2_izq": {
+        inicio: { casa: 17, x: 83.0, y: 32.0 },   // Casa 17 (arriba)
+        fin:      { casa: 32, x: 83.0, y: 81.0 }   // Casa 32 (abajo)
+    },
     
-    // ETAPA 3 (naranjas claras)
-    "66": { x: 53.0, y: 91.5 },
-    "67": { x: 53.0, y: 88.0 },
-    "68": { x: 53.0, y: 84.5 },
-    "69": { x: 53.0, y: 81.0 },
-    "70": { x: 53.0, y: 77.5 },
-    "71": { x: 53.0, y: 74.0 },
-    "72": { x: 53.0, y: 70.5 },
-    "73": { x: 53.0, y: 67.0 },
-    "74": { x: 53.0, y: 63.5 },
-    "75": { x: 53.0, y: 60.0 },
-    "76": { x: 53.0, y: 56.5 },
-    "77": { x: 53.0, y: 53.0 },
-    "78": { x: 53.0, y: 49.5 },
-    "79": { x: 53.0, y: 46.0 },
-    "80": { x: 53.0, y: 42.5 },
-    "81": { x: 53.0, y: 39.0 },
-    "82": { x: 53.0, y: 35.5 },
-    "83": { x: 53.0, y: 32.0 },
+    // ETAPA 1 - Columna derecha (casas 33-47)
+    "col_etapa1_der": {
+        inicio: { casa: 33, x: 76.5, y: 81.0 },   // Casa 33 (abajo)
+        fin:      { casa: 47, x: 76.5, y: 32.0 }   // Casa 47 (arriba)
+    },
     
-    // ETAPA 4 (naranjas oscuras)
-    "84": { x: 38.0, y: 32.0 },
-    "85": { x: 38.0, y: 35.5 },
-    "86": { x: 38.0, y: 39.0 },
-    "87": { x: 38.0, y: 42.5 },
-    "88": { x: 38.0, y: 46.0 },
-    "89": { x: 38.0, y: 49.5 },
-    "90": { x: 38.0, y: 53.0 },
-    "91": { x: 38.0, y: 56.5 },
-    "92": { x: 38.0, y: 60.0 },
-    "93": { x: 38.0, y: 63.5 },
-    "94": { x: 38.0, y: 67.0 },
-    "95": { x: 38.0, y: 70.5 },
-    "96": { x: 38.0, y: 74.0 },
-    "97": { x: 38.0, y: 77.5 },
-    "98": { x: 38.0, y: 81.0 },
-    "99": { x: 38.0, y: 84.5 },
+    // ETAPA 1 - Columna izquierda (casas 48-65)
+    "col_etapa1_izq": {
+        inicio: { casa: 48, x: 61.0, y: 32.0 },   // Casa 48 (arriba)
+        fin:      { casa: 65, x: 61.0, y: 91.5 }   // Casa 65 (abajo)
+    },
+    
+    // ETAPA 3 - Casas 66-83
+    "col_etapa3": {
+        inicio: { casa: 66, x: 53.0, y: 91.5 },   // Casa 66 (abajo)
+        fin:      { casa: 83, x: 53.0, y: 32.0 }   // Casa 83 (arriba)
+    },
+    
+    // ETAPA 4 - Casas 84-99
+    "col_etapa4": {
+        inicio: { casa: 84, x: 38.0, y: 32.0 },   // Casa 84 (arriba)
+        fin:      { casa: 99, x: 38.0, y: 84.5 }   // Casa 99 (abajo)
+    }
 };
+
+// ============================================
+// GENERADOR AUTOMÁTICO (NO TOCAR)
+// Calcula todas las casas intermedias
+// ============================================
+
+const MAPEO_CASAS = (function() {
+    const mapeo = {};
+    
+    Object.values(PUNTOS_ANCLAJE).forEach(col => {
+        const { inicio, fin } = col;
+        const totalCasas = Math.abs(fin.casa - inicio.casa) + 1;
+        
+        // Calcular paso entre casas
+        const pasoX = (fin.x - inicio.x) / (totalCasas - 1);
+        const pasoY = (fin.y - inicio.y) / (totalCasas - 1);
+        
+        // Generar cada casa
+        for (let i = 0; i < totalCasas; i++) {
+            const numeroCasa = inicio.casa + i;
+            const x = inicio.x + (pasoX * i);
+            const y = inicio.y + (pasoY * i);
+            
+            mapeo[numeroCasa.toString()] = {
+                x: parseFloat(x.toFixed(1)),
+                y: parseFloat(y.toFixed(1))
+            };
+        }
+    });
+    
+    console.log('✅ MAPEO_CASAS generado automáticamente:', Object.keys(mapeo).length, 'casas');
+    return mapeo;
+})();
