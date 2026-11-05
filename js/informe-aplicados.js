@@ -48,6 +48,44 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
+// HERRAMIENTA TEMPORAL: OBTENER COORDENADAS
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const imgPlano = document.getElementById('imgPlano');
+    if (imgPlano) {
+        imgPlano.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            console.log(`Casa #___: { x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`);
+            
+            // Mostrar visualmente
+            const marker = document.createElement('div');
+            marker.style.cssText = `
+                position: absolute;
+                left: ${e.clientX - rect.left}px;
+                top: ${e.clientY - rect.top}px;
+                width: 20px;
+                height: 20px;
+                background: red;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                z-index: 9999;
+            `;
+            this.parentElement.appendChild(marker);
+            
+            // Copiar al portapapeles
+            const texto = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
+            navigator.clipboard.writeText(texto).then(() => {
+                console.log('✅ Coordenada copiada al portapapeles:', texto);
+            });
+        });
+    }
+});
+
+// ============================================
 // CARGAR DATOS (SIMPLIFICADO)
 // ============================================
 async function cargarDatos() {
