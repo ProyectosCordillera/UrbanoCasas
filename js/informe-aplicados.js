@@ -1,8 +1,8 @@
 // ============================================
 // CONFIGURACIÓN
 // ============================================
-const PLANO_ANCHO_REAL = 1275;
-const PLANO_ALTO_REAL = 1650;
+const PLANO_ANCHO_REAL = 2298;
+const PLANO_ALTO_REAL = 1452;
 
 // ============================================
 // INICIALIZACIÓN
@@ -29,6 +29,62 @@ document.addEventListener('DOMContentLoaded', function() {
             ajustarContenedorMarcadores();
             colocarMarcadores();
         }
+        
+        // MODO CAPTURA: Click en el número del plano para asociar
+        imgPlano.style.cursor = 'crosshair';
+        imgPlano.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            // Pedir al usuario que ingrese el número de casa
+            const numeroCasa = prompt('¿Qué número de casa está en esta posición?\n\nIngresa el número exacto:');
+            
+            if (numeroCasa && !isNaN(numeroCasa)) {
+                const coord = { x: parseFloat(x.toFixed(1)), y: parseFloat(y.toFixed(1)) };
+                
+                // Mostrar confirmación
+                console.log(`%c✅ CASA ${numeroCasa} CAPTURADA:`, 'color: #0f0; font-weight: bold');
+                console.log(`"${numeroCasa}": { x: ${coord.x}, y: ${coord.y} },`);
+                
+                // Copiar al portapapeles
+                const texto = `"${numeroCasa}": { x: ${coord.x}, y: ${coord.y} },`;
+                navigator.clipboard.writeText(texto).then(() => {
+                    console.log('%c✅ Copiado al portapapeles - Pégalo en mapeo-casas.js', 'color: #0f0');
+                });
+                
+                // Mostrar punto verde
+                const marker = document.createElement('div');
+                marker.style.cssText = `
+                    position: absolute;
+                    left: ${e.clientX - rect.left}px;
+                    top: ${e.clientY - rect.top}px;
+                    width: 25px;
+                    height: 25px;
+                    background: #0f0;
+                    border: 3px solid white;
+                    border-radius: 50%;
+                    transform: translate(-50%, -50%);
+                    pointer-events: none;
+                    z-index: 9999;
+                    box-shadow: 0 0 15px rgba(0,255,0,0.8);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: black;
+                    font-weight: bold;
+                    font-size: 12px;
+                `;
+                marker.textContent = numeroCasa;
+                this.parentElement.appendChild(marker);
+                
+                // Actualizar MAPEO_CASAS en tiempo real si existe
+                if (typeof MAPEO_CASAS !== 'undefined') {
+                    MAPEO_CASAS[numeroCasa.trim()] = coord;
+                    colocarMarcadores(); // Recolocar marcadores
+                }
+            }
+        });
     }
     
     const btnActualizar = document.getElementById('btnActualizar');
@@ -56,20 +112,17 @@ async function cargarDatos() {
     try {
         if (typeof window.Database !== 'undefined' && window.Database.getCasas) {
             const casas = await window.Database.getCasas();
-            console.log("✅ Datos recibidos de la Base de Datos:", casas);
+            console.log("✅ Datos recibidos:", casas.length, "casas");
             mostrarDatosEnTabla(casas);
         } else {
-            console.log('⚠️ Usando datos de prueba (API no disponible)');
-            const casasPrueba = [
-                { numero_casa: "1", nombre_cliente: "Cliente 1" },
-                { numero_casa: "2", nombre_cliente: "Cliente 2" },
-                { numero_casa: "13", nombre_cliente: "Cliente 13" },
-                { numero_casa: "17", nombre_cliente: "Cliente 17" },
-                { numero_casa: "23", nombre_cliente: "Cliente 23" },
-                { numero_casa: "34", nombre_cliente: "Cliente 34" },
-                { numero_casa: "47", nombre_cliente: "Cliente 47" },
-                { numero_casa: "65", nombre_cliente: "Cliente 65" }
-            ];
+            console.log('⚠️ Usando datos de prueba');
+            const casasPrueba = [];
+            for (let i = 1; i <= 99; i++) {
+                casasPrueba.push({
+                    numero_casa: i.toString(),
+                    nombre_cliente: `Cliente ${i}`
+                });
+            }
             mostrarDatosEnTabla(casasPrueba);
         }
     } catch (error) {
@@ -90,6 +143,7 @@ function mostrarDatosEnTabla(casas) {
     
     let countPrimera = 0;
     let countSegunda = 0;
+    let countOtras = 0;
     
     casas.forEach(casa => {
         const numeroCasa = parseInt(casa.numero_casa);
@@ -113,6 +167,7 @@ function mostrarDatosEnTabla(casas) {
             etapa = 'Etapa 3/4';
             badgeClass = 'bg-warning text-dark';
             rowClass = 'table-warning';
+            countOtras++;
         }
         
         fila.className = rowClass;
@@ -128,49 +183,8 @@ function mostrarDatosEnTabla(casas) {
         tbody.appendChild(fila);
     });
     
-    console.log(`📊 Total: ${casas.length} casas`);
+    console.log(`📊 Total: ${casas.length} casas (${countPrimera} 1ra, ${countSegunda} 2da, ${countOtras} otras)`);
 }
-
-// ============================================
-// HERRAMIENTA TEMPORAL: OBTENER COORDENADAS EXACTAS
-// ============================================
-document.addEventListener('DOMContentLoaded', function() {
-    const imgPlano = document.getElementById('imgPlano');
-    if (imgPlano) {
-        imgPlano.style.cursor = 'crosshair';
-        
-        imgPlano.addEventListener('click', function(e) {
-            const rect = this.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            
-            const coordText = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
-            console.log(`📍 Casa #___: ${coordText}`);
-            console.log(`%c Copia esto: "${numero}": ${coordText},`, 'background: #222; color: #0f0; font-size: 12px');
-            
-            // Mostrar punto rojo
-            const marker = document.createElement('div');
-            marker.style.cssText = `
-                position: absolute;
-                left: ${e.clientX - rect.left}px;
-                top: ${e.clientY - rect.top}px;
-                width: 15px;
-                height: 15px;
-                background: red;
-                border: 2px solid white;
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 9999;
-            `;
-            this.parentElement.appendChild(marker);
-            
-            navigator.clipboard.writeText(coordText).then(() => {
-                console.log('✅ Coordenada copiada al portapapeles');
-            });
-        });
-    }
-});
 
 // ============================================
 // COLOCAR MARCADORES
@@ -201,12 +215,12 @@ function colocarMarcadores() {
         if (celdas.length < 4) return;
         
         const numeroMatch = celdas[0].innerHTML.match(/<strong>(\d+)<\/strong>/);
-        // .trim() asegura que no haya espacios accidentales
         const numeroCasa = numeroMatch ? numeroMatch[1].trim() : null;
         
         if (!numeroCasa) return;
         
-       const posicion = MAPEO_CASAS[numeroCasa.trim()];
+        // Buscar en el mapeo (con y sin espacio)
+        const posicion = MAPEO_CASAS[numeroCasa] || MAPEO_CASAS[numeroCasa + ' '];
         
         if (!posicion) {
             sinMapeo.push(numeroCasa);
@@ -236,13 +250,12 @@ function colocarMarcadores() {
         marcador.style.cursor = 'pointer';
         
         marcador.addEventListener('click', function(e) {
-            e.stopPropagation(); // Evita conflictos con otros clics en la página
+            e.stopPropagation();
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: `Casa #${numeroCasa}`,
                     text: `Cliente: ${cliente}`,
-                    icon: 'info',
-                    confirmButtonColor: '#3085d6'
+                    icon: 'info'
                 });
             } else {
                 alert(`Casa ${numeroCasa}\nCliente: ${cliente}`);
@@ -253,9 +266,10 @@ function colocarMarcadores() {
         colocados++;
     });
     
-    console.log(`📍 ${colocados} marcadores colocados exitosamente`);
+    console.log(`📍 ${colocados} marcadores colocados`);
     if (sinMapeo.length > 0) {
-        console.warn(`⚠️ Casas sin mapeo en MAPEO_CASAS: ${sinMapeo.join(', ')}`);
+        console.warn(`️ Casas sin mapeo (${sinMapeo.length}): ${sinMapeo.slice(0, 10).join(', ')}...`);
+        console.log('💡 Haz clic en el plano sobre estos números para capturarlos');
     }
 }
 
@@ -291,7 +305,7 @@ function verResumen() {
     
     if (typeof Swal !== 'undefined') {
         Swal.fire({
-            title: '📊 Resumen de Ocupación',
+            title: ' Resumen de Ocupación',
             html: `
                 <div class="text-start">
                     <p><strong>Total casas registradas:</strong> ${total}</p>
@@ -307,55 +321,3 @@ function verResumen() {
         alert(`Total: ${total}\nPrimera: ${primera}\nSegunda: ${segunda}\nOtras: ${otras}`);
     }
 }
-
-// ============================================
-// HERRAMIENTA: CAPTURAR COORDENADAS AL HACER CLIC
-// ============================================
-document.addEventListener('DOMContentLoaded', function() {
-    const imgPlano = document.getElementById('imgPlano');
-    if (imgPlano) {
-        // Cambiar cursor para indicar que se puede hacer clic
-        imgPlano.style.cursor = 'crosshair';
-        
-        imgPlano.addEventListener('click', function(e) {
-            const rect = this.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            
-            const coordText = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
-            
-            // Mostrar en consola
-            console.log('%c📍 CLIC DETECTADO:', 'color: #0f0; font-size: 14px; font-weight: bold');
-            console.log(`Coordenada: ${coordText}`);
-            console.log(`%cPara copiar: "${numeroCasa}": ${coordText},`, 'background: #222; color: #ff0; font-size: 12px; padding: 2px');
-            
-            // Mostrar punto rojo visual
-            const marker = document.createElement('div');
-            marker.style.cssText = `
-                position: absolute;
-                left: ${e.clientX - rect.left}px;
-                top: ${e.clientY - rect.top}px;
-                width: 20px;
-                height: 20px;
-                background: red;
-                border: 3px solid white;
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 9999;
-                box-shadow: 0 0 10px rgba(0,0,0,0.5);
-            `;
-            this.parentElement.appendChild(marker);
-            
-            // Copiar al portapapeles
-            navigator.clipboard.writeText(coordText).then(() => {
-                console.log('%c✅ COPIADO AL PORTAPAPELES', 'color: #0f0; font-weight: bold');
-            }).catch(err => {
-                console.log('⚠️ No se pudo copiar automáticamente');
-            });
-            
-            // Remover marcador después de 3 segundos
-            setTimeout(() => marker.remove(), 3000);
-        });
-    }
-});
