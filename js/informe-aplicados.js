@@ -132,6 +132,47 @@ function mostrarDatosEnTabla(casas) {
 }
 
 // ============================================
+// HERRAMIENTA TEMPORAL: OBTENER COORDENADAS EXACTAS
+// ============================================
+document.addEventListener('DOMContentLoaded', function() {
+    const imgPlano = document.getElementById('imgPlano');
+    if (imgPlano) {
+        imgPlano.style.cursor = 'crosshair';
+        
+        imgPlano.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            const coordText = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
+            console.log(`📍 Casa #___: ${coordText}`);
+            console.log(`%c Copia esto: "${numero}": ${coordText},`, 'background: #222; color: #0f0; font-size: 12px');
+            
+            // Mostrar punto rojo
+            const marker = document.createElement('div');
+            marker.style.cssText = `
+                position: absolute;
+                left: ${e.clientX - rect.left}px;
+                top: ${e.clientY - rect.top}px;
+                width: 15px;
+                height: 15px;
+                background: red;
+                border: 2px solid white;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                z-index: 9999;
+            `;
+            this.parentElement.appendChild(marker);
+            
+            navigator.clipboard.writeText(coordText).then(() => {
+                console.log('✅ Coordenada copiada al portapapeles');
+            });
+        });
+    }
+});
+
+// ============================================
 // COLOCAR MARCADORES
 // ============================================
 function colocarMarcadores() {
@@ -165,7 +206,7 @@ function colocarMarcadores() {
         
         if (!numeroCasa) return;
         
-        const posicion = MAPEO_CASAS[numeroCasa];
+       const posicion = MAPEO_CASAS[numeroCasa.trim()];
         
         if (!posicion) {
             sinMapeo.push(numeroCasa);
