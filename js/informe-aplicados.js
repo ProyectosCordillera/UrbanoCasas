@@ -15,10 +15,8 @@ document.addEventListener('DOMContentLoaded', function() {
         yearElement.textContent = new Date().getFullYear();
     }
     
-    // Cargar datos
     cargarDatos();
     
-    // Configurar imagen
     const imgPlano = document.getElementById('imgPlano');
     if (imgPlano) {
         imgPlano.addEventListener('load', function() {
@@ -31,9 +29,42 @@ document.addEventListener('DOMContentLoaded', function() {
             ajustarContenedorMarcadores();
             colocarMarcadores();
         }
+
+        // ============================================
+        // HERRAMIENTA: OBTENER COORDENADAS AL HACER CLIC
+        // ============================================
+        imgPlano.style.cursor = 'crosshair';
+        imgPlano.addEventListener('click', function(e) {
+            const rect = this.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width) * 100;
+            const y = ((e.clientY - rect.top) / rect.height) * 100;
+            
+            const coordText = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
+            console.log(`📍 Casa #___: ${coordText}`);
+            
+            // Mostrar punto rojo visualmente
+            const marker = document.createElement('div');
+            marker.style.cssText = `
+                position: absolute;
+                left: ${e.clientX - rect.left}px;
+                top: ${e.clientY - rect.top}px;
+                width: 15px;
+                height: 15px;
+                background: red;
+                border: 2px solid white;
+                border-radius: 50%;
+                transform: translate(-50%, -50%);
+                pointer-events: none;
+                z-index: 9999;
+            `;
+            this.parentElement.appendChild(marker);
+            
+            navigator.clipboard.writeText(coordText).then(() => {
+                console.log('✅ Copiado al portapapeles: ' + coordText);
+            });
+        });
     }
     
-    // Botón actualizar
     const btnActualizar = document.getElementById('btnActualizar');
     if (btnActualizar) {
         btnActualizar.addEventListener('click', function() {
@@ -48,45 +79,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// HERRAMIENTA TEMPORAL: OBTENER COORDENADAS
-// ============================================
-document.addEventListener('DOMContentLoaded', function() {
-    const imgPlano = document.getElementById('imgPlano');
-    if (imgPlano) {
-        imgPlano.addEventListener('click', function(e) {
-            const rect = this.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width) * 100;
-            const y = ((e.clientY - rect.top) / rect.height) * 100;
-            
-            console.log(`Casa #___: { x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`);
-            
-            // Mostrar visualmente
-            const marker = document.createElement('div');
-            marker.style.cssText = `
-                position: absolute;
-                left: ${e.clientX - rect.left}px;
-                top: ${e.clientY - rect.top}px;
-                width: 20px;
-                height: 20px;
-                background: red;
-                border-radius: 50%;
-                transform: translate(-50%, -50%);
-                pointer-events: none;
-                z-index: 9999;
-            `;
-            this.parentElement.appendChild(marker);
-            
-            // Copiar al portapapeles
-            const texto = `{ x: ${x.toFixed(1)}, y: ${y.toFixed(1)} }`;
-            navigator.clipboard.writeText(texto).then(() => {
-                console.log('✅ Coordenada copiada al portapapeles:', texto);
-            });
-        });
-    }
-});
-
-// ============================================
-// CARGAR DATOS (SIMPLIFICADO)
+// CARGAR DATOS
 // ============================================
 async function cargarDatos() {
     const tbody = document.getElementById('tbodyDatos');
@@ -95,26 +88,11 @@ async function cargarDatos() {
     console.log('📥 Cargando datos...');
     
     try {
-        // Intentar cargar de la API si existe
-     
-if (typeof window.Database !== 'undefined' && window.Database.getCasas) {
-    const casas = await window.Database.getCasas();
-
-    console.log("=================================");
-    console.log("DATOS RECIBIDOS DE LA BASE DE DATOS");
-    console.log("=================================");
-    console.log(casas);
-
-    if (casas.length > 0) {
-        console.log("ESTRUCTURA DE UNA CASA:");
-        console.log(JSON.stringify(casas[0], null, 2));
-    }
-
-    mostrarDatosEnTabla(casas);
-
-
+        if (typeof window.Database !== 'undefined' && window.Database.getCasas) {
+            const casas = await window.Database.getCasas();
+            console.log("DATOS RECIBIDOS DE LA BASE DE DATOS:", casas);
+            mostrarDatosEnTabla(casas);
         } else {
-            // DATOS DE PRUEBA si no hay API
             console.log('⚠️ Usando datos de prueba (API no disponible)');
             const casasPrueba = [
                 { numero_casa: "1", nombre_cliente: "Cliente 1" },
@@ -142,8 +120,6 @@ function mostrarDatosEnTabla(casas) {
     if (!tbody) return;
     
     tbody.innerHTML = '';
-    
-    // Ordenar
     casas.sort((a, b) => parseInt(a.numero_casa) - parseInt(b.numero_casa));
     
     let countPrimera = 0;
@@ -153,7 +129,6 @@ function mostrarDatosEnTabla(casas) {
         const numeroCasa = parseInt(casa.numero_casa);
         const fila = document.createElement('tr');
         
-        // Determinar etapa
         let etapa = 'Desconocida';
         let badgeClass = 'bg-secondary';
         let rowClass = '';
@@ -171,7 +146,6 @@ function mostrarDatosEnTabla(casas) {
         }
         
         fila.className = rowClass;
-        
         const cliente = casa.nombre_cliente || 'Sin cliente';
         
         fila.innerHTML = `
@@ -181,7 +155,6 @@ function mostrarDatosEnTabla(casas) {
             <td>${cliente}</td>
             <td class="text-center"><small class="text-muted">En línea</small></td>
         `;
-        
         tbody.appendChild(fila);
     });
     
@@ -199,14 +172,12 @@ function colocarMarcadores() {
     if (!tbody || !container || !imgPlano) return;
     if (!imgPlano.complete) return;
     
-    // Verificar que existe MAPEO_CASAS
     if (typeof MAPEO_CASAS === 'undefined') {
-        console.warn('⚠️ MAPEO_CASAS no definido - crea el archivo mapeo-casas.js');
+        console.warn('⚠️ MAPEO_CASAS no definido');
         return;
     }
     
     container.innerHTML = '';
-    
     const filas = tbody.querySelectorAll('tr');
     const ancho = imgPlano.clientWidth;
     const alto = imgPlano.clientHeight;
@@ -223,28 +194,24 @@ function colocarMarcadores() {
         
         if (!numeroCasa) return;
         
-        // Buscar en el mapeo
-        const posicion = MAPEO_CASAS[numeroCasa];
+        // CORRECCIÓN: .trim() elimina espacios accidentales en las claves
+        const posicion = MAPEO_CASAS[numeroCasa.trim()];
         
         if (!posicion) {
             sinMapeo.push(numeroCasa);
             return;
         }
         
-        // Calcular posición
         const posX = (posicion.x / 100) * ancho;
         const posY = (posicion.y / 100) * alto;
-        
         const cliente = celdas[3].textContent.trim();
         
-        // Crear marcador
         const marcador = document.createElement('div');
         marcador.className = 'marcador';
         marcador.textContent = numeroCasa;
         marcador.style.left = posX + 'px';
         marcador.style.top = posY + 'px';
         
-        // Color por etapa
         const num = parseInt(numeroCasa);
         if (num >= 33 && num <= 65) {
             marcador.classList.add('etapa-primera');
@@ -257,8 +224,8 @@ function colocarMarcadores() {
         marcador.title = `Casa ${numeroCasa}\nCliente: ${cliente}`;
         marcador.style.cursor = 'pointer';
         
-        // Click
-        marcador.addEventListener('click', function() {
+        marcador.addEventListener('click', function(e) {
+            e.stopPropagation(); // Evita que el clic active la herramienta de coordenadas
             if (typeof Swal !== 'undefined') {
                 Swal.fire({
                     title: `Casa #${numeroCasa}`,
@@ -289,16 +256,10 @@ function ajustarContenedorMarcadores() {
     }
 }
 
-// ============================================
-// IMPRIMIR
-// ============================================
 function imprimirPlano() {
     window.print();
 }
 
-// ============================================
-// RESUMEN
-// ============================================
 function verResumen() {
     const tbody = document.querySelector('#tblCasas tbody');
     if (!tbody) return;
